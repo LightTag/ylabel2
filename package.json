@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@reduxjs/toolkit": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -14,6 +15,7 @@
     "@types/react": "^16.9.51",
     "@types/react-dom": "^16.9.8",
     "immer": "^7.0.9",
+    "libsvm-ts": "0.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-query": "^2.25.0",
@@ -21,6 +23,7 @@
     "react-reflex": "^3.1.0",
     "react-scripts": "3.4.3",
     "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
     "superagent": "^6.1.0",
     "typeface-roboto": "^1.1.13",
     "typescript": "^4.0.3"
@@ -29,7 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preinstall": "npx npm-force-resolutions"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,6 +53,10 @@
   "devDependencies": {
     "@types/react-redux": "^7.1.9",
     "@types/superagent": "^4.1.10",
-    "@typescript-eslint/parser": "^4.4.0"
+    "@typescript-eslint/parser": "^4.4.0",
+    "prettier": "^2.1.2"
+  },
+  "resolutions": {
+    "immer": "^7.0.9"
   }
 }
