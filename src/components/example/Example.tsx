@@ -11,9 +11,10 @@ import { useQuery } from "react-query";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
 import ClassificationSelect from "./ClassificationSelect";
 import Fade from "@material-ui/core/Fade";
-import classificationSelectors from "../../redux-state/classificationSelectors";
+import classificationSelectors from "../../redux-state/classification/classificationSelectors";
+import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
 interface Props {
-  example: Required<example>;
+  exampleId: string;
   addSpanId: (spanId: string) => void;
 }
 const useStyles = makeStyles((theme) => ({
@@ -201,16 +202,13 @@ const ExampleSpan: FunctionComponent<{
 const Example: FunctionComponent<Props> = (props) => {
   const classes = useStyles();
   const labelsetName = "hood";
-  const exampleId = props.example.example_id;
+  const exampleQuery = useGetExampleFromDBByExampleId(props.exampleId);
   const currentClass = classificationSelectors.useSelectExampleClassification(
-    exampleId
+    props.exampleId
   );
-  const annotationQuery = useQuery(
-    [props.example, labelsetName],
-    getExampleAnnotations
-  );
+
   const [showRibbon, setShowRibbon] = React.useState<boolean>(false);
-  if (annotationQuery.isSuccess && annotationQuery.data) {
+  if (exampleQuery.isSuccess && exampleQuery.data) {
     return (
       <Paper
         tabIndex={1}
@@ -220,20 +218,21 @@ const Example: FunctionComponent<Props> = (props) => {
       >
         <div className={classes.ribbon}>
           <Fade in={showRibbon} mountOnEnter unmountOnExit>
-            <ClassificationSelect exampleId={props.example.example_id} />
+            <ClassificationSelect exampleId={props.exampleId} />
           </Fade>
           <Fade in={!showRibbon}>
             <div>{currentClass || null}</div>
           </Fade>
         </div>
-        <div className={classes.body}>
-          {annotationQuery.data.map((span) => (
-            <ExampleSpan
-              span={span}
-              key={span.start}
-              addSpanId={props.addSpanId}
-            />
-          ))}
+        <div className={classes.body} dir={"auto"}>
+          {/*{annotationQuery.data.map((span) => (*/}
+          {/*  <ExampleSpan*/}
+          {/*    span={span}*/}
+          {/*    key={span.start}*/}
+          {/*    addSpanId={props.addSpanId}*/}
+          {/*  />*/}
+          {/*))}*/}
+          {exampleQuery.data.content}
         </div>
       </Paper>
     );

@@ -1,4 +1,4 @@
-import { RootState, useTypedSelector } from "./rootState";
+import { RootState, useTypedSelector } from "../rootState";
 import { createSelector } from "@reduxjs/toolkit";
 import exp from "constants";
 

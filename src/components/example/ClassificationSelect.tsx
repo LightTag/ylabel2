@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from "react";
 import { FunctionComponent } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import classificationSelectors from "../../redux-state/classificationSelectors";
-import { classificationActions } from "../../redux-state/classificationReducer";
+import classificationSelectors from "../../redux-state/classification/classificationSelectors";
+import { classificationActions } from "../../redux-state/classification/classificationReducer";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";

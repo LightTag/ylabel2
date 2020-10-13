@@ -3,12 +3,7 @@ import { Provider } from "react-redux";
 
 import "./App.css";
 import "typeface-roboto";
-import DBClient, {
-  example,
-  label,
-  model,
-  Response_getExample_200,
-} from "./data_clients/dbclient";
+import DBClient, { label, model } from "./data_clients/dbclient";
 import {
   QueryCache,
   QueryClient,
@@ -22,40 +17,32 @@ import "react-reflex/styles.css";
 import { CssBaseline } from "@material-ui/core";
 import Example from "./components/example/Example";
 import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
-import store from "./redux-state/rootState";
+import store, { useTypedSelector } from "./redux-state/rootState";
 import ClassificationStats from "./components/classificationStats";
+import FileUploadButton from "./components/dataUpload/simpleDataUpload";
+import { selectExampleIds } from "./redux-state/examples/exampleSelectors";
 
 const Body: FunctionComponent = () => {
-  const client = new DBClient();
   const spanRegistry = useSpanRegistry();
-  const query = useQuery("examples", () =>
-    client.getExample({ range: "1-2000" })
-  );
-  if (query.isLoading) {
-    return <CircularProgress />;
-  }
-  if (query.isSuccess && query.data !== undefined) {
-    const data = query.data.body as Required<example>[];
-    return (
-      <div style={{ height: "100%", padding: "2rem" }}>
-        <div style={{ margin: "2rem" }}>
-          <button onMouseDown={spanRegistry.gotoPrev}>Prev </button>
-          <button onMouseDown={spanRegistry.gotoNext}>Next </button>
-        </div>
-        <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
-          {data.map((ex) => (
-            <Example
-              key={ex.example_id}
-              example={ex}
-              addSpanId={spanRegistry.addSpanId}
-            />
-          ))}
-        </div>
+  const exampleIds = useTypedSelector(selectExampleIds).slice(100, 200);
+
+  return (
+    <div style={{ height: "100%", padding: "2rem" }}>
+      <div style={{ margin: "2rem" }}>
+        <button onMouseDown={spanRegistry.gotoPrev}>Prev </button>
+        <button onMouseDown={spanRegistry.gotoNext}>Next </button>
       </div>
-    );
-  } else {
-    return <div>Hello</div>;
-  }
+      <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
+        {exampleIds.map((exampleId) => (
+          <Example
+            key={exampleId}
+            exampleId={exampleId as string}
+            addSpanId={spanRegistry.addSpanId}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const Labelset: FunctionComponent = () => {
@@ -96,30 +83,7 @@ const Labelset: FunctionComponent = () => {
 };
 
 const Dataset: FunctionComponent = () => {
-  const client = new DBClient();
-  const query = useQuery("dataset", () => client.getDataset({}));
-
-  // Create a cache
-  const cache = new QueryCache();
-
-  // Create a client
-  if (query.isLoading) {
-    return <CircularProgress />;
-  }
-  if (query.isSuccess && query.data && query.data.body) {
-    const datasets = query.data.body;
-    return (
-      <div>
-        <ul>
-          {datasets.map((ds) => (
-            <li>{ds.dataset_name}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  } else {
-    return <div> Bad</div>;
-  }
+  return <FileUploadButton />;
 };
 const cache = new QueryCache();
 const client = new QueryClient({ cache });
