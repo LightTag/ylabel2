@@ -9,20 +9,42 @@ import "react-reflex/styles.css";
 import { CssBaseline } from "@material-ui/core";
 import Example from "./components/example/Example";
 import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
-import store, { useTypedSelector } from "./redux-state/rootState";
+import store from "./redux-state/rootState";
 import ClassificationStats from "./components/classificationStats";
 import FileUploadButton from "./components/dataUpload/simpleDataUpload";
-import { selectExampleIds } from "./redux-state/examples/exampleSelectors";
+import sortBy from "lodash/sortBy";
+import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
+import TextField from "@material-ui/core/TextField";
+import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
-  const exampleIds = useTypedSelector(selectExampleIds).slice(0, 100);
+  const [exampleIds, setExampleIds] = React.useState<string[]>([]);
+  const [tot, setTot] = React.useState<number>(0);
+  async function _handleChange(val: string) {
+    const response = await IndexWorkerController.query(val);
+    const xIds = sortBy(response.results, (x) => -x.score)
+      .slice(0, 100)
+      .map((x) => x.exampleId);
+    setExampleIds(xIds);
+    setTot(response.results.length);
+  }
+  const handleChange = debounce((e) => _handleChange(e.target.value), 150);
+
   return (
     <div style={{ height: "100%", padding: "2rem" }}>
       <div style={{ margin: "2rem" }}>
         <button onMouseDown={spanRegistry.gotoPrev}>Prev </button>
         <button onMouseDown={spanRegistry.gotoNext}>Next </button>
+        <TextField
+          variant={"outlined"}
+          onChange={(e) => {
+            e.persist();
+            handleChange(e);
+          }}
+          helperText={`${tot} items`}
+        />
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
         {exampleIds.map((exampleId) => (

@@ -13,14 +13,14 @@ export class Counter {
     this.items[key] = val + 1;
   }
 }
-const splitter = /[\b\s-.,!&:]+(?!$)/;
+export const tokenizingRegex = /[\b\s-.,!&:]+(?!$)/;
 export type TFIDFT = Record<string, Record<string, number>>;
 
 function doExample(example: Data.Example) {
   const tf = new Counter();
   const df = new Set<string>();
 
-  example.content.split(splitter).forEach((word) => {
+  example.content.split(tokenizingRegex).forEach((word) => {
     if (!word.match(/[\d]/)) {
       tf.increment(word);
       df.add(word);

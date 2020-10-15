@@ -6,8 +6,9 @@ import { Typography } from "@material-ui/core";
 import { useTypedSelector } from "app/redux-state/rootState";
 import { selectExampleIds } from "app/redux-state/examples/exampleSelectors";
 import { EventKinds, TFIDFEvent } from "app/classifier/test.worker";
+import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
 const worker = new Worker();
-
+IndexWorkerController;
 const WorkComp: FunctionComponent = () => {
   const exampleIds = useTypedSelector(selectExampleIds);
 
