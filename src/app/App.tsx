@@ -12,22 +12,22 @@ import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
 import store from "./redux-state/rootState";
 import ClassificationStats from "./components/classificationStats";
 import FileUploadButton from "./components/dataUpload/simpleDataUpload";
-import sortBy from "lodash/sortBy";
+// import sortBy from "lodash/sortBy";
 import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
 import TextField from "@material-ui/core/TextField";
 import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+import { IndexWorker } from "app/docIndex/indextypes";
+import SearchResult = IndexWorker.SearchResult;
 IndexWorkerController.initializeIndex();
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
-  const [exampleIds, setExampleIds] = React.useState<string[]>([]);
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
   const [tot, setTot] = React.useState<number>(0);
   async function _handleChange(val: string) {
     const response = await IndexWorkerController.query(val);
-    const xIds = sortBy(response.results, (x) => -x.score)
-      .slice(0, 100)
-      .map((x) => x.exampleId);
-    setExampleIds(xIds);
+    setSearchResults(response.results);
+
     setTot(response.results.length);
   }
   const handleChange = debounce((e) => _handleChange(e.target.value), 50);
@@ -47,9 +47,10 @@ const Body: FunctionComponent = () => {
         />
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
-        {exampleIds.map((exampleId) => (
+        {searchResults.slice(0, 100).map(({ exampleId, score }) => (
           <Example
             key={exampleId}
+            score={score}
             exampleId={exampleId as string}
             addSpanId={spanRegistry.addSpanId}
           />

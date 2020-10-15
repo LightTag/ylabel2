@@ -8,9 +8,11 @@ import { Paper } from "@material-ui/core";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
 import ClassificationRibbon from "./ClassificationRibbon";
 import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
+import Typography from "@material-ui/core/Typography";
 
 interface Props {
   exampleId: string;
+  score?: number;
   addSpanId: (spanId: string) => void;
 }
 const useStyles = makeStyles((theme) => ({
@@ -202,6 +204,9 @@ const Example: FunctionComponent<Props> = (props) => {
     return (
       <Paper tabIndex={1} className={classes.root}>
         <div className={classes.ribbon}>
+          <Typography variant={"subtitle1"} color={"primary"}>
+            {props.score || null}
+          </Typography>
           <ClassificationRibbon exampleId={props.exampleId} />
         </div>
         <div className={classes.body} dir={"auto"}>
