@@ -1,8 +1,10 @@
 import { IndexWorker } from "app/docIndex/indextypes";
 import Worker from "worker-loader!./ndx.worker";
 import Data from "app/data_clients/datainterfaces";
+import RequestMessageKind = IndexWorker.RequestMessageKind;
 
 export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ {
+  private static initialized: boolean = false;
   private static worker = new Worker();
   private static requestId: number = 0;
   private static responseListeners: Record<
@@ -13,27 +15,13 @@ export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ 
     IndexWorkerController.requestId++;
     return IndexWorkerController.requestId;
   }
-  public static addDocs(examples: Data.Example[]) {
-    const requestId = IndexWorkerController.nextRequestId();
-    debugger;
-    const message: IndexWorker.Request.IStartIndex = {
-      kind: IndexWorker.MessageKind.startIndexing,
-      requestId,
-      payload: {
-        examples,
-      },
-    };
-    IndexWorkerController.worker.postMessage(message);
-
-    return new Promise<{ numInserted: number }>((resolve) => {
-      const responseHandler = (
-        event: MessageEvent<IndexWorker.Response.IEndIndex>
-      ) => {
+  private static registerResponseHandler<
+    T extends IndexWorker.Response.TResponse
+  >(requestId: number): Promise<T["payload"]> {
+    return new Promise((resolve) => {
+      const responseHandler = (event: MessageEvent<T>) => {
         debugger;
-        if (
-          event.data.kind === IndexWorker.MessageKind.endIndexing &&
-          event.data.requestId === requestId
-        ) {
+        if (event.data.kind && event.data.requestId === requestId) {
           IndexWorkerController.worker.removeEventListener(
             "message",
             IndexWorkerController.responseListeners[requestId]
@@ -46,35 +34,57 @@ export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ 
       IndexWorkerController.worker.addEventListener("message", responseHandler);
     });
   }
+  public static initializeIndex(indexName?: string) {
+    const requestId = IndexWorkerController.nextRequestId();
+    const message: IndexWorker.Request.IStartInit = {
+      requestId,
+      kind: RequestMessageKind.startInit,
+      payload: {
+        indexName,
+      },
+    };
+    IndexWorkerController.worker.postMessage(message);
+    return IndexWorkerController.registerResponseHandler<
+      IndexWorker.Response.IEndInit
+    >(requestId).then((response) => {
+      debugger;
+      IndexWorkerController.initialized = true;
+      return response;
+    });
+  }
+  public static addDocs(examples: Data.Example[]) {
+    if (!IndexWorkerController.initialized) {
+      throw new Error("The index is not initialized yet");
+    }
+    const requestId = IndexWorkerController.nextRequestId();
+    debugger;
+    const message: IndexWorker.Request.IStartIndex = {
+      kind: IndexWorker.RequestMessageKind.startIndexing,
+      requestId,
+      payload: {
+        examples,
+      },
+    };
+    IndexWorkerController.worker.postMessage(message);
+    return IndexWorkerController.registerResponseHandler<
+      IndexWorker.Response.IEndIndex
+    >(requestId);
+  }
   public static query(query: string) {
+    if (!IndexWorkerController.initialized) {
+      throw new Error("The index is not initialized yet");
+    }
     const requestId = IndexWorkerController.nextRequestId();
     const message: IndexWorker.Request.IStartQuery = {
-      kind: IndexWorker.MessageKind.startQuery,
+      kind: IndexWorker.RequestMessageKind.startQuery,
       requestId,
       payload: {
         query,
       },
     };
     IndexWorkerController.worker.postMessage(message);
-    return new Promise<{ results: IndexWorker.SearchResult[] }>((resolve) => {
-      const responseHandler = (
-        workerMessage: MessageEvent<IndexWorker.Response.IEndQuery>
-      ) => {
-        debugger;
-        if (
-          workerMessage.data.kind === IndexWorker.MessageKind.endQuery &&
-          workerMessage.data.requestId === requestId
-        ) {
-          IndexWorkerController.worker.removeEventListener(
-            "message",
-            IndexWorkerController.responseListeners[requestId]
-          );
-          delete IndexWorkerController.responseListeners[requestId];
-          resolve(workerMessage.data.payload);
-        }
-      };
-      IndexWorkerController.responseListeners[requestId] = responseHandler;
-      IndexWorkerController.worker.addEventListener("message", responseHandler);
-    });
+    return IndexWorkerController.registerResponseHandler<
+      IndexWorker.Response.IEndQuery
+    >(requestId);
   }
 }

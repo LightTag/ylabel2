@@ -13,6 +13,11 @@ export const exampleStoreIndexDB = localForage.createInstance({
   driver: localForage.INDEXEDDB,
 });
 
+export const indexCacheDB = localForage.createInstance({
+  name: "indexcache-1", // Change the number for migrations
+  driver: localForage.INDEXEDDB,
+});
+
 export function useGetExampleFromDBByExampleId(exampleId: string) {
   return useQuery(["exampleDB", exampleId], () =>
     exampleStoreIndexDB.getItem<Data.Example>(exampleId)

@@ -30,13 +30,13 @@ function typedAddDocumentToIndex<T, D>(
   );
 }
 const tokenizer = (s: string) => s.split(tokenizingRegex);
-function createDocumentIndex<
-  K extends keyof TData,
-  TData extends { exampleId: string | number } = Data.Example
->(fields: K[]) {
+function createDocumentIndex(
+  fields: (keyof Data.Example)[],
+  existingIndex?: Index<string>
+) {
   // `createIndex()` creates an index data structure.
   // First argument specifies how many different fields we want to index.
-  const index = createIndex<string>(fields.length);
+  const index = existingIndex || createIndex<string>(fields.length);
   // `fieldAccessors` is an array with functions that used to retrieve data from different fields.
   // const fieldAccessors = fields.map((f) => (doc: TData) => doc[f]);
   // `fieldBoostFactors` is an array of boost factors for each field, in this example all fields will have
@@ -49,7 +49,7 @@ function createDocumentIndex<
   return {
     // `add()` function will add documents to the index.
     _index: index,
-    add: (doc: TData) => {
+    add: (doc: Data.Example) => {
       typedAddDocumentToIndex(
         index,
         fieldAccessors,
@@ -87,4 +87,6 @@ function createDocumentIndex<
     },
   };
 }
+
+export type IIndexAPI = ReturnType<typeof createDocumentIndex>;
 export default createDocumentIndex;

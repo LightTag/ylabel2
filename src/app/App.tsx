@@ -17,7 +17,7 @@ import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
 import TextField from "@material-ui/core/TextField";
 import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
-
+IndexWorkerController.initializeIndex();
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
   const [exampleIds, setExampleIds] = React.useState<string[]>([]);
@@ -30,7 +30,7 @@ const Body: FunctionComponent = () => {
     setExampleIds(xIds);
     setTot(response.results.length);
   }
-  const handleChange = debounce((e) => _handleChange(e.target.value), 150);
+  const handleChange = debounce((e) => _handleChange(e.target.value), 50);
 
   return (
     <div style={{ height: "100%", padding: "2rem" }}>

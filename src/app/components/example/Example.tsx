@@ -6,7 +6,7 @@ import DBClient, {
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
-import ClassificationSelect from "./ClassificationSelect";
+// import ClassificationSelect from "./ClassificationSelect";
 import Fade from "@material-ui/core/Fade";
 import classificationSelectors from "../../redux-state/classification/classificationSelectors";
 import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
@@ -213,9 +213,9 @@ const Example: FunctionComponent<Props> = (props) => {
         onBlur={() => setShowRibbon(false)}
       >
         <div className={classes.ribbon}>
-          <Fade in={showRibbon} mountOnEnter unmountOnExit>
-            <ClassificationSelect exampleId={props.exampleId} />
-          </Fade>
+          {/*<Fade in={showRibbon} mountOnEnter unmountOnExit>*/}
+          {/*  <ClassificationSelect exampleId={props.exampleId} />*/}
+          {/*</Fade>*/}
           <Fade in={!showRibbon}>
             <div>{currentClass || null}</div>
           </Fade>
