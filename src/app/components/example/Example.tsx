@@ -6,9 +6,7 @@ import DBClient, {
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
-// import ClassificationSelect from "./ClassificationSelect";
-import Fade from "@material-ui/core/Fade";
-import classificationSelectors from "../../redux-state/classification/classificationSelectors";
+import ClassificationRibbon from "./ClassificationRibbon";
 import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
 
 interface Props {
@@ -199,26 +197,12 @@ export const ExampleSpan: FunctionComponent<{
 const Example: FunctionComponent<Props> = (props) => {
   const classes = useStyles();
   const exampleQuery = useGetExampleFromDBByExampleId(props.exampleId);
-  const currentClass = classificationSelectors.useSelectExampleClassification(
-    props.exampleId
-  );
 
-  const [showRibbon, setShowRibbon] = React.useState<boolean>(false);
   if (exampleQuery.isSuccess && exampleQuery.data) {
     return (
-      <Paper
-        tabIndex={1}
-        className={classes.root}
-        onFocus={() => setShowRibbon(true)}
-        onBlur={() => setShowRibbon(false)}
-      >
+      <Paper tabIndex={1} className={classes.root}>
         <div className={classes.ribbon}>
-          {/*<Fade in={showRibbon} mountOnEnter unmountOnExit>*/}
-          {/*  <ClassificationSelect exampleId={props.exampleId} />*/}
-          {/*</Fade>*/}
-          <Fade in={!showRibbon}>
-            <div>{currentClass || null}</div>
-          </Fade>
+          <ClassificationRibbon exampleId={props.exampleId} />
         </div>
         <div className={classes.body} dir={"auto"}>
           {/*{annotationQuery.data.map((span) => (*/}
