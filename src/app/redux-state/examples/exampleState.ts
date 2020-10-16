@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Data from "../../data_clients/datainterfaces";
-import { exampleStoreIndexDB } from "../../data_clients/exampleDataStore";
 import { AppThunk } from "../rootState";
 import TFIDFTransformer from "app/classifier/tfidf";
 import Worker from "worker-loader!../../classifier/test.worker";
@@ -58,27 +57,17 @@ const exampleSlice = createSlice({
   },
 });
 const worker = new Worker();
-export const addExamplesThunk = (examples: Data.Example[]): AppThunk => async (
-  dispatch
-) => {
-  if (examples.length < 200) {
-    await exampleStoreIndexDB.setItems(
-      examples.map((ex) => ({ key: ex.exampleId, value: ex }))
-    );
-    dispatch(exampleSlice.actions.addExamples({ examples }));
-  } else {
-    const firstBatch = examples.slice(0, 150);
-    const remaining = examples.slice(150);
-    const event: InsertToDBEvent = {
-      kind: EventKinds.insertToDb,
-      payload: {
-        examples: remaining,
-      },
-    };
+export const addExamplesThunk = (
+  examples: Data.Example[]
+): AppThunk => async () => {
+  const event: InsertToDBEvent = {
+    kind: EventKinds.insertToDb,
+    payload: {
+      examples: examples,
+    },
+  };
 
-    worker.postMessage(event);
-    dispatch(addExamplesThunk(firstBatch));
-  }
+  worker.postMessage(event);
   IndexWorkerController.addDocs(examples);
 };
 const exampleReducer = exampleSlice.reducer;

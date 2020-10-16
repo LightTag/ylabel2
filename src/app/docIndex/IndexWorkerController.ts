@@ -20,7 +20,6 @@ export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ 
   >(requestId: number): Promise<T["payload"]> {
     return new Promise((resolve) => {
       const responseHandler = (event: MessageEvent<T>) => {
-        debugger;
         if (event.data.kind && event.data.requestId === requestId) {
           IndexWorkerController.worker.removeEventListener(
             "message",
@@ -47,7 +46,6 @@ export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ 
     return IndexWorkerController.registerResponseHandler<
       IndexWorker.Response.IEndInit
     >(requestId).then((response) => {
-      debugger;
       IndexWorkerController.initialized = true;
       return response;
     });
@@ -57,7 +55,7 @@ export class IndexWorkerController /*implements IndexWorker.IWorkerController*/ 
       throw new Error("The index is not initialized yet");
     }
     const requestId = IndexWorkerController.nextRequestId();
-    debugger;
+
     const message: IndexWorker.Request.IStartIndex = {
       kind: IndexWorker.RequestMessageKind.startIndexing,
       requestId,

@@ -53,7 +53,7 @@ const classificationSlice = createSlice({
     classify(state, action: PayloadAction<ClassificationActions.AClassify>) {
       const { exampleId, labelName } = action.payload;
       const currentLabel = state.classifications[exampleId];
-      debugger;
+
       if (currentLabel === labelName) {
         //do nothing
       } else {

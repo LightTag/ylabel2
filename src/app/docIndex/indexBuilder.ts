@@ -70,7 +70,6 @@ function createDocumentIndex(
     },
     // `search()` function will be used to perform queries.
     search: (queryString: string) => {
-      debugger;
       return query(
         index,
         fieldBoostFactors,

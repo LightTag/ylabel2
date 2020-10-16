@@ -7,8 +7,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
 import ClassificationRibbon from "./ClassificationRibbon";
-import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
+// import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
 import Typography from "@material-ui/core/Typography";
+import useDatabase from "app/database/useDatabase";
 
 interface Props {
   exampleId: string;
@@ -198,9 +199,13 @@ export const ExampleSpan: FunctionComponent<{
 };
 const Example: FunctionComponent<Props> = (props) => {
   const classes = useStyles();
-  const exampleQuery = useGetExampleFromDBByExampleId(props.exampleId);
-
-  if (exampleQuery.isSuccess && exampleQuery.data) {
+  const exampleQuery = useDatabase(
+    ["example", props.exampleId],
+    "example",
+    (db) => db.example.get(props.exampleId)
+  );
+  console.log(exampleQuery);
+  if (exampleQuery.data) {
     return (
       <Paper tabIndex={1} className={classes.root}>
         <div className={classes.ribbon}>
@@ -217,6 +222,7 @@ const Example: FunctionComponent<Props> = (props) => {
           {/*    addSpanId={props.addSpanId}*/}
           {/*  />*/}
           {/*))}*/}
+
           {exampleQuery.data.content}
         </div>
       </Paper>

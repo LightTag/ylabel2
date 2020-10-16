@@ -1,6 +1,6 @@
 import Data from "app/data_clients/datainterfaces";
-import { exampleStoreIndexDB } from "app/data_clients/exampleDataStore";
 import TFIDFTransformer from "app/classifier/tfidf";
+import { workerDB } from "app/database/database";
 
 const ctx: Worker = self as any;
 
@@ -32,7 +32,8 @@ async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
   const transformer = new TFIDFTransformer();
   const exampleIds = event.data.payload.exampleIds;
   const examplesOrNull: (Data.Example | null)[] = await Promise.all(
-    exampleIds.map((exId) => exampleStoreIndexDB.getItem<Data.Example>(exId))
+    // exampleIds.map((exId) => exampleStoreIndexDB.getItem<Data.Example>(exId))
+    [Promise.resolve(null)]
   );
   const examples = examplesOrNull.filter((x) => x !== null) as Data.Example[];
   const tfidf = transformer.fitTransform(examples);
@@ -43,9 +44,8 @@ async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
 
 async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
   const examples = event.data.payload.examples;
-  await exampleStoreIndexDB.setItems(
-    examples.map((ex) => ({ key: ex.exampleId, value: ex }))
-  );
+  workerDB.example.bulkAdd(examples);
+
   console.log(`Inserted ${examples.length}`);
 }
 

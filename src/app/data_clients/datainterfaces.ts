@@ -9,6 +9,10 @@ declare namespace Data {
   interface Base {
     kind: resource;
   }
+  interface SerializedIndex {
+    name: string;
+    data: Uint8Array;
+  }
   interface Dataset extends Base {
     name: string;
     kind: "dataset";
@@ -29,6 +33,8 @@ declare namespace Data {
     metadata?: any;
     datasetName?: string;
     kind: "example";
+    label?: string;
+    hasLabel: -1 | 1; //Indexdb won't index bools so we use 1 for labeled and -1 for not labeled
   }
   interface Tag extends Base {
     name: string;
@@ -37,6 +43,13 @@ declare namespace Data {
   interface Label extends Base {
     name: string;
     kind: "label";
+    count: number;
+  }
+  interface Vector {
+    exampleId: string;
+    vector: number[];
+    label?: string; // The label applied to the example
+    hasLabel: -1 | 1; //Indexdb won't index bools so we use 1 for labeled and -1 for not labeled
   }
 }
 

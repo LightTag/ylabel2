@@ -1,10 +1,10 @@
 import React, { FunctionComponent } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import classificationSelectors from "../../redux-state/classification/classificationSelectors";
-import { classificationActions } from "../../redux-state/classification/classificationReducer";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import colorManaer from "app/utils/labelsetcolors/labelsetcolors";
+import useDatabase from "app/database/useDatabase";
+import { useMutation } from "react-query";
+import { mainThreadDB } from "app/database/database";
 
 interface Props {
   exampleId: string;
@@ -28,7 +28,7 @@ export const ClassBox: FunctionComponent<{
   selected: boolean;
   onClick?: (val: string | null) => void;
   comment?: string;
-}> = (props) => {
+}> = React.memo((props) => {
   const classes = useStyles();
   const labelName = props.labelName;
   const style = React.useMemo(() => {
@@ -62,32 +62,35 @@ export const ClassBox: FunctionComponent<{
       {labelName} {props.comment ? ` - ${props.comment}` : null}
     </div>
   );
-};
-const ClassificationRibbon: FunctionComponent<Props> = (props) => {
+});
+const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
   const { exampleId } = props;
-  const dispatch = useDispatch();
-  const labels = useSelector(classificationSelectors.selectLabelArray);
-  const currentClass = classificationSelectors.useSelectExampleClassification(
-    exampleId
-  );
-  const classify = React.useCallback(
-    (labelName: string | null) => {
-      dispatch(classificationActions.classify({ exampleId, labelName }));
-    },
-    [labels, dispatch, exampleId]
-  );
 
-  return (
-    <div>
-      {labels.map((labelName) => (
-        <ClassBox
-          labelName={labelName}
-          selected={currentClass == labelName}
-          onClick={classify}
-        />
-      ))}
-    </div>
+  const labels = useDatabase("labels", "label", (db) => db.label.toArray());
+  const example = useDatabase(["exampleLabel", exampleId], "example", (db) =>
+    db.example.where("exampleId").equals(exampleId).first()
   );
-};
+  const classify = useMutation((labelName: string | null) =>
+    mainThreadDB.example.update(exampleId, {
+      label: labelName,
+      hasLabel: labelName !== null ? 1 : -1,
+    })
+  );
+  if (labels.data && example.data)
+    return (
+      <div>
+        {labels.data.map((label) => (
+          <ClassBox
+            labelName={label.name}
+            selected={example?.data?.label == label.name}
+            onClick={classify.mutate}
+          />
+        ))}
+      </div>
+    );
+  else {
+    return null;
+  }
+});
 
 export default ClassificationRibbon;

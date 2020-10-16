@@ -21,6 +21,7 @@ const FileUploadButton: FunctionComponent = () => {
           content: ex[key],
           datasetName: "test",
           exampleId: md5(ex[key]).toString(),
+          hasLabel: -1,
           kind: "example",
         });
       });

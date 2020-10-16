@@ -1,20 +1,16 @@
 import React, { FunctionComponent } from "react";
-import { useTypedSelector } from "../redux-state/rootState";
-import classificationSelectors from "../redux-state/classification/classificationSelectors";
-import { useDispatch } from "react-redux";
-import { classificationActions } from "app/redux-state/classification/classificationReducer";
 import { TextField } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
 import { ClassBox } from "app/components/example/ClassificationRibbon";
+import useDatabase from "app/database/useDatabase";
+import { useMutation } from "react-query";
+import { mainThreadDB } from "app/database/database";
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
-  const dispatch = useDispatch();
-  const addLabel = () => {
-    if (name) {
-      dispatch(classificationActions.addLabel({ name }));
-    }
-  };
+  const addLabel = useMutation((name: string) =>
+    mainThreadDB.label.add({ name, kind: "label", count: 0 }, name)
+  );
   return (
     <div>
       <TextField
@@ -25,7 +21,7 @@ const AddLabel: FunctionComponent = () => {
       <IconButton
         size={"small"}
         disabled={name === undefined}
-        onClick={addLabel}
+        onClick={() => name && addLabel.mutate(name)}
       >
         <SaveIcon fontSize={"small"} />
       </IconButton>
@@ -33,18 +29,21 @@ const AddLabel: FunctionComponent = () => {
   );
 };
 const ClassificationStats: FunctionComponent = (props) => {
-  const stats = useTypedSelector(classificationSelectors.selectLabelCounts);
+  const labels = useDatabase("labelStats", "label", (db) => db.label.toArray());
+  if (!labels.data) {
+    return <div>loading</div>;
+  }
   return (
     <div>
       <AddLabel />
 
       <ul>
-        {Object.entries(stats).map(([label, count]) => (
+        {labels.data.map((label, count) => (
           <ClassBox
-            labelName={`${label} `}
-            comment={JSON.stringify(count)}
+            labelName={`${label.name} `}
+            comment={`${label.count}`}
             selected={true}
-            key={label}
+            key={label.name}
           />
         ))}
       </ul>

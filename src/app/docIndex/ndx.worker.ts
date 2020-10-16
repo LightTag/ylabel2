@@ -2,7 +2,7 @@ import createDocumentIndex, { IIndexAPI } from "app/docIndex/indexBuilder";
 import { IndexWorker } from "app/docIndex/indextypes";
 import { assertNever } from "../../typing/utils";
 import { decode, encode } from "@msgpack/msgpack";
-import { indexCacheDB } from "app/data_clients/exampleDataStore";
+
 import { Index } from "ndx";
 import {
   toSerializable,
@@ -12,6 +12,8 @@ import {
 
 import ResponseKinds = IndexWorker.ResponseMessageKind;
 import ResponseMessageKind = IndexWorker.ResponseMessageKind;
+import { workerDB } from "app/database/database";
+import Data from "app/data_clients/datainterfaces";
 
 interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages
@@ -25,7 +27,9 @@ function handleIndexRequest(
   const examples = message.data.payload.examples;
   examples.forEach((ex) => ctx.index.add(ex));
   const serializedIndex: Uint8Array = encode(toSerializable(ctx.index._index));
-  indexCacheDB.setItem("index", serializedIndex);
+
+  workerDB.indexCache.add({ data: serializedIndex, name: "index" });
+
   console.log("Saved the index to disk");
   const response: IndexWorker.Response.IEndIndex = {
     requestId: message.data.requestId,
@@ -61,14 +65,14 @@ async function handleStartInitRequest(
   message: MessageEvent<IndexWorker.Request.IStartInit>
 ) {
   const indexName = message.data.payload.indexName || "index"; //The default name
-  const serializedIndex: Uint8Array | null = await indexCacheDB.getItem(
-    indexName
-  );
+  const serializedIndex:
+    | Data.SerializedIndex
+    | undefined = await workerDB.indexCache.get(indexName);
   let loadedFromCache = false;
   if (serializedIndex) {
     console.log("Found a serialized index");
     const _index = fromSerializable(
-      decode(serializedIndex) as SerializableIndex<string>
+      decode(serializedIndex.data) as SerializableIndex<string>
     ) as Index<string>;
     if (_index) {
       ctx;
