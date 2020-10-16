@@ -32,14 +32,15 @@ async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
   const transformer = new TFIDFTransformer();
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
-  const tfidfBatch: Data.TFIDF[] = Object.entries(
-    tfidf
-  ).map(([exampleId, tfs]) => ({
-    exampleId,
-    ...tfs,
-    size: Object.keys(tfs).length,
-  }));
-  workerDB.tfidf.bulkAdd(tfidfBatch);
+  console.log("start tfidf", tfidf);
+  workerDB.tfidf.bulkAdd(
+    Object.values(tfidf).map((x) => ({
+      dict: x,
+      arr: Object.values(x),
+      hasLabel: -1,
+    })),
+    Object.keys(tfidf)
+  );
   console.log("tfidf", tfidf);
   ctx.postMessage(tfidf);
 }
@@ -51,6 +52,18 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
   console.log(`Inserted ${examples.length}`);
 }
 
+// async function trainSVM(event: MessageEvent<any>) {
+//   const labeledExamples = await workerDB.example
+//     .where("hasLabel")
+//     .equals(1)
+//     .toArray();
+//   const unlabeledExampleIds = await workerDB.example
+//     .where("hasLabel")
+//     .equals(-1)
+//     .primaryKeys();
+//   const labeledTFIDF = await workerDB.tfidf.bulkGet(labeledExampleIds);
+//   const unlabeledTFIDF = await workerDB.tfidf.bulkGet(unlabeledExampleIds);
+// }
 async function workerDispatch(
   event: MessageEvent<InsertToDBEvent | TFIDFEvent>
 ) {

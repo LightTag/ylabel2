@@ -1,5 +1,4 @@
 import Data from "app/data_clients/datainterfaces";
-import { workerDB } from "app/database/database";
 
 export class Counter {
   items: Record<string, number>;

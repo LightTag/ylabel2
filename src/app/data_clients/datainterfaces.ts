@@ -6,6 +6,8 @@ declare namespace Data {
     | "tag"
     | "label"
     | "example";
+  type LabelState = { label?: string; hasLabel: 1 | -1 };
+
   interface Base {
     kind: resource;
   }
@@ -27,14 +29,12 @@ declare namespace Data {
     colorize?: () => void;
     kind: "labelset";
   }
-  interface Example extends Base {
+  interface Example extends Base, LabelState {
     exampleId: string | number;
     content: string;
     metadata?: any;
     datasetName?: string;
     kind: "example";
-    label?: string;
-    hasLabel: -1 | 1; //Indexdb won't index bools so we use 1 for labeled and -1 for not labeled
   }
   interface Tag extends Base {
     name: string;
@@ -45,13 +45,14 @@ declare namespace Data {
     kind: "label";
     count: number;
   }
-  interface Vector {
+  interface Vector extends LabelState {
     exampleId: string;
     vector: number[];
-    label?: string; // The label applied to the example
-    hasLabel: -1 | 1; //Indexdb won't index bools so we use 1 for labeled and -1 for not labeled
   }
-  type TFIDF = { exampleId: string; size: number } | Record<string, number>;
+  type TFIDF = {
+    dict: Record<string, number>;
+    arr: Array<number>;
+  } & LabelState;
 }
 
 export default Data;

@@ -5,6 +5,7 @@ import colorManaer from "app/utils/labelsetcolors/labelsetcolors";
 import useDatabase from "app/database/useDatabase";
 import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
+import Data from "app/data_clients/datainterfaces";
 
 interface Props {
   exampleId: string;
@@ -71,10 +72,20 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
     db.example.where("exampleId").equals(exampleId).first()
   );
   const classify = useMutation((labelName: string | null) =>
-    mainThreadDB.example.update(exampleId, {
-      label: labelName,
-      hasLabel: labelName !== null ? 1 : -1,
-    })
+    mainThreadDB.transaction(
+      "rw",
+      [mainThreadDB.example, mainThreadDB.tfidf],
+      async () => {
+        const labelState: Data.LabelState = {
+          label: labelName || undefined,
+          hasLabel: labelName !== null ? 1 : -1,
+        };
+
+        mainThreadDB.example.update(exampleId, labelState);
+        mainThreadDB.tfidf.update(exampleId, labelState);
+        mainThreadDB.vector.update(exampleId, labelState);
+      }
+    )
   );
   if (labels.data && example.data)
     return (

@@ -4,7 +4,12 @@ import Data from "app/data_clients/datainterfaces";
 import { DatabaseChangeType, IDatabaseChange } from "dexie-observable/api";
 
 type TDBChangeCallback = (changeEvent: IDatabaseChange) => void;
-export type TableNames = "example" | "label" | "indexCache" | "vector";
+export type TableNames =
+  | "example"
+  | "label"
+  | "indexCache"
+  | "vector"
+  | "tfidf";
 export class OurDatabase extends Dexie {
   example: Dexie.Table<Data.Example, string>;
   label: Dexie.Table<Data.Label, string>;
@@ -33,7 +38,7 @@ export class OurDatabase extends Dexie {
       label: "name",
       indexCache: "name",
       vector: "exampleId,label,hasLabel",
-      tfidf: "exampleId,size",
+      tfidf: ",label,hasLabel",
     });
     this.example = this.table("example");
     this.label = this.table("label");
@@ -45,6 +50,7 @@ export class OurDatabase extends Dexie {
       label: [],
       indexCache: [],
       vector: [],
+      tfidf: [],
     };
   }
 }
