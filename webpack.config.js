@@ -146,7 +146,8 @@ module.exports = {
         collapseInlineTagWhitespace: true,
       },
       append: {
-        head: `<script src="//cdn.polyfill.io/v3/polyfill.min.js"></script>`,
+        head: `<script src="//cdn.polyfill.io/v3/polyfill.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/machinelearn/machinelearn.min.js"></script>
+`,
       },
       meta: {
         title: package.name,

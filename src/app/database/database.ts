@@ -96,6 +96,7 @@ function initatiateMainThreadDB() {
     const labelChangeAccumulator: Record<string, number> = {};
     changes.forEach((change) => {
       gatherLabelChangeCount(change, labelChangeAccumulator);
+
       const callbacks =
         mainThreadDB.changeCallbacks[change.table as TableNames];
       callbacks.forEach((callback) => callback(change));

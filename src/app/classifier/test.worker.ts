@@ -3,13 +3,13 @@ import { SVM } from "libsvm-ts";
 import Data from "app/data_clients/datainterfaces";
 import TFIDFTransformer from "app/classifier/tfidf";
 import { workerDB } from "app/database/database";
-
 const ctx: Worker = self as any;
-const svm = new SVM({
+let svm = new SVM({
   type: "C_SVC",
-  kernel: "RBF",
+  kernel: "POLYNOMIAL",
   gamma: 1,
   cost: 1,
+  degree: 4,
 });
 
 // Post data to parent thread
@@ -65,13 +65,13 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
 }
 
 async function trainSVM(event: MessageEvent<any>) {
-  debugger;
   const labelVocab: Record<string, number> = {};
   let maxLabelId: number = 0;
   const trainingFormat: { samples: number[][]; labels: number[] } = {
     samples: [],
     labels: [],
   };
+  debugger;
   const labeledTFIDFArray = (await workerDB.tfidf
     .where("hasLabel")
     .equals(1)
@@ -85,19 +85,31 @@ async function trainSVM(event: MessageEvent<any>) {
     let labelId = labelVocab[tf.label];
     trainingFormat.labels.push(labelId);
   });
-
+  console.log(labelVocab);
+  const inverseLabelVoab: Record<number, string> = {};
+  for (const key in labelVocab) {
+    const lid = labelVocab[key];
+    inverseLabelVoab[lid] = key;
+  }
   const unlabeledTfIDF = (
-    await workerDB.tfidf.where("hasLabel").equals(-1).toArray()
+    await workerDB.tfidf.where("hasLabel").equals(-1).limit(200).toArray()
   ).map((x) => x.arr);
 
   const loadedSVM = await svm.loadWASM();
+  console.log(trainingFormat);
   loadedSVM.train(trainingFormat);
   const result = loadedSVM.predictProbability({ samples: unlabeledTfIDF });
-  console.log(result);
+  console.log(
+    result.map((x) => ({
+      label: inverseLabelVoab[x.prediction],
+      est: x.estimates,
+    }))
+  );
 }
 async function workerDispatch(
   event: MessageEvent<InsertToDBEvent | TFIDFEvent | TrainSVMEvent>
 ) {
+  debugger;
   switch (event.data.kind) {
     case EventKinds.tfidf:
       return handleTfIdf(event as MessageEvent<TFIDFEvent>);
