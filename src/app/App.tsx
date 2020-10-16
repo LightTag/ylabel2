@@ -7,7 +7,7 @@ import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
-  useQuery,
+  // useQuery,
 } from "react-query";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
@@ -20,14 +20,18 @@ import FileUploadButton from "./components/dataUpload/simpleDataUpload";
 import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
 import TextField from "@material-ui/core/TextField";
-import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+// import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+import useDatabase from "app/database/useDatabase";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
-  const [query, setQuery] = React.useState<string>("");
+  const [, setQuery] = React.useState<string>("");
   const [tot] = React.useState<number>(0);
-  const examples = useQuery(["example", "search", query], () =>
-    IndexWorkerController.query(query)
+  // const examples = useQuery(["example", "search", query], () =>
+  //   IndexWorkerController.query(query)
+  // );
+  const examples = useDatabase(["vecotor"], "vector", (db) =>
+    db.vector.where("hasLabel").equals(-1).limit(10).toArray()
   );
 
   const handleChange = debounce((e) => setQuery(e.target.value), 50);
@@ -48,12 +52,12 @@ const Body: FunctionComponent = () => {
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
         {examples.data
-          ? examples.data.results
+          ? examples.data
               .slice(0, 100)
               .map((ex) => (
                 <Example
                   key={ex.exampleId}
-                  score={ex.score}
+                  score={1}
                   exampleId={ex.exampleId as string}
                   addSpanId={spanRegistry.addSpanId}
                 />

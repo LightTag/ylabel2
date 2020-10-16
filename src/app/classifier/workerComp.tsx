@@ -6,6 +6,7 @@ import {
   EventKinds,
   TFIDFEvent,
   TrainSVMEvent,
+  VecotizeEvent,
 } from "app/classifier/test.worker";
 import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
 import Button from "@material-ui/core/Button";
@@ -23,6 +24,13 @@ const WorkComp: FunctionComponent = () => {
     };
     worker.postMessage(event);
   };
+  const vectorize = () => {
+    const event: VecotizeEvent = {
+      kind: EventKinds.vectorize,
+      payload: {},
+    };
+    worker.postMessage(event);
+  };
   const trainSVM = () => {
     const event: TrainSVMEvent = {
       kind: EventKinds.trainSVM,
@@ -34,6 +42,7 @@ const WorkComp: FunctionComponent = () => {
   return (
     <>
       <Button onClick={calculateTFIDF}>Calculate TFIDF</Button>
+      <Button onClick={vectorize}>Vectorize</Button>
       <Button onClick={trainSVM}>Train SVM</Button>
     </>
   );

@@ -74,16 +74,16 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
   const classify = useMutation((labelName: string | null) =>
     mainThreadDB.transaction(
       "rw",
-      [mainThreadDB.example, mainThreadDB.tfidf],
+      [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
       async () => {
         const labelState: Data.LabelState = {
           label: labelName || undefined,
           hasLabel: labelName !== null ? 1 : -1,
         };
 
-        mainThreadDB.example.update(exampleId, labelState);
-        mainThreadDB.tfidf.update(exampleId, labelState);
-        mainThreadDB.vector.update(exampleId, labelState);
+        await mainThreadDB.example.update(exampleId, labelState);
+        await mainThreadDB.tfidf.update(exampleId, labelState);
+        await mainThreadDB.vector.update(exampleId, labelState);
       }
     )
   );
