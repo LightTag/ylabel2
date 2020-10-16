@@ -1,14 +1,23 @@
+import { SVM } from "libsvm-ts";
+
 import Data from "app/data_clients/datainterfaces";
 import TFIDFTransformer from "app/classifier/tfidf";
 import { workerDB } from "app/database/database";
 
 const ctx: Worker = self as any;
+const svm = new SVM({
+  type: "C_SVC",
+  kernel: "RBF",
+  gamma: 1,
+  cost: 1,
+});
 
 // Post data to parent thread
 ctx.postMessage({ foo: "foo" });
 export const enum EventKinds {
   tfidf = "tfidf",
   insertToDb = "insertToDb",
+  trainSVM = "trainSVM",
 }
 type Event = {
   kind: EventKinds;
@@ -20,7 +29,10 @@ export interface TFIDFEvent extends Event {
     exampleIds: string[];
   };
 }
-
+export interface TrainSVMEvent extends Event {
+  kind: EventKinds.trainSVM;
+  payload: {};
+}
 export interface InsertToDBEvent extends Event {
   kind: EventKinds.insertToDb;
   payload: {
@@ -52,26 +64,47 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
   console.log(`Inserted ${examples.length}`);
 }
 
-// async function trainSVM(event: MessageEvent<any>) {
-//   const labeledExamples = await workerDB.example
-//     .where("hasLabel")
-//     .equals(1)
-//     .toArray();
-//   const unlabeledExampleIds = await workerDB.example
-//     .where("hasLabel")
-//     .equals(-1)
-//     .primaryKeys();
-//   const labeledTFIDF = await workerDB.tfidf.bulkGet(labeledExampleIds);
-//   const unlabeledTFIDF = await workerDB.tfidf.bulkGet(unlabeledExampleIds);
-// }
+async function trainSVM(event: MessageEvent<any>) {
+  debugger;
+  const labelVocab: Record<string, number> = {};
+  let maxLabelId: number = 0;
+  const trainingFormat: { samples: number[][]; labels: number[] } = {
+    samples: [],
+    labels: [],
+  };
+  const labeledTFIDFArray = (await workerDB.tfidf
+    .where("hasLabel")
+    .equals(1)
+    .toArray()) as Required<Data.TFIDF>[];
+  labeledTFIDFArray.forEach((tf) => {
+    trainingFormat.samples.push(tf.arr);
+    if (!labelVocab[tf.label]) {
+      labelVocab[tf.label] = maxLabelId;
+      maxLabelId += 1;
+    }
+    let labelId = labelVocab[tf.label];
+    trainingFormat.labels.push(labelId);
+  });
+
+  const unlabeledTfIDF = (
+    await workerDB.tfidf.where("hasLabel").equals(-1).toArray()
+  ).map((x) => x.arr);
+
+  const loadedSVM = await svm.loadWASM();
+  loadedSVM.train(trainingFormat);
+  const result = loadedSVM.predictProbability({ samples: unlabeledTfIDF });
+  console.log(result);
+}
 async function workerDispatch(
-  event: MessageEvent<InsertToDBEvent | TFIDFEvent>
+  event: MessageEvent<InsertToDBEvent | TFIDFEvent | TrainSVMEvent>
 ) {
-  if (event.data.kind === EventKinds.tfidf) {
-    return handleTfIdf(event as MessageEvent<TFIDFEvent>);
-  }
-  if (event.data.kind === EventKinds.insertToDb) {
-    return insertToDB(event as MessageEvent<InsertToDBEvent>);
+  switch (event.data.kind) {
+    case EventKinds.tfidf:
+      return handleTfIdf(event as MessageEvent<TFIDFEvent>);
+    case EventKinds.insertToDb:
+      return insertToDB(event as MessageEvent<InsertToDBEvent>);
+    case EventKinds.trainSVM:
+      return trainSVM(event);
   }
 }
 
