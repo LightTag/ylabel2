@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
 import ClassificationRibbon from "./ClassificationRibbon";
-// import { useGetExampleFromDBByExampleId } from "../../data_clients/exampleDataStore";
+
 import Typography from "@material-ui/core/Typography";
 import useDatabase from "app/database/useDatabase";
 
@@ -18,7 +18,7 @@ interface Props {
 }
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "fit-content",
+    height: "inherit",
     maxHeight: "65%",
 
     boxShadow: "4px 4px 4px #CDCDCD ",
@@ -115,13 +115,12 @@ export const EmptySpan: FunctionComponent<{ span: ExampleRange.EmptyRange }> = (
   const handleMouseUp: React.MouseEventHandler = (e) => {
     const selection = window.getSelection();
     if (selection) {
-      const range = selection.getRangeAt(0);
-      const _start = range.startOffset;
-      const _end = range.endOffset;
-      const spanStart = Math.min(_start, _end);
-      const spanEnd = Math.max(_start, _end);
-      const selected = props.span.text.slice(spanStart, spanEnd);
-      console.log(spanStart, spanEnd, selected);
+      // const range = selection.getRangeAt(0);
+      // const _start = range.startOffset;
+      // const _end = range.endOffset;
+      // const spanStart = Math.min(_start, _end);
+      // const spanEnd = Math.max(_start, _end);
+      // const selected = props.span.text.slice(spanStart, spanEnd);
     }
   };
 
@@ -161,9 +160,7 @@ const AnnotatedSpan: FunctionComponent<{
   );
   React.useEffect(() => {
     addSpanId(spanId);
-    return () => {
-      console.log(spanId);
-    };
+    return () => {};
   }, [spanId, addSpanId]);
   return (
     <span
@@ -204,7 +201,6 @@ const Example: FunctionComponent<Props> = (props) => {
     "example",
     (db) => db.example.get(props.exampleId)
   );
-  console.log(exampleQuery);
   if (exampleQuery.data) {
     return (
       <Paper tabIndex={1} className={classes.root}>

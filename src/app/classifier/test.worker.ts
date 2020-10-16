@@ -30,14 +30,16 @@ export interface InsertToDBEvent extends Event {
 // Respond to message from parent thread
 async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
   const transformer = new TFIDFTransformer();
-  const exampleIds = event.data.payload.exampleIds;
-  const examplesOrNull: (Data.Example | null)[] = await Promise.all(
-    // exampleIds.map((exId) => exampleStoreIndexDB.getItem<Data.Example>(exId))
-    [Promise.resolve(null)]
-  );
-  const examples = examplesOrNull.filter((x) => x !== null) as Data.Example[];
+  const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
-  console.log(`Asked for ${exampleIds.length} got back ${examples.length}`);
+  const tfidfBatch: Data.TFIDF[] = Object.entries(
+    tfidf
+  ).map(([exampleId, tfs]) => ({
+    exampleId,
+    ...tfs,
+    size: Object.keys(tfs).length,
+  }));
+  workerDB.tfidf.bulkAdd(tfidfBatch);
   console.log("tfidf", tfidf);
   ctx.postMessage(tfidf);
 }

@@ -64,20 +64,22 @@ const FileUploadButton: FunctionComponent = () => {
           Add File
         </Button>
       </label>
-      <TextField
-        onChange={(e) => setKey(e.target.value)}
-        disabled={!keys}
-        select={true}
-        label={"Text Field"}
-        helperText={"Which Field will we label"}
-        value={key}
-      >
-        {(keys || []).map((key) => (
-          <MenuItem key={key} value={key}>
-            {key}
-          </MenuItem>
-        ))}
-      </TextField>
+      {keys ? (
+        <TextField
+          onChange={(e) => setKey(e.target.value)}
+          disabled={!keys}
+          select={true}
+          label={"Text Field"}
+          helperText={"Which Field will we label"}
+          value={key}
+        >
+          {(keys || []).map((key) => (
+            <MenuItem key={key} value={key}>
+              {key}
+            </MenuItem>
+          ))}
+        </TextField>
+      ) : null}
       <Button disabled={!key} onClick={handleSaveExamples}>
         Upload
       </Button>

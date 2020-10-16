@@ -10,6 +10,7 @@ export class OurDatabase extends Dexie {
   label: Dexie.Table<Data.Label, string>;
   indexCache: Dexie.Table<Data.SerializedIndex, string>; // stores the search index
   vector: Dexie.Table<Data.Vector, string>;
+  tfidf: Dexie.Table<Data.TFIDF, string>;
   changeCallbacks: Record<TableNames, TDBChangeCallback[]>;
   public addTableEventListener(
     tableName: TableNames,
@@ -32,11 +33,13 @@ export class OurDatabase extends Dexie {
       label: "name",
       indexCache: "name",
       vector: "exampleId,label,hasLabel",
+      tfidf: "exampleId,size",
     });
     this.example = this.table("example");
     this.label = this.table("label");
     this.indexCache = this.table("indexCache");
     this.vector = this.table("vector");
+    this.tfidf = this.table("tfidf");
     this.changeCallbacks = {
       example: [],
       label: [],
@@ -53,7 +56,6 @@ function gatherLabelChangeCount(
   if (change.table === "example" && change.type === DatabaseChangeType.Update) {
     const oldLabel = (change.oldObj as Data.Example).label;
     const newLabel = (change.obj as Data.Example).label;
-    console.log(oldLabel, newLabel);
     if (newLabel === oldLabel) {
       //do nothing
     } else {
@@ -86,9 +88,6 @@ function initatiateMainThreadDB() {
   const mainThreadDB = new OurDatabase();
   mainThreadDB.on("changes", (changes) => {
     const labelChangeAccumulator: Record<string, number> = {};
-    console.log(changes);
-    console.log(mainThreadDB.changeCallbacks.label.length);
-    console.log(mainThreadDB.changeCallbacks.example.length);
     changes.forEach((change) => {
       gatherLabelChangeCount(change, labelChangeAccumulator);
       const callbacks =

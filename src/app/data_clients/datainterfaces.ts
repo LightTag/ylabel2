@@ -51,6 +51,7 @@ declare namespace Data {
     label?: string; // The label applied to the example
     hasLabel: -1 | 1; //Indexdb won't index bools so we use 1 for labeled and -1 for not labeled
   }
+  type TFIDF = { exampleId: string; size: number } | Record<string, number>;
 }
 
 export default Data;

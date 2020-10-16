@@ -29,7 +29,6 @@ const Body: FunctionComponent = () => {
   const examples = useQuery(["example", "search", query], () =>
     IndexWorkerController.query(query)
   );
-  console.log(examples);
 
   const handleChange = debounce((e) => setQuery(e.target.value), 50);
 
