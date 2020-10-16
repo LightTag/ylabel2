@@ -10,10 +10,12 @@ console.log(tf);
 const ctx: Worker = self as any;
 debugger;
 let svm = new SVM({
-  type: "NU_SVC",
-  kernel: "LINEAR",
+  // Having trouble tuning these ? Look at the outputs and then read https://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f427
+  type: "C_SVC",
+  kernel: "RBF",
   cost: 5,
-  gamma: 0.001,
+  gamma: 0.0000001,
+  probabilityEstimates: true,
 });
 debugger;
 
@@ -111,7 +113,7 @@ async function trainSVM(event: MessageEvent<any>) {
   labeledTFIDFArray.forEach((tf) => {
     trainingFormat.samples.push(tf.vector);
     if (!labelVocab[tf.label]) {
-      labelVocab[tf.label] = maxLabelId;
+      labelVocab[tf.label] = 1 + maxLabelId - 1;
       maxLabelId += 1;
     }
     let labelId = labelVocab[tf.label];
