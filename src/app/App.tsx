@@ -24,6 +24,7 @@ import TextField from "@material-ui/core/TextField";
 import useDatabase from "app/database/useDatabase";
 import { sortBy } from "lodash";
 import Data from "app/data_clients/datainterfaces";
+import PredictionStats from "app/components/predictionStats";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
@@ -147,6 +148,7 @@ export function App() {
               </ReflexElement>
               <ReflexSplitter />
               <ReflexElement className="left-pane" propagateDimensions>
+                <PredictionStats />
                 <Dataset />
                 <WorkComp />
               </ReflexElement>
