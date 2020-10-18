@@ -2,10 +2,15 @@ import { SVM } from "libsvm-ts";
 import * as tf from "@tensorflow/tfjs-core";
 import * as useTF from "@tensorflow-models/universal-sentence-encoder";
 
-import "@tensorflow/tfjs-backend-cpu";
+// @ts-ignore
+import wasmPath from "../node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-backend-wasm.wasm";
+
+import "@tensorflow/tfjs-backend-wasm";
+import "@tensorflow/tfjs-backend-webgl";
 import Data from "app/data_clients/datainterfaces";
-import TFIDFTransformer from "app/classifier/tfidf";
+import TFIDFTransformer, { Counter } from "app/classifier/tfidf";
 import { TableNames, workerDB } from "app/database/database";
+import { sortBy } from "lodash";
 console.log(tf);
 const ctx: Worker = self as any;
 
@@ -13,11 +18,15 @@ let svm = new SVM({
   // Having trouble tuning these ? Look at the outputs and then read https://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f427
   type: "C_SVC",
   kernel: "RBF",
-  cost: 10,
-  gamma: 0.0000001,
+  cost: 5,
+  gamma: 0.000001,
   probabilityEstimates: true,
 });
-
+async function run() {
+  await tf.setBackend("webgl");
+  tf.add(5, 3).print();
+}
+run();
 // Post data to parent thread
 ctx.postMessage({ foo: "foo" });
 export const enum EventKinds {
@@ -53,17 +62,20 @@ export interface VecotizeEvent extends Event {
 }
 // Respond to message from parent thread
 async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
+  debugger;
   const transformer = new TFIDFTransformer();
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
+
   console.log("start tfidf", tfidf);
   workerDB.tfidf.bulkAdd(
-    Object.values(tfidf).map((x) => ({
+    Object.values(tfidf).map((x, ix) => ({
       dict: x,
       arr: Object.values(x),
-      hasLabel: -1,
-    })),
-    Object.keys(tfidf)
+      hasLabel: examples[ix].hasLabel,
+      exampleId: examples[ix].exampleId,
+      label: examples[ix].label,
+    }))
   );
   console.log("tfidf", tfidf);
   ctx.postMessage(tfidf);
@@ -71,19 +83,43 @@ async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
 
 async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
   const examples = event.data.payload.examples;
+  const uniqueLabelSet = new Counter();
+  examples.forEach((ex) => {
+    if (ex.label) {
+      uniqueLabelSet.increment(ex.label);
+    }
+  });
+  const newLabels: Data.Label[] = Object.entries(uniqueLabelSet.items).map(
+    ([name, count]) => ({
+      name,
+      count,
+      kind: "label",
+    })
+  );
   workerDB.example.bulkAdd(examples);
-
+  workerDB.label.bulkAdd(newLabels);
   console.log(`Inserted ${examples.length}`);
 }
 async function vectorize(event: MessageEvent<any>) {
   const model = await useTF.load();
-  const allText = await workerDB.example.toArray();
-  const step = 4;
-  for (let start = 0; start < allText.length; start += 8) {
-    const batch = allText.slice(start, start + step);
-    const vectors = await model.embed(batch.map((x) => x.content));
+  const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
+
+  const allText = await workerDB.example
+    .where("exampleId")
+    .noneOf(hasVectorIds)
+    .toArray();
+  const step = 8;
+  const sortedAllText = sortBy(allText, (x) => x.content.length);
+  for (let start = 0; start < allText.length; start += step) {
+    const batch = sortedAllText.slice(start, start + step);
+    const embed_start = performance.now();
+    const vectors = await model.embed(batch.map((x) => x.content.slice(0, 64)));
+    const embed_end = performance.now();
+    const embed_time = embed_end - embed_start;
+    console.log(`emebd in ${embed_time} ms `);
     const vectorsArray = await vectors.array();
     const insertBatch: Data.Vector[] = [];
+
     vectorsArray.forEach((vec, ix) => {
       const example = batch[ix];
       insertBatch.push({
@@ -93,7 +129,12 @@ async function vectorize(event: MessageEvent<any>) {
         vector: vec,
       });
     });
-    await workerDB.vector.bulkAdd(insertBatch);
+    const insert_start = performance.now();
+
+    await workerDB.vector.bulkAdd(insertBatch).then(() => {
+      const insert_end = performance.now();
+      console.log(`insert in ${insert_end - insert_start} ms`);
+    });
     console.log(`Inserted ${start} to ${start + step}`);
   }
 }
@@ -127,7 +168,7 @@ async function trainSVM(event: MessageEvent<any>) {
   const unlabeledExamples = await workerDB.vector
     .where("hasLabel")
     .equals(-1)
-    .limit(200)
+    // .limit(200)
     .toArray();
   const unlabeledTfIDF = unlabeledExamples.map((x) => x.vector);
   //@ts-ignore
@@ -154,7 +195,6 @@ async function trainSVM(event: MessageEvent<any>) {
       return update;
     });
     for (const update of updates) {
-      console.log(update);
       await workerDB.example.update(update.exampleId, update.update);
     }
   });

@@ -32,8 +32,12 @@ const Body: FunctionComponent = () => {
   // const examples = useQuery(["example", "search", query], () =>
   //   IndexWorkerController.query(query)
   // );
-  const examples = useDatabase(["vecotor"], "example", (db) =>
-    db.example.where({ hasLabel: -1, hasPrediction: 1 }).limit(50).toArray()
+  const examples = useDatabase(["vecotor"], "tfidf", (db) =>
+    db.example
+      .where({ hasLabel: -1, hasPrediction: 1 })
+      .and((x) => x.predictedLabel === "toxic")
+      .limit(200)
+      .toArray()
   );
 
   const handleChange = debounce((e) => setQuery(e.target.value), 50);
@@ -56,7 +60,7 @@ const Body: FunctionComponent = () => {
         {examples.data
           ? //@ts-ignore
             sortBy(examples.data, (x: Data.Example) => x.confidence || 0)
-              .slice(0, 100)
+              .slice(0, 10)
               .map((ex) => (
                 <Example
                   key={ex.exampleId}

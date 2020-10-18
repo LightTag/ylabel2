@@ -30,7 +30,7 @@ declare namespace Data {
     kind: "labelset";
   }
   interface Example extends Base, LabelState {
-    exampleId: string | number;
+    exampleId: string;
     content: string;
     metadata?: any;
     datasetName?: string;
@@ -55,6 +55,7 @@ declare namespace Data {
   type TFIDF = {
     dict: Record<string, number>;
     arr: Array<number>;
+    exampleId: string;
   } & LabelState;
 }
 

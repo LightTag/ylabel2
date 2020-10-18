@@ -38,6 +38,15 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.wasm$/i,
+        type: "javascript/auto",
+        use: [
+          {
+            loader: "file-loader",
+          },
+        ],
+      },
       //workers
       {
         test: /\.worker\.(c|m)?js$/i,

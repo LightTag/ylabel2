@@ -84,8 +84,9 @@ async function handleStartInitRequest(
     }
   }
   if (!loadedFromCache) {
-    console.log("Created a new index");
+    console.log("Starting New Index");
     ctx.index = createDocumentIndex(["content"]);
+    console.log("Done New Index");
   }
 
   const response: IndexWorker.Response.IEndInit = {

@@ -39,7 +39,7 @@ export class OurDatabase extends Dexie {
       label: "name",
       indexCache: "name",
       vector: "exampleId,label,hasLabel",
-      tfidf: ",label,hasLabel",
+      tfidf: "exampleId,label,hasLabel",
     });
     this.example = this.table("example");
     this.label = this.table("label");
