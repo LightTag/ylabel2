@@ -29,7 +29,12 @@ const AddLabel: FunctionComponent = () => {
   );
 };
 const ClassificationStats: FunctionComponent = (props) => {
-  const labels = useDatabase("labelStats", "label", (db) => db.label.toArray());
+  const labels = useDatabase(
+    "labelStats",
+    "label",
+    (db) => db.label.toArray(),
+    undefined
+  );
   if (!labels.data) {
     return <div>loading</div>;
   }

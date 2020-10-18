@@ -48,7 +48,7 @@ export const ClassBox: FunctionComponent<{
     }
   }, [labelName, props.selected]);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     if (!props.onClick) {
       return;
     }
@@ -59,7 +59,19 @@ export const ClassBox: FunctionComponent<{
     }
   };
   return (
-    <div style={style} className={classes.cbRoot} onClick={handleClick}>
+    <div
+      onKeyDown={(e) => {
+        debugger;
+        if (e.key === "Enter" || e.keyCode === 32) {
+          handleClick();
+          e.preventDefault();
+        }
+      }}
+      style={style}
+      className={classes.cbRoot}
+      onClick={handleClick}
+      tabIndex={0}
+    >
       {labelName} {props.comment ? ` - ${props.comment}` : null}
     </div>
   );
@@ -67,9 +79,17 @@ export const ClassBox: FunctionComponent<{
 const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
   const { exampleId } = props;
 
-  const labels = useDatabase("labels", "label", (db) => db.label.toArray());
-  const example = useDatabase(["exampleLabel", exampleId], "example", (db) =>
-    db.example.where("exampleId").equals(exampleId).first()
+  const labels = useDatabase(
+    "labels",
+    "label",
+    (db) => db.label.toArray(),
+    undefined
+  );
+  const example = useDatabase(
+    ["exampleLabel", exampleId],
+    "example",
+    (db) => db.example.where("exampleId").equals(exampleId).first(),
+    props.exampleId
   );
   const classify = useMutation((labelName: string | null) =>
     mainThreadDB.transaction(
@@ -89,7 +109,7 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
   );
   if (labels.data && example.data)
     return (
-      <div>
+      <div tabIndex={0}>
         {labels.data.map((label) => (
           <ClassBox
             labelName={label.name}

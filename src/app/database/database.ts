@@ -3,7 +3,7 @@ import "dexie-observable";
 import Data from "app/data_clients/datainterfaces";
 import { DatabaseChangeType, IDatabaseChange } from "dexie-observable/api";
 
-type TDBChangeCallback = (changeEvent: IDatabaseChange) => void;
+export type TDBChangeCallback = (changeEvent: IDatabaseChange) => void;
 export type TableNames =
   | "example"
   | "label"

@@ -32,12 +32,16 @@ const Body: FunctionComponent = () => {
   // const examples = useQuery(["example", "search", query], () =>
   //   IndexWorkerController.query(query)
   // );
-  const examples = useDatabase(["vecotor"], "tfidf", (db) =>
-    db.example
-      .where({ hasLabel: -1, hasPrediction: 1 })
-      .and((x) => x.predictedLabel === "toxic")
-      .limit(200)
-      .toArray()
+  const examples = useDatabase(
+    ["vecotor"],
+    "tfidf",
+    (db) =>
+      db.example
+        .where({ hasLabel: -1, hasPrediction: 1 })
+        .and((x) => x.predictedLabel === "toxic")
+        .limit(200)
+        .toArray(),
+    undefined
   );
 
   const handleChange = debounce((e) => setQuery(e.target.value), 50);

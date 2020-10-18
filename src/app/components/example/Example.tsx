@@ -18,17 +18,12 @@ interface Props {
 }
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "inherit",
-    maxHeight: "65%",
-
     boxShadow: "4px 4px 4px #CDCDCD ",
     margin: theme.spacing(3),
     padding: theme.spacing(3),
     lineHeight: "2.5rem",
   },
   body: {
-    height: "85%",
-    overflowY: "auto",
     padding: theme.spacing(3),
   },
   ribbon: {
@@ -199,12 +194,12 @@ const Example: FunctionComponent<Props> = (props) => {
   const exampleQuery = useDatabase(
     ["example", props.exampleId],
     "example",
-    (db) => db.example.get(props.exampleId)
+    (db) => db.example.get(props.exampleId),
+    props.exampleId
   );
   if (exampleQuery.data) {
     return (
       <Paper
-        tabIndex={1}
         className={classes.root}
         style={{
           border: exampleQuery.data?.predictedLabel
