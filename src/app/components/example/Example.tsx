@@ -203,12 +203,29 @@ const Example: FunctionComponent<Props> = (props) => {
   );
   if (exampleQuery.data) {
     return (
-      <Paper tabIndex={1} className={classes.root}>
+      <Paper
+        tabIndex={1}
+        className={classes.root}
+        style={{
+          border: exampleQuery.data?.predictedLabel
+            ? `1px solid ${LabselsetColors.getLabelColor(
+                exampleQuery.data.predictedLabel
+              )}`
+            : undefined,
+        }}
+      >
         <div className={classes.ribbon}>
           <Typography variant={"subtitle1"} color={"primary"}>
             {props.score || null}
           </Typography>
           <ClassificationRibbon exampleId={props.exampleId} />
+        </div>
+        <div style={{ fontWeight: "bold" }}>
+          {" "}
+          {exampleQuery.data?.predictedLabel || null}{" "}
+          {exampleQuery.data?.confidence?.toLocaleString("en", {
+            style: "percent",
+          }) || null}
         </div>
         <div className={classes.body} dir={"auto"}>
           {/*{annotationQuery.data.map((span) => (*/}

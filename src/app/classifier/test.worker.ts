@@ -5,19 +5,18 @@ import * as useTF from "@tensorflow-models/universal-sentence-encoder";
 import "@tensorflow/tfjs-backend-cpu";
 import Data from "app/data_clients/datainterfaces";
 import TFIDFTransformer from "app/classifier/tfidf";
-import { workerDB } from "app/database/database";
+import { TableNames, workerDB } from "app/database/database";
 console.log(tf);
 const ctx: Worker = self as any;
-debugger;
+
 let svm = new SVM({
   // Having trouble tuning these ? Look at the outputs and then read https://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f427
   type: "C_SVC",
   kernel: "RBF",
-  cost: 5,
+  cost: 10,
   gamma: 0.0000001,
   probabilityEstimates: true,
 });
-debugger;
 
 // Post data to parent thread
 ctx.postMessage({ foo: "foo" });
@@ -125,16 +124,40 @@ async function trainSVM(event: MessageEvent<any>) {
     const lid = labelVocab[key];
     inverseLabelVoab[lid] = key;
   }
-  const unlabeledTfIDF = (
-    await workerDB.vector.where("hasLabel").equals(-1).limit(200).toArray()
-  ).map((x) => x.vector);
+  const unlabeledExamples = await workerDB.vector
+    .where("hasLabel")
+    .equals(-1)
+    .limit(200)
+    .toArray();
+  const unlabeledTfIDF = unlabeledExamples.map((x) => x.vector);
   //@ts-ignore
   const loadedSVM = svm.loaded
     ? await Promise.resolve(svm)
     : await svm.loadWASM();
+
   console.log(trainingFormat);
   loadedSVM.train(trainingFormat);
   const result = loadedSVM.predictProbability({ samples: unlabeledTfIDF });
+
+  await workerDB.transaction("rw", "example" as TableNames, async (tx) => {
+    const updates = result.map((res, ix) => {
+      const exampleId = unlabeledExamples[ix].exampleId;
+      const predictedLabel = inverseLabelVoab[res.prediction];
+      const update = {
+        exampleId,
+        update: {
+          predictedLabel,
+          hasPrediction: 1,
+          confidence: res.estimates[res.prediction].probability,
+        },
+      };
+      return update;
+    });
+    for (const update of updates) {
+      console.log(update);
+      await workerDB.example.update(update.exampleId, update.update);
+    }
+  });
   console.log(
     result.map((x) => ({
       label: inverseLabelVoab[x.prediction],

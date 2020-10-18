@@ -35,6 +35,9 @@ declare namespace Data {
     metadata?: any;
     datasetName?: string;
     kind: "example";
+    predictedLabel?: string;
+    hasPrediction?: boolean;
+    confidence?: number;
   }
   interface Tag extends Base {
     name: string;
