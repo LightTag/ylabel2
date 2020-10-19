@@ -14,7 +14,7 @@ import "react-reflex/styles.css";
 import { CssBaseline } from "@material-ui/core";
 import Example from "./components/example/Example";
 import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
-import store from "./redux-state/rootState";
+import store, { useTypedSelector } from "./redux-state/rootState";
 import ClassificationStats from "./components/classificationStats";
 import FileUploadButton from "./components/dataUpload/simpleDataUpload";
 import debounce from "@material-ui/core/utils/debounce";
@@ -27,16 +27,12 @@ import useSearchQuery from "app/QueryContext/useSearchQuery";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
-  const [, setQuery] = React.useState<string>("");
-  const [tot] = React.useState<number>(0);
-  // const examples = useQuery(["example", "search", query], () =>
-  //   IndexWorkerController.query(query)
-  // );
+
+  const query = useTypedSelector((state) => state.searchReducer.searchQuery);
   const exampleIds = useSearchQuery();
   const dispatch = useDispatch();
 
   const handleChange = debounce((e) => {
-    setQuery(e.target.value);
     dispatch(
       searchSlice.actions.setSearchParams({
         params: { searchQuery: e.target.value },
@@ -55,7 +51,8 @@ const Body: FunctionComponent = () => {
             e.persist();
             handleChange(e);
           }}
-          helperText={`${tot} items`}
+          defaultValue={query}
+          helperText={`${exampleIds.data?.length || 0} items`}
         />
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>

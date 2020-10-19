@@ -11,6 +11,9 @@ import searchSlice from "app/QueryContext/searchReducer";
 import { useTypedSelector } from "app/redux-state/rootState";
 import FilterCheckboxes from "app/components/FilterCheckboxes";
 import SelectedLabelToggle from "app/components/SelectedLabelToggle";
+import Data from "app/data_clients/datainterfaces";
+import useSearchQuery from "app/QueryContext/useSearchQuery";
+import Button from "@material-ui/core/Button";
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
   const addLabel = useMutation((name: string) =>
@@ -31,6 +34,35 @@ const AddLabel: FunctionComponent = () => {
         <SaveIcon fontSize={"small"} />
       </IconButton>
     </div>
+  );
+};
+const AnnotateAllButton: FunctionComponent<{ label: string }> = (props) => {
+  const exampleIds = useSearchQuery();
+  const classifyAll = useMutation(() =>
+    mainThreadDB.transaction(
+      "rw",
+      [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
+      async () => {
+        const labelState: Data.LabelState = {
+          label: props.label || undefined,
+          hasLabel: props.label !== null ? 1 : -1,
+        };
+        await Promise.all(
+          (exampleIds.data || []).map(async (exampleId) => {
+            Promise.all([
+              mainThreadDB.example.update(exampleId, labelState),
+              mainThreadDB.tfidf.update(exampleId, labelState),
+              mainThreadDB.vector.update(exampleId, labelState),
+            ]);
+          })
+        );
+      }
+    )
+  );
+  return (
+    <Button size={"small"} onClick={() => classifyAll.mutate()}>
+      {`Label all ${exampleIds?.data?.length || 0} examples as ${props.label}`}
+    </Button>
   );
 };
 const ClassificationStats: FunctionComponent = (props) => {
@@ -60,6 +92,7 @@ const ClassificationStats: FunctionComponent = (props) => {
       <ul>
         {labels.data.map((label, count) => (
           <div key={label.name} style={{ padding: "0.5rem" }}>
+            <AnnotateAllButton label={label.name} />
             <ClassBox
               labelName={label.name}
               comment={`${label.count}`}

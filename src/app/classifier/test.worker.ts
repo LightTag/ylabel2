@@ -95,7 +95,11 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
       kind: "label",
     })
   );
-  workerDB.example.bulkAdd(examples);
+  workerDB.example.bulkAdd(examples).catch((e) => {
+    console.log(
+      "Dexie rejected a bulka dd but we caught it because its about duplicate string. If we didn't catch it the transaction would abort"
+    );
+  });
   workerDB.label.bulkAdd(newLabels);
   console.log(`Inserted ${examples.length}`);
 }
@@ -179,24 +183,25 @@ async function trainSVM(event: MessageEvent<any>) {
   console.log(trainingFormat);
   loadedSVM.train(trainingFormat);
   const result = loadedSVM.predictProbability({ samples: unlabeledTfIDF });
-
+  const updates = result.map((res, ix) => {
+    const exampleId = unlabeledExamples[ix].exampleId;
+    const predictedLabel = inverseLabelVoab[res.prediction];
+    const update = {
+      exampleId,
+      update: {
+        predictedLabel,
+        hasPrediction: 1,
+        confidence: res.estimates[res.prediction].probability,
+      },
+    };
+    return update;
+  });
   await workerDB.transaction("rw", "example" as TableNames, async (tx) => {
-    const updates = result.map((res, ix) => {
-      const exampleId = unlabeledExamples[ix].exampleId;
-      const predictedLabel = inverseLabelVoab[res.prediction];
-      const update = {
-        exampleId,
-        update: {
-          predictedLabel,
-          hasPrediction: 1,
-          confidence: res.estimates[res.prediction].probability,
-        },
-      };
-      return update;
-    });
-    for (const update of updates) {
-      await workerDB.example.update(update.exampleId, update.update);
-    }
+    await Promise.all(
+      updates.map((update) => {
+        workerDB.example.update(update.exampleId, update.update);
+      })
+    );
   });
   console.log(
     result.map((x) => ({
