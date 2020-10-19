@@ -21,11 +21,16 @@ import {
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import classificationReducer from "./classification/classificationReducer";
 import exampleReducer from "./examples/exampleState";
+import searchSlice from "app/QueryContext/searchReducer";
 
 export const res = enableMapSet();
 
 enableAllPlugins();
-const rootReducer = combineReducers({ classificationReducer, exampleReducer });
+const rootReducer = combineReducers({
+  classificationReducer,
+  exampleReducer,
+  searchReducer: searchSlice.reducer,
+});
 const persistConfig = {
   key: "root",
   storage,

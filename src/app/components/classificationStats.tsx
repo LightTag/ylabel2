@@ -6,6 +6,11 @@ import { ClassBox } from "app/components/example/ClassificationRibbon";
 import useDatabase from "app/database/useDatabase";
 import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
+import { useDispatch } from "react-redux";
+import searchSlice from "app/QueryContext/searchReducer";
+import { useTypedSelector } from "app/redux-state/rootState";
+import FilterCheckboxes from "app/components/FilterCheckboxes";
+import SelectedLabelToggle from "app/components/SelectedLabelToggle";
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
   const addLabel = useMutation((name: string) =>
@@ -35,6 +40,16 @@ const ClassificationStats: FunctionComponent = (props) => {
     (db) => db.label.toArray(),
     undefined
   );
+  const dispatch = useDispatch();
+  const selectedPrediction = useTypedSelector(
+    (state) => state.searchReducer.predictedLabel
+  );
+  const handleClick = (labelName: string | null) =>
+    dispatch(
+      searchSlice.actions.setSearchParams({
+        params: { predictedLabel: labelName },
+      })
+    );
   if (!labels.data) {
     return <div>loading</div>;
   }
@@ -44,14 +59,19 @@ const ClassificationStats: FunctionComponent = (props) => {
 
       <ul>
         {labels.data.map((label, count) => (
-          <ClassBox
-            labelName={`${label.name} `}
-            comment={`${label.count}`}
-            selected={true}
-            key={label.name}
-          />
+          <div key={label.name} style={{ padding: "0.5rem" }}>
+            <ClassBox
+              labelName={label.name}
+              comment={`${label.count}`}
+              selected={label.name === selectedPrediction}
+              key={label.name}
+              onClick={handleClick}
+            />
+            <SelectedLabelToggle labelName={label.name} />
+          </div>
         ))}
       </ul>
+      <FilterCheckboxes />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import "./index.css";
 import "./App.css";
 import "typeface-roboto";
@@ -21,10 +21,9 @@ import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
 import TextField from "@material-ui/core/TextField";
 // import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
-import useDatabase from "app/database/useDatabase";
-import { sortBy } from "lodash";
-import Data from "app/data_clients/datainterfaces";
 import PredictionStats from "app/components/predictionStats";
+import searchSlice from "app/QueryContext/searchReducer";
+import useSearchQuery from "app/QueryContext/useSearchQuery";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
@@ -33,19 +32,17 @@ const Body: FunctionComponent = () => {
   // const examples = useQuery(["example", "search", query], () =>
   //   IndexWorkerController.query(query)
   // );
-  const examples = useDatabase(
-    ["vecotor"],
-    "tfidf",
-    (db) =>
-      db.example
-        .where({ hasLabel: -1, hasPrediction: 1 })
-        .and((x) => x.predictedLabel === "toxic")
-        .limit(200)
-        .toArray(),
-    undefined
-  );
+  const exampleIds = useSearchQuery();
+  const dispatch = useDispatch();
 
-  const handleChange = debounce((e) => setQuery(e.target.value), 50);
+  const handleChange = debounce((e) => {
+    setQuery(e.target.value);
+    dispatch(
+      searchSlice.actions.setSearchParams({
+        params: { searchQuery: e.target.value },
+      })
+    );
+  }, 50);
 
   return (
     <div style={{ height: "100%", padding: "2rem" }}>
@@ -62,15 +59,15 @@ const Body: FunctionComponent = () => {
         />
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
-        {examples.data
+        {exampleIds.data
           ? //@ts-ignore
-            sortBy(examples.data, (x: Data.Example) => x.confidence || 0)
+            exampleIds.data
               .slice(0, 10)
               .map((ex) => (
                 <Example
-                  key={ex.exampleId}
+                  key={ex}
                   score={1}
-                  exampleId={ex.exampleId as string}
+                  exampleId={ex}
                   addSpanId={spanRegistry.addSpanId}
                 />
               ))

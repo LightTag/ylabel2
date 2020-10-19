@@ -17,9 +17,9 @@ const ctx: Worker = self as any;
 let svm = new SVM({
   // Having trouble tuning these ? Look at the outputs and then read https://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f427
   type: "C_SVC",
-  kernel: "RBF",
-  cost: 5,
-  gamma: 0.000001,
+  kernel: "LINEAR",
+  cost: 1,
+  gamma: 0.00000001,
   probabilityEstimates: true,
 });
 async function run() {
@@ -62,7 +62,6 @@ export interface VecotizeEvent extends Event {
 }
 // Respond to message from parent thread
 async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
-  debugger;
   const transformer = new TFIDFTransformer();
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
@@ -166,11 +165,12 @@ async function trainSVM(event: MessageEvent<any>) {
     inverseLabelVoab[lid] = key;
   }
   const unlabeledExamples = await workerDB.vector
-    .where("hasLabel")
-    .equals(-1)
+    // .where("hasLabel")
+    // .equals(-1)
     // .limit(200)
     .toArray();
   const unlabeledTfIDF = unlabeledExamples.map((x) => x.vector);
+
   //@ts-ignore
   const loadedSVM = svm.loaded
     ? await Promise.resolve(svm)

@@ -61,7 +61,6 @@ export const ClassBox: FunctionComponent<{
   return (
     <div
       onKeyDown={(e) => {
-        debugger;
         if (e.key === "Enter" || e.keyCode === 32) {
           handleClick();
           e.preventDefault();
