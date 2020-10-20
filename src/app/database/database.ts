@@ -9,13 +9,15 @@ export type TableNames =
   | "label"
   | "indexCache"
   | "vector"
-  | "tfidf";
+  | "tfidf"
+  | "kfold";
 export class OurDatabase extends Dexie {
   example: Dexie.Table<Data.Example, string>;
   label: Dexie.Table<Data.Label, string>;
   indexCache: Dexie.Table<Data.SerializedIndex, string>; // stores the search index
   vector: Dexie.Table<Data.Vector, string>;
   tfidf: Dexie.Table<Data.TFIDF, string>;
+  kfold: Dexie.Table<Data.PrecisionRecallKfoldMetric, [Date, number, string]>;
   changeCallbacks: Record<TableNames, TDBChangeCallback[]>;
   public addTableEventListener(
     tableName: TableNames,
@@ -40,18 +42,21 @@ export class OurDatabase extends Dexie {
       indexCache: "name",
       vector: "exampleId,label,hasLabel",
       tfidf: "exampleId,label,hasLabel",
+      kfold: "[timestamp+kNumber+label],[timestamp+label]",
     });
     this.example = this.table("example");
     this.label = this.table("label");
     this.indexCache = this.table("indexCache");
     this.vector = this.table("vector");
     this.tfidf = this.table("tfidf");
+    this.kfold = this.table("kfold");
     this.changeCallbacks = {
       example: [],
       label: [],
       indexCache: [],
       vector: [],
       tfidf: [],
+      kfold: [],
     };
   }
 }

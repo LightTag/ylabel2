@@ -57,6 +57,19 @@ declare namespace Data {
     arr: Array<number>;
     exampleId: string;
   } & LabelState;
+
+  interface PrecisionRecallKfoldMetric {
+    truePositive: number;
+    falsePositive: number;
+    falseNegative: number;
+    precision: number | null;
+    recall: number;
+    f1: number;
+    timestamp: Date;
+    kNumber: number;
+    label: string | number;
+    size: number;
+  }
 }
 
 export default Data;
