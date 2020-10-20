@@ -39,11 +39,13 @@ class LabelAccumulator {
       return;
     }
     if (truth === pred) {
+      this.seen++;
       this.truePositive += 1;
       return;
     }
     if (truth === this.labelNum) {
-      this.falseNegative + 1;
+      this.seen++;
+      this.falseNegative += 1;
     }
     if (pred === this.labelNum) {
       this.falsePositive += 1;
@@ -171,3 +173,5 @@ class SVMTrainer {
     return resultArr;
   }
 }
+
+export default SVMTrainer;

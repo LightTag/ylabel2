@@ -6,6 +6,7 @@ import {
   EventKinds,
   TFIDFEvent,
   TrainSVMEvent,
+  ValidateModelEvent,
   VecotizeEvent,
 } from "app/classifier/test.worker";
 import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
@@ -39,11 +40,22 @@ const WorkComp: FunctionComponent = () => {
     worker.postMessage(event);
   };
 
+  const validateModel = () => {
+    const event: ValidateModelEvent = {
+      kind: EventKinds.validateModel,
+      payload: {},
+    };
+    worker.postMessage(event);
+  };
+
   return (
     <>
       <Button onClick={calculateTFIDF}>Calculate TFIDF</Button>
       <Button onClick={vectorize}>Vectorize</Button>
       <Button onClick={trainSVM}>Train SVM</Button>
+      <Button onClick={validateModel} color={"primary"}>
+        Val
+      </Button>
     </>
   );
 };

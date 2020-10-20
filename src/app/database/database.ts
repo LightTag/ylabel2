@@ -35,7 +35,7 @@ export class OurDatabase extends Dexie {
   }
   constructor() {
     super("OurDatabase");
-    this.version(4).stores({
+    this.version(5).stores({
       example:
         "exampleId,datasetName,label,hasLabel,hasPrediction,[hasPrediction+hasLabel],predictedLabel,[predictedLabel+label],[predictedLabel+hasLabel]",
       label: "name",

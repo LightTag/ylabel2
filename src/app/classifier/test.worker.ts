@@ -11,6 +11,8 @@ import Data from "app/data_clients/datainterfaces";
 import TFIDFTransformer, { Counter } from "app/classifier/tfidf";
 import { TableNames, workerDB } from "app/database/database";
 import { sortBy } from "lodash";
+import SVMTrainer from "app/classifier/SVMTrainer";
+import logger from "app/utils/logger";
 console.log(tf);
 const ctx: Worker = self as any;
 
@@ -34,6 +36,7 @@ export const enum EventKinds {
   insertToDb = "insertToDb",
   trainSVM = "trainSVM",
   vectorize = "vectorize",
+  validateModel = "validateModel",
 }
 type Event = {
   kind: EventKinds;
@@ -59,6 +62,50 @@ export interface InsertToDBEvent extends Event {
 export interface VecotizeEvent extends Event {
   kind: EventKinds.vectorize;
   payload: {};
+}
+
+export interface ValidateModelEvent extends Event {
+  kind: EventKinds.validateModel;
+  payload: {};
+}
+
+async function validateModel(event: MessageEvent<ValidateModelEvent>) {
+  logger("Begin Model Validation");
+  const labelVocab: Record<string, number> = {};
+  let maxLabelId: number = 0;
+  const trainingFormat: { samples: number[][]; labels: number[] } = {
+    samples: [],
+    labels: [],
+  };
+
+  const labeledTFIDFArray = (await workerDB.vector
+    .where("hasLabel")
+    .equals(1)
+    .toArray()) as Required<Data.Vector>[];
+  logger(`Fetched ${labeledTFIDFArray.length} labeled examples`);
+  labeledTFIDFArray.forEach((tf) => {
+    trainingFormat.samples.push(tf.vector);
+    if (!labelVocab[tf.label]) {
+      labelVocab[tf.label] = 1 + maxLabelId - 1;
+      maxLabelId += 1;
+    }
+    let labelId = labelVocab[tf.label];
+    trainingFormat.labels.push(labelId);
+  });
+  logger(`Loading Trainer`);
+  const trainer = new SVMTrainer();
+  await trainer.init();
+  logger(`Trainer Initialized`);
+  for await (let result of trainer.kFoldEvaluate(
+    trainingFormat.samples,
+    trainingFormat.labels,
+    5
+  )) {
+    logger(`Finished a loop. Sending to db`);
+    await workerDB.kfold.bulkAdd(result);
+    logger(`Inserted starting next`);
+  }
+  logger(`Finished KFOLD Evaluation`);
 }
 // Respond to message from parent thread
 async function handleTfIdf(event: MessageEvent<TFIDFEvent>) {
@@ -212,7 +259,11 @@ async function trainSVM(event: MessageEvent<any>) {
 }
 async function workerDispatch(
   event: MessageEvent<
-    InsertToDBEvent | TFIDFEvent | TrainSVMEvent | VecotizeEvent
+    | InsertToDBEvent
+    | TFIDFEvent
+    | TrainSVMEvent
+    | VecotizeEvent
+    | ValidateModelEvent
   >
 ) {
   switch (event.data.kind) {
@@ -224,6 +275,8 @@ async function workerDispatch(
       return trainSVM(event);
     case EventKinds.vectorize:
       return vectorize(event);
+    case EventKinds.validateModel:
+      return validateModel(event as MessageEvent<ValidateModelEvent>);
   }
 }
 
