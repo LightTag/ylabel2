@@ -1,10 +1,11 @@
 import React from "react";
 import { useTypedSelector } from "app/redux-state/rootState";
-import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
 import { mainThreadDB } from "app/database/database";
 import intersection from "lodash/intersection";
 import { useQuery } from "react-query";
 function useSearchQuery() {
+  const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
   const searchParams = useTypedSelector((state) => state.searchReducer);
   const searchFunction = React.useCallback(async () => {
     const criteria = {
@@ -37,7 +38,7 @@ function useSearchQuery() {
     ) {
       const searchQuery = searchParams.searchQuery;
       return filterFunction().then(async (filterResult) => {
-        const searchResults = await IndexWorkerController.query(searchQuery);
+        const searchResults = await indexWorkerSingleton.query(searchQuery);
         console.log(
           `Search for "${searchQuery}" and got ${searchResults.results.length} results`
         );

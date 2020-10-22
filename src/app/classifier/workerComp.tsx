@@ -9,11 +9,11 @@ import {
   ValidateModelEvent,
   VecotizeEvent,
 } from "app/classifier/test.worker";
-import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
 import Button from "@material-ui/core/Button";
 
 const worker = new Worker();
-IndexWorkerController;
+IndexWorkerSingleton;
 const WorkComp: FunctionComponent = () => {
   const exampleIds = useTypedSelector(selectExampleIds);
   const calculateTFIDF = () => {

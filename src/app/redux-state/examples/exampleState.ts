@@ -5,7 +5,7 @@ import TFIDFTransformer from "app/classifier/tfidf";
 import Worker from "worker-loader!../../classifier/test.worker";
 
 import { EventKinds, InsertToDBEvent } from "app/classifier/test.worker";
-import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
+import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
 
 declare namespace ExampleActions {
   export interface ExampleState {
@@ -66,9 +66,9 @@ export const addExamplesThunk = (
       examples: examples,
     },
   };
-
+  const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
   worker.postMessage(event);
-  IndexWorkerController.addDocs(examples);
+  indexWorkerSingleton.addDocs(examples);
 };
 const exampleReducer = exampleSlice.reducer;
 export default exampleReducer;
