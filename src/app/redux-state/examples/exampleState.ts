@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Data from "../../data_clients/datainterfaces";
 import { AppThunk } from "../rootState";
-import TFIDFTransformer from "app/workers/aiWorker/tfidf";
+import TFIDFTransformer from "app/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import Worker from "worker-loader!../../workers/aiWorker/ai.worker";
 
 import { EventKinds, InsertToDBEvent } from "app/workers/aiWorker/ai.worker";

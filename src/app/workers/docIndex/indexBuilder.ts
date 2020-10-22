@@ -3,7 +3,7 @@ import { query } from "ndx-query";
 import Data from "app/data_clients/datainterfaces";
 import { Index } from "ndx/src/index";
 import { tokenizer } from "app/data_clients/dbclient";
-import { tokenizingRegex } from "app/workers/aiWorker/tfidf";
+import { tokenizingRegex } from "app/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 
 function termFilter(term: string) {
   return term.toLowerCase();

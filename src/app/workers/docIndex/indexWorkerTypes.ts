@@ -1,7 +1,7 @@
 import Data from "app/data_clients/datainterfaces";
 import { GenericWorkerTypes } from "app/workers/common/datatypes";
 
-export namespace IndexWorker {
+export namespace NSIndexWorker {
   export const enum IndexRequestMessageKind {
     startIndexing = "startIndexing",
     startQuery = "startQuery",

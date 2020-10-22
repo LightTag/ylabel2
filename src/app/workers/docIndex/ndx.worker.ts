@@ -1,7 +1,7 @@
 import createDocumentIndex, {
   IIndexAPI,
 } from "app/workers/docIndex/indexBuilder";
-import { IndexWorker } from "app/workers/docIndex/indextypes";
+import { NSIndexWorker } from "app/workers/docIndex/indexWorkerTypes";
 import { assertNever } from "../../../typing/utils";
 import { decode, encode } from "@msgpack/msgpack";
 
@@ -12,8 +12,8 @@ import {
   SerializableIndex,
 } from "ndx-serializable";
 
-import ResponseKinds = IndexWorker.IndexResponseMessageKind;
-import ResponseMessageKind = IndexWorker.IndexResponseMessageKind;
+import ResponseKinds = NSIndexWorker.IndexResponseMessageKind;
+import ResponseMessageKind = NSIndexWorker.IndexResponseMessageKind;
 import { workerDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
 import { GenericWorkerTypes } from "app/workers/common/datatypes";
@@ -25,7 +25,7 @@ interface WorkerWithIndex extends Worker {
 let ctx: WorkerWithIndex = self as any;
 
 function handleIndexRequest(
-  message: MessageEvent<IndexWorker.Request.IStartIndex>
+  message: MessageEvent<NSIndexWorker.Request.IStartIndex>
 ) {
   const examples = message.data.payload.examples;
   examples.forEach((ex) => ctx.index.add(ex));
@@ -34,7 +34,7 @@ function handleIndexRequest(
   workerDB.indexCache.add({ data: serializedIndex, name: "index" });
 
   console.log("Saved the index to disk");
-  const response: IndexWorker.Response.IEndIndex = {
+  const response: NSIndexWorker.Response.IEndIndex = {
     worker: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
 
@@ -48,16 +48,16 @@ function handleIndexRequest(
 }
 
 function handleQueryRequest(
-  message: MessageEvent<IndexWorker.Request.IStartQuery>
+  message: MessageEvent<NSIndexWorker.Request.IStartQuery>
 ) {
   const queryString = message.data.payload.query;
-  const results: IndexWorker.SearchResult[] = ctx.index
+  const results: NSIndexWorker.SearchResult[] = ctx.index
     .search(queryString)
     .map((res) => ({
       exampleId: res.key,
       score: res.score,
     }));
-  const response: IndexWorker.Response.IEndQuery = {
+  const response: NSIndexWorker.Response.IEndQuery = {
     worker: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
     kind: ResponseKinds.endQuery,
@@ -70,7 +70,7 @@ function handleQueryRequest(
 }
 
 async function handleStartInitRequest(
-  message: MessageEvent<IndexWorker.Request.IStartInit>
+  message: MessageEvent<NSIndexWorker.Request.IStartInit>
 ) {
   const indexName = message.data.payload.indexName || "index"; //The default name
   const serializedIndex:
@@ -97,7 +97,7 @@ async function handleStartInitRequest(
     console.log("Done New Index");
   }
 
-  const response: IndexWorker.Response.IEndInit = {
+  const response: NSIndexWorker.Response.IEndInit = {
     worker: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
 
@@ -111,18 +111,18 @@ async function handleStartInitRequest(
 }
 
 function messageDispatch(message: MessageEvent<any>) {
-  const kind: IndexWorker.IndexRequestMessageKind | undefined =
+  const kind: NSIndexWorker.IndexRequestMessageKind | undefined =
     message.data.kind;
 
   if (!kind) {
     return;
   }
   switch (kind) {
-    case IndexWorker.IndexRequestMessageKind.startIndexing:
+    case NSIndexWorker.IndexRequestMessageKind.startIndexing:
       return handleIndexRequest(message);
-    case IndexWorker.IndexRequestMessageKind.startQuery:
+    case NSIndexWorker.IndexRequestMessageKind.startQuery:
       return handleQueryRequest(message);
-    case IndexWorker.IndexRequestMessageKind.startInit:
+    case NSIndexWorker.IndexRequestMessageKind.startInit:
       return handleStartInitRequest(message);
     default:
       assertNever(kind);
