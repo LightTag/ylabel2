@@ -8,10 +8,10 @@ import wasmPath from "../node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-ba
 import "@tensorflow/tfjs-backend-wasm";
 import "@tensorflow/tfjs-backend-webgl";
 import Data from "app/data_clients/datainterfaces";
-import TFIDFTransformer, { Counter } from "app/classifier/tfidf";
+import TFIDFTransformer, { Counter } from "app/workers/aiWorker/tfidf";
 import { TableNames, workerDB } from "app/database/database";
 import { sortBy } from "lodash";
-import SVMTrainer from "app/classifier/SVMTrainer";
+import SVMTrainer from "app/workers/aiWorker/SVMTrainer";
 import logger from "app/utils/logger";
 console.log(tf);
 const ctx: Worker = self as any;

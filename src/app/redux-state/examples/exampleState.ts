@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Data from "../../data_clients/datainterfaces";
 import { AppThunk } from "../rootState";
-import TFIDFTransformer from "app/classifier/tfidf";
-import Worker from "worker-loader!../../classifier/test.worker";
+import TFIDFTransformer from "app/workers/aiWorker/tfidf";
+import Worker from "worker-loader!../../workers/aiWorker/ai.worker";
 
-import { EventKinds, InsertToDBEvent } from "app/classifier/test.worker";
-import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
+import { EventKinds, InsertToDBEvent } from "app/workers/aiWorker/ai.worker";
+import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
 
 declare namespace ExampleActions {
   export interface ExampleState {

@@ -1,6 +1,8 @@
-import createDocumentIndex, { IIndexAPI } from "app/docIndex/indexBuilder";
-import { GenericWorkerTypes, IndexWorker } from "app/docIndex/indextypes";
-import { assertNever } from "../../typing/utils";
+import createDocumentIndex, {
+  IIndexAPI,
+} from "app/workers/docIndex/indexBuilder";
+import { IndexWorker } from "app/workers/docIndex/indextypes";
+import { assertNever } from "../../../typing/utils";
 import { decode, encode } from "@msgpack/msgpack";
 
 import { Index } from "ndx";
@@ -10,10 +12,11 @@ import {
   SerializableIndex,
 } from "ndx-serializable";
 
-import ResponseKinds = IndexWorker.ResponseMessageKind;
-import ResponseMessageKind = IndexWorker.ResponseMessageKind;
+import ResponseKinds = IndexWorker.IndexResponseMessageKind;
+import ResponseMessageKind = IndexWorker.IndexResponseMessageKind;
 import { workerDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
 
 interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages
@@ -108,17 +111,18 @@ async function handleStartInitRequest(
 }
 
 function messageDispatch(message: MessageEvent<any>) {
-  const kind: IndexWorker.RequestMessageKind | undefined = message.data.kind;
+  const kind: IndexWorker.IndexRequestMessageKind | undefined =
+    message.data.kind;
 
   if (!kind) {
     return;
   }
   switch (kind) {
-    case IndexWorker.RequestMessageKind.startIndexing:
+    case IndexWorker.IndexRequestMessageKind.startIndexing:
       return handleIndexRequest(message);
-    case IndexWorker.RequestMessageKind.startQuery:
+    case IndexWorker.IndexRequestMessageKind.startQuery:
       return handleQueryRequest(message);
-    case IndexWorker.RequestMessageKind.startInit:
+    case IndexWorker.IndexRequestMessageKind.startInit:
       return handleStartInitRequest(message);
     default:
       assertNever(kind);

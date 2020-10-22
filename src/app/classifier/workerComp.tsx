@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import Worker from "worker-loader!./test.worker";
+import Worker from "worker-loader!../workers/aiWorker/ai.worker";
 import { useTypedSelector } from "app/redux-state/rootState";
 import { selectExampleIds } from "app/redux-state/examples/exampleSelectors";
 import {
@@ -8,8 +8,8 @@ import {
   TrainSVMEvent,
   ValidateModelEvent,
   VecotizeEvent,
-} from "app/classifier/test.worker";
-import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
+} from "app/workers/aiWorker/ai.worker";
+import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
 import Button from "@material-ui/core/Button";
 
 const worker = new Worker();

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./app/App";
-import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
+import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
 const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 indexWorkerSingleton.initializeIndex().then(() => {
   ReactDOM.render(

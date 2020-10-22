@@ -1,6 +1,6 @@
 import React from "react";
 import { useTypedSelector } from "app/redux-state/rootState";
-import { IndexWorkerSingleton } from "app/docIndex/IndexWorkerSingleton";
+import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
 import { mainThreadDB } from "app/database/database";
 import intersection from "lodash/intersection";
 import { useQuery } from "react-query";

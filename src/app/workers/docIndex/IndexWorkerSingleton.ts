@@ -1,10 +1,11 @@
-import { GenericWorkerTypes, IndexWorker } from "app/docIndex/indextypes";
+import { IndexWorker } from "app/workers/docIndex/indextypes";
 import Worker from "worker-loader!./ndx.worker";
 import Data from "app/data_clients/datainterfaces";
-import RequestMessageKind = IndexWorker.RequestMessageKind;
+import RequestMessageKind = IndexWorker.IndexRequestMessageKind;
 import IIndexSingelton = IndexWorker.IIndexSingelton;
 import EWorkerName = GenericWorkerTypes.EWorkerName;
 import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
 
 abstract class WorkerSingletonBase {
   protected static instance: IndexWorkerSingleton;
@@ -104,7 +105,7 @@ export class IndexWorkerSingleton
       worker: EWorkerName.index,
       direction: ERquestOrResponesOrUpdate.request,
 
-      kind: IndexWorker.RequestMessageKind.startIndexing,
+      kind: IndexWorker.IndexRequestMessageKind.startIndexing,
       requestId,
       payload: {
         examples,
@@ -123,7 +124,7 @@ export class IndexWorkerSingleton
     const message: IndexWorker.Request.IStartQuery = {
       worker: GenericWorkerTypes.EWorkerName.index,
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
-      kind: IndexWorker.RequestMessageKind.startQuery,
+      kind: IndexWorker.IndexRequestMessageKind.startQuery,
       requestId,
       payload: {
         query,
