@@ -1,31 +1,24 @@
-import { IndexWorker } from "app/docIndex/indextypes";
+import { GenericWorkerTypes, IndexWorker } from "app/docIndex/indextypes";
 import Worker from "worker-loader!./ndx.worker";
 import Data from "app/data_clients/datainterfaces";
 import RequestMessageKind = IndexWorker.RequestMessageKind;
+import IIndexSingelton = IndexWorker.IIndexSingelton;
+import EWorkerName = GenericWorkerTypes.EWorkerName;
+import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
 
-export class IndexWorkerSingleton /*implements IndexWorker.IWorkerController*/ {
-  private static instance: IndexWorkerSingleton;
-  private initialized: boolean;
-  private worker;
-  private requestId: number;
-  private responseListeners: Record<string, (evt: MessageEvent) => void>;
-  private constructor() {
+abstract class WorkerSingletonBase {
+  protected static instance: IndexWorkerSingleton;
+  initialized: boolean;
+  requestId: number;
+  responseListeners: Record<string, (evt: MessageEvent) => void>;
+  worker: Worker;
+  constructor(workerInstance: any) {
     this.initialized = false;
-    this.worker = new Worker();
     this.requestId = 0;
     this.responseListeners = {};
+    this.worker = workerInstance;
   }
-  public static getInstance() {
-    if (IndexWorkerSingleton.instance === undefined) {
-      IndexWorkerSingleton.instance = new IndexWorkerSingleton();
-    }
-    return IndexWorkerSingleton.instance;
-  }
-  private nextRequestId() {
-    this.requestId++;
-    return this.requestId;
-  }
-  private registerResponseHandler<T extends IndexWorker.Response.TResponse>(
+  registerResponseHandler<T extends IndexWorker.Response.TResponse>(
     requestId: number
   ): Promise<T["payload"]> {
     return new Promise((resolve) => {
@@ -43,9 +36,50 @@ export class IndexWorkerSingleton /*implements IndexWorker.IWorkerController*/ {
       this.worker.addEventListener("message", responseHandler);
     });
   }
+}
+
+export class IndexWorkerSingleton
+  extends WorkerSingletonBase
+  implements IIndexSingelton {
+  private constructor() {
+    super(new Worker());
+  }
+  public static getInstance() {
+    if (IndexWorkerSingleton.instance === undefined) {
+      IndexWorkerSingleton.instance = new IndexWorkerSingleton();
+    }
+    return IndexWorkerSingleton.instance;
+  }
+
+  nextRequestId() {
+    this.requestId++;
+    return this.requestId;
+  }
+
+  registerResponseHandler<T extends IndexWorker.Response.TResponse>(
+    requestId: number
+  ): Promise<T["payload"]> {
+    return new Promise((resolve) => {
+      const responseHandler = (event: MessageEvent<T>) => {
+        if (event.data.kind && event.data.requestId === requestId) {
+          this.worker.removeEventListener(
+            "message",
+            this.responseListeners[requestId]
+          );
+          delete this.responseListeners[requestId];
+          resolve(event.data.payload);
+        }
+      };
+      this.responseListeners[requestId] = responseHandler;
+      this.worker.addEventListener("message", responseHandler);
+    });
+  }
+
   public initializeIndex(indexName?: string) {
     const requestId = this.nextRequestId();
     const message: IndexWorker.Request.IStartInit = {
+      worker: EWorkerName.index,
+      direction: ERquestOrResponesOrUpdate.request,
       requestId,
       kind: RequestMessageKind.startInit,
       payload: {
@@ -67,6 +101,9 @@ export class IndexWorkerSingleton /*implements IndexWorker.IWorkerController*/ {
     const requestId = this.nextRequestId();
 
     const message: IndexWorker.Request.IStartIndex = {
+      worker: EWorkerName.index,
+      direction: ERquestOrResponesOrUpdate.request,
+
       kind: IndexWorker.RequestMessageKind.startIndexing,
       requestId,
       payload: {
@@ -84,6 +121,8 @@ export class IndexWorkerSingleton /*implements IndexWorker.IWorkerController*/ {
     }
     const requestId = this.nextRequestId();
     const message: IndexWorker.Request.IStartQuery = {
+      worker: GenericWorkerTypes.EWorkerName.index,
+      direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
       kind: IndexWorker.RequestMessageKind.startQuery,
       requestId,
       payload: {

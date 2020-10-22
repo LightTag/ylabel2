@@ -1,5 +1,20 @@
 import Data from "app/data_clients/datainterfaces";
-
+export namespace GenericWorkerTypes {
+  export const enum EWorkerName {
+    index = "index",
+    dataLoader = "dataLoading",
+    ai = "ai",
+  }
+  export const enum ERquestOrResponesOrUpdate {
+    request = "request",
+    response = "response",
+    update = "update",
+  }
+  export interface GenericEvent {
+    worker: EWorkerName;
+    direction: ERquestOrResponesOrUpdate;
+  }
+}
 export namespace IndexWorker {
   export const enum RequestMessageKind {
     startIndexing = "startIndexing",
@@ -12,13 +27,22 @@ export namespace IndexWorker {
     endInit = "endInit",
   }
 
-  type EventBase<T extends RequestMessageKind | ResponseMessageKind> = {
+  interface EventBase<T extends RequestMessageKind | ResponseMessageKind>
+    extends GenericWorkerTypes.GenericEvent {
+    worker: GenericWorkerTypes.EWorkerName.index;
+    direction: T extends RequestMessageKind
+      ? GenericWorkerTypes.ERquestOrResponesOrUpdate.request
+      : GenericWorkerTypes.ERquestOrResponesOrUpdate.response;
     requestId: number;
     kind: T;
     payload: unknown;
+  }
+  type RequestEvent = EventBase<RequestMessageKind> & {
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request;
   };
-  type RequestEvent = EventBase<RequestMessageKind>;
-  type ResponseEvent = EventBase<ResponseMessageKind>;
+  type ResponseEvent = EventBase<ResponseMessageKind> & {
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response;
+  };
   export type SearchResult = {
     exampleId: string;
     score: number;
@@ -65,10 +89,22 @@ export namespace IndexWorker {
     }
     export type TResponse = IEndQuery | IEndIndex | IEndInit;
   }
-  export interface IWorkerController {
+  export interface IWorkerSingleton {
+    initialized: boolean;
+    worker: any;
+    requestId: number;
+    responseListeners: Record<string, (evt: MessageEvent) => void>;
+
+    nextRequestId(): any;
+
+    registerResponseHandler<T extends IndexWorker.Response.TResponse>(
+      requestId: number
+    ): Promise<T["payload"]>;
+  }
+  export interface IIndexSingelton extends IWorkerSingleton {
     addDocs: (docs: Data.Example[]) => Promise<{ numInserted: number }>;
     query: (query: string) => Promise<{ results: SearchResult[] }>;
-    init: (indexName?: string) => Promise<{ numIndexed: number }>;
+    initializeIndex: (indexName?: string) => Promise<{ numIndexed: number }>;
     addLabel?: (exampleId: string, label: string) => Promise<boolean>;
     saveToDisk?: () => void;
   }

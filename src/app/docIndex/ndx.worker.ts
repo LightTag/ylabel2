@@ -1,5 +1,5 @@
 import createDocumentIndex, { IIndexAPI } from "app/docIndex/indexBuilder";
-import { IndexWorker } from "app/docIndex/indextypes";
+import { GenericWorkerTypes, IndexWorker } from "app/docIndex/indextypes";
 import { assertNever } from "../../typing/utils";
 import { decode, encode } from "@msgpack/msgpack";
 
@@ -32,6 +32,9 @@ function handleIndexRequest(
 
   console.log("Saved the index to disk");
   const response: IndexWorker.Response.IEndIndex = {
+    worker: GenericWorkerTypes.EWorkerName.index,
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
+
     requestId: message.data.requestId,
     kind: ResponseKinds.endIndexing,
     payload: {
@@ -52,6 +55,8 @@ function handleQueryRequest(
       score: res.score,
     }));
   const response: IndexWorker.Response.IEndQuery = {
+    worker: GenericWorkerTypes.EWorkerName.index,
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
     kind: ResponseKinds.endQuery,
     requestId: message.data.requestId,
     payload: {
@@ -90,6 +95,9 @@ async function handleStartInitRequest(
   }
 
   const response: IndexWorker.Response.IEndInit = {
+    worker: GenericWorkerTypes.EWorkerName.index,
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
+
     requestId: message.data.requestId,
     kind: ResponseMessageKind.endInit,
     payload: {
