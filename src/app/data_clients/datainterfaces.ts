@@ -57,8 +57,9 @@ declare namespace Data {
     arr: Array<number>;
     exampleId: string;
   } & LabelState;
-
-  interface PrecisionRecallKfoldMetric {
+}
+export namespace AnalyticsData {
+  export interface PrecisionRecallKfoldMetric {
     truePositive: number;
     falsePositive: number;
     falseNegative: number;
@@ -67,9 +68,15 @@ declare namespace Data {
     f1: number;
     timestamp: Date;
     kNumber: number;
-    label: string | number;
+    label: string;
     size: number;
   }
+  export interface LabelValidationRun {
+    label: string;
+    mean: number; // Mean F1
+    lower: number; // lower bound of confidence interval
+    upper: number; // upper bound of confidence interval
+  }
+  export type ValidationRunResult = Record<string, LabelValidationRun[]>;
 }
-
 export default Data;

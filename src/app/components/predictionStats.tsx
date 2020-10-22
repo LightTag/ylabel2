@@ -29,7 +29,7 @@ const PredictionStats: FunctionComponent = () => {
     return (
       <table>
         {results.data.map((res) => (
-          <tr>
+          <tr key={res.labelName}>
             <td>{res.labelName}</td>
             <td>{res.count}</td>
             <td>{res.correct}</td>

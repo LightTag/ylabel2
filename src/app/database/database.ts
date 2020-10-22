@@ -1,6 +1,6 @@
 import Dexie from "dexie";
 import "dexie-observable";
-import Data from "app/data_clients/datainterfaces";
+import Data, { AnalyticsData } from "app/data_clients/datainterfaces";
 import { DatabaseChangeType, IDatabaseChange } from "dexie-observable/api";
 
 export type TDBChangeCallback = (changeEvent: IDatabaseChange) => void;
@@ -17,7 +17,10 @@ export class OurDatabase extends Dexie {
   indexCache: Dexie.Table<Data.SerializedIndex, string>; // stores the search index
   vector: Dexie.Table<Data.Vector, string>;
   tfidf: Dexie.Table<Data.TFIDF, string>;
-  kfold: Dexie.Table<Data.PrecisionRecallKfoldMetric, [Date, number, string]>;
+  kfold: Dexie.Table<
+    AnalyticsData.PrecisionRecallKfoldMetric,
+    [Date, number, string]
+  >;
   changeCallbacks: Record<TableNames, TDBChangeCallback[]>;
   public addTableEventListener(
     tableName: TableNames,

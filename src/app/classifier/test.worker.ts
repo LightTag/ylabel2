@@ -92,6 +92,11 @@ async function validateModel(event: MessageEvent<ValidateModelEvent>) {
     let labelId = labelVocab[tf.label];
     trainingFormat.labels.push(labelId);
   });
+  const inverseLabelVoab: Record<number, string> = {};
+  for (const key in labelVocab) {
+    const lid = labelVocab[key];
+    inverseLabelVoab[lid] = key;
+  }
   logger(`Loading Trainer`);
   const trainer = new SVMTrainer();
   await trainer.init();
@@ -99,10 +104,16 @@ async function validateModel(event: MessageEvent<ValidateModelEvent>) {
   for await (let result of trainer.kFoldEvaluate(
     trainingFormat.samples,
     trainingFormat.labels,
-    5
+    15,
+    inverseLabelVoab
   )) {
     logger(`Finished a loop. Sending to db`);
-    await workerDB.kfold.bulkAdd(result);
+    const adjusted = result.map((x) => ({
+      ...x,
+      label: x.label,
+    }));
+    console.log(adjusted);
+    await workerDB.kfold.bulkAdd(adjusted.filter((x) => x.label !== undefined));
     logger(`Inserted starting next`);
   }
   logger(`Finished KFOLD Evaluation`);

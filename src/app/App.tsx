@@ -24,6 +24,7 @@ import TextField from "@material-ui/core/TextField";
 import PredictionStats from "app/components/predictionStats";
 import searchSlice from "app/QueryContext/searchReducer";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
+import D3Chart from "app/classifier/d3ConfChart";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
@@ -145,6 +146,7 @@ export function App() {
                 <PredictionStats />
                 <Dataset />
                 <WorkComp />
+                <D3Chart />
               </ReflexElement>
             </ReflexContainer>
           </ReflexElement>

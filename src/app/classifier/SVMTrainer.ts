@@ -1,7 +1,7 @@
 import { SVM } from "libsvm-ts";
 import zip from "lodash/zip";
 import shuffle from "lodash/shuffle";
-import Data from "app/data_clients/datainterfaces";
+import { AnalyticsData } from "app/data_clients/datainterfaces";
 class LabelAccumulator {
   labelNum: number;
   seen: number;
@@ -54,9 +54,10 @@ class LabelAccumulator {
   toRecord(params: {
     kNumber: number;
     timestamp: Date;
-  }): Data.PrecisionRecallKfoldMetric {
+    idToLabelMap: Record<number, string>;
+  }): AnalyticsData.PrecisionRecallKfoldMetric {
     return {
-      label: this.labelNum,
+      label: params.idToLabelMap[this.labelNum],
       truePositive: this.truePositive,
       falsePositive: this.falsePositive,
       falseNegative: this.falseNegative,
@@ -119,13 +120,17 @@ class SVMTrainer {
   async *kFoldEvaluate(
     samples: number[][],
     labels: number[],
-    k: number
-  ): AsyncGenerator<Data.PrecisionRecallKfoldMetric[], undefined> {
+    k: number,
+    idToLabelMap: Record<number, string>
+  ): AsyncGenerator<AnalyticsData.PrecisionRecallKfoldMetric[], undefined> {
     /*
         Generally this whole function is very bad code
          */
     this.timestamp = new Date();
-    const testSize = Math.floor((1 / k) * samples.length);
+    const testSize = Math.max(
+      Math.floor((1 / k) * Math.floor(samples.length)),
+      Math.floor(samples.length / 2)
+    ); // If we don't have enough data take half of it
     const trainSize = samples.length - testSize;
     //Zip the data together so we can shuffle them together
     const zippedData = zip(samples, labels);
@@ -150,24 +155,32 @@ class SVMTrainer {
         testSetPredictions.map((x) => x.pred)
       );
       yield precisionRecallReport.map((x) =>
-        x.toRecord({ kNumber: i, timestamp: this.timestamp as Date })
+        x.toRecord({
+          kNumber: i,
+          timestamp: this.timestamp as Date,
+          idToLabelMap,
+        })
       );
     }
     return;
   }
   async precisionRecallReport(truths: number[], preds: number[]) {
-    const numLabels = Math.max(...truths);
+    const numLabels = Math.max(...truths, ...preds);
     const resultArr: LabelAccumulator[] = [];
     for (let i = 0; i <= numLabels; i++) {
       resultArr.push(new LabelAccumulator(i));
     }
     truths.forEach((truth, ix) => {
       const pred = preds[ix];
-      if (truth === pred) {
-        resultArr[truth].addObservation(truth, pred);
-      } else {
-        resultArr[truth].addObservation(truth, pred); // Add a false negative here
-        resultArr[pred].addObservation(truth, pred); // And a false positive here
+      try {
+        if (truth === pred) {
+          resultArr[truth].addObservation(truth, pred);
+        } else {
+          resultArr[truth].addObservation(truth, pred); // Add a false negative here
+          resultArr[pred].addObservation(truth, pred); // And a false positive here
+        }
+      } catch (ex) {
+        debugger;
       }
     });
     return resultArr;
