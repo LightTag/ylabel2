@@ -4,9 +4,7 @@ import Data from "app/data_clients/datainterfaces";
 import SVMTrainer from "app/workers/aiWorker/SVMTrainer";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
 
-export async function validateModel(
-  event: MessageEvent<NSAIWorker.Request.IStartValidate>
-) {
+export async function validateModel(event: NSAIWorker.Request.IStartValidate) {
   logger("Begin Model Validation");
   const labelVocab: Record<string, number> = {};
   let maxLabelId: number = 0;

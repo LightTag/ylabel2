@@ -3,9 +3,7 @@ import Data from "app/data_clients/datainterfaces";
 import SVMTrainer from "app/workers/aiWorker/SVMTrainer";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
 
-export async function trainSVM(
-  event: MessageEvent<NSAIWorker.Request.IStartFitPredict>
-) {
+export async function trainSVM(event: NSAIWorker.Request.IStartFitPredict) {
   const labelVocab: Record<string, number> = {};
   let maxLabelId: number = 0;
   const trainingFormat: { samples: number[][]; labels: number[] } = {

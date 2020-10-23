@@ -3,9 +3,7 @@ import TFIDFTransformer from "app/workers/aiWorker/workerProcedures/vectorizers/
 import { workerDB } from "app/database/database";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
 
-export async function handleTfIdf(
-  event: MessageEvent<NSAIWorker.Request.IStartVectorize>
-) {
+export async function handleTfIdf(event: NSAIWorker.Request.IStartVectorize) {
   const transformer = new TFIDFTransformer();
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);

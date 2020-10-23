@@ -5,7 +5,7 @@ import Data from "app/data_clients/datainterfaces";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
 
 export async function universalEncodersVectorize(
-  event: MessageEvent<NSAIWorker.Request.IStartVectorize>
+  event: NSAIWorker.Request.IStartVectorize
 ) {
   const model = await useTF.load();
   const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();

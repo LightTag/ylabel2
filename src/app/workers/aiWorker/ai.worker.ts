@@ -14,17 +14,8 @@ import { universalEncodersVectorize } from "app/workers/aiWorker/workerProcedure
 import { trainSVM } from "app/workers/aiWorker/workerProcedures/trainSvm";
 import AIRequestMessageKind = NSAIWorker.AIRequestMessageKind;
 
-console.log(tf);
 const ctx: Worker = self as any;
 
-let svm = new SVM({
-  // Having trouble tuning these ? Look at the outputs and then read https://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f427
-  type: "C_SVC",
-  kernel: "LINEAR",
-  cost: 1,
-  gamma: 0.00000001,
-  probabilityEstimates: true,
-});
 async function run() {
   await tf.setBackend("webgl");
 }
@@ -79,36 +70,26 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
 async function aiWorkerDispatch(
   event: MessageEvent<InsertToDBEvent | NSAIWorker.Request.AIWorkerRequests>
 ) {
-  if (event.data.kind === EventKinds.insertToDb) {
-    return insertToDB(event as MessageEvent<InsertToDBEvent>);
-  }
   switch (event.data.kind) {
+    case EventKinds.insertToDb:
+      return insertToDB(event as MessageEvent<InsertToDBEvent>);
+    case AIRequestMessageKind.startFitPredict:
+      event.data;
+      return trainSVM(event.data);
+    case NSAIWorker.AIRequestMessageKind.startValidation:
+      return validateModel(event.data);
     case AIRequestMessageKind.startVectorize:
       const method = event.data.payload.method;
       switch (method) {
         case "tfidf":
-          return handleTfIdf(
-            event as MessageEvent<NSAIWorker.Request.IStartVectorize>
-          );
+          return handleTfIdf(event.data);
         case "universalSentenceEncoder":
-          return universalEncodersVectorize(
-            event as MessageEvent<NSAIWorker.Request.IStartVectorize>
-          );
+          return universalEncodersVectorize(event.data);
         default:
           logger(`Got a vecotrization request with unkown method ${method}`);
-        // assertNever(event.data.payload.method);
+          // assertNever(event.data);
+          return;
       }
-
-    case AIRequestMessageKind.startFitPredict:
-      return trainSVM(
-        event as MessageEvent<NSAIWorker.Request.IStartFitPredict>
-      );
-    case NSAIWorker.AIRequestMessageKind.startValidation:
-      return validateModel(
-        event as MessageEvent<NSAIWorker.Request.IStartValidate>
-      );
-    default:
-      assertNever(event.data);
   }
 }
 

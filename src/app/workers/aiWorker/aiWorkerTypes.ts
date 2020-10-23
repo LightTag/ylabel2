@@ -28,12 +28,10 @@ namespace NSAIWorker {
   type RequestEvent = AIEventBase &
     GenericWorkerTypes.RequestEvent & {
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request;
-      kind: AIRequestMessageKind;
     };
   type ResponseEvent = AIEventBase &
     GenericWorkerTypes.ResponseEvent & {
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response;
-      kind: AIResponseMessageKind;
     };
 
   type UpdateEvent = AIEventBase &
