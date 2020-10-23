@@ -41,7 +41,7 @@ const SelectedLabelToggle: FunctionComponent<Props> = (props) => {
       value={value}
       size="small"
     >
-      <ToggleButton value={"human"}>
+      <ToggleButton style={{ fontSize: "0.75rem" }} value={"human"}>
         <HumanIcon />
       </ToggleButton>
       <ToggleButton value={"pred"}>

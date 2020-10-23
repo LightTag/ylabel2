@@ -5,7 +5,7 @@ import searchSlice from "app/QueryContext/searchReducer";
 import { useTypedSelector } from "app/redux-state/rootState";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
 import { useDispatch } from "react-redux";
-import FilterCheckboxes from "app/components/FilterCheckboxes";
+import FilterCheckboxes from "app/components/searchBar/FilterCheckboxes";
 import { LinearProgress } from "@material-ui/core";
 const SearchBar: FunctionComponent = () => {
   const query = useTypedSelector((state) => state.searchReducer.searchQuery);

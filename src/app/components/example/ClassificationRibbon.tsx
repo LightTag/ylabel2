@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     userSelect: "none",
   },
 }));
-export const ClassBox: FunctionComponent<{
+const ClassBox: FunctionComponent<{
   labelName: string;
   selected: boolean;
   onClick?: (val: string | null) => void;
