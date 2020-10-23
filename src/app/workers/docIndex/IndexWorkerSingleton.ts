@@ -14,41 +14,17 @@ export class IndexWorkerSingleton
   private constructor() {
     super(new Worker());
   }
-  public static getInstance() {
+  public static getInstance(): IndexWorkerSingleton {
     if (IndexWorkerSingleton.instance === undefined) {
       IndexWorkerSingleton.instance = new IndexWorkerSingleton();
     }
-    return IndexWorkerSingleton.instance;
-  }
-
-  nextRequestId() {
-    this.requestId++;
-    return this.requestId;
-  }
-
-  registerResponseHandler<T extends NSIndexWorker.Response.TResponse>(
-    requestId: number
-  ): Promise<T["payload"]> {
-    return new Promise((resolve) => {
-      const responseHandler = (event: MessageEvent<T>) => {
-        if (event.data.kind && event.data.requestId === requestId) {
-          this.worker.removeEventListener(
-            "message",
-            this.responseListeners[requestId]
-          );
-          delete this.responseListeners[requestId];
-          resolve(event.data.payload);
-        }
-      };
-      this.responseListeners[requestId] = responseHandler;
-      this.worker.addEventListener("message", responseHandler);
-    });
+    return IndexWorkerSingleton.instance as IndexWorkerSingleton;
   }
 
   public initializeIndex(indexName?: string) {
     const requestId = this.nextRequestId();
     const message: NSIndexWorker.Request.IStartInit = {
-      worker: EWorkerName.index,
+      workerName: EWorkerName.index,
       direction: ERquestOrResponesOrUpdate.request,
       requestId,
       kind: RequestMessageKind.startInit,
@@ -71,7 +47,7 @@ export class IndexWorkerSingleton
     const requestId = this.nextRequestId();
 
     const message: NSIndexWorker.Request.IStartIndex = {
-      worker: EWorkerName.index,
+      workerName: EWorkerName.index,
       direction: ERquestOrResponesOrUpdate.request,
 
       kind: NSIndexWorker.IndexRequestMessageKind.startIndexing,
@@ -91,7 +67,7 @@ export class IndexWorkerSingleton
     }
     const requestId = this.nextRequestId();
     const message: NSIndexWorker.Request.IStartQuery = {
-      worker: GenericWorkerTypes.EWorkerName.index,
+      workerName: GenericWorkerTypes.EWorkerName.index,
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
       kind: NSIndexWorker.IndexRequestMessageKind.startQuery,
       requestId,

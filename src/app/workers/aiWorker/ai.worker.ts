@@ -1,4 +1,3 @@
-import { SVM } from "libsvm-ts";
 import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-wasm";
 import "@tensorflow/tfjs-backend-webgl";
@@ -6,13 +5,14 @@ import Data from "app/data_clients/datainterfaces";
 import { Counter } from "app/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import { workerDB } from "app/database/database";
 import logger from "app/utils/logger";
-import { assertNever } from "../../../typing/utils";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
 import { validateModel } from "app/workers/aiWorker/workerProcedures/validateModel";
 import { handleTfIdf } from "app/workers/aiWorker/workerProcedures/vectorizers/tfidfProcedure";
 import { universalEncodersVectorize } from "app/workers/aiWorker/workerProcedures/vectorizers/universalEncodersVectorizer";
 import { trainSVM } from "app/workers/aiWorker/workerProcedures/trainSvm";
 import AIRequestMessageKind = NSAIWorker.AIRequestMessageKind;
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
+import { assertNever } from "../../../typing/utils";
 
 const ctx: Worker = self as any;
 
@@ -32,7 +32,7 @@ export const enum EventKinds {
   validateModel = "validateModel",
 }
 
-export interface InsertToDBEvent extends Event {
+export interface InsertToDBEvent extends GenericWorkerTypes.GenericEvent {
   //TODO  This needs to move to its own module and worker
 
   kind: EventKinds.insertToDb;
@@ -67,30 +67,42 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
   console.log(`Inserted ${examples.length}`);
 }
 
-async function aiWorkerDispatch(
+async function _aiWorkerDispatch(
   event: MessageEvent<InsertToDBEvent | NSAIWorker.Request.AIWorkerRequests>
-) {
+): Promise<NSAIWorker.Response.Responses> {
   switch (event.data.kind) {
     case EventKinds.insertToDb:
+      //@ts-ignore
       return insertToDB(event as MessageEvent<InsertToDBEvent>);
+
     case AIRequestMessageKind.startFitPredict:
       event.data;
       return trainSVM(event.data);
+
     case NSAIWorker.AIRequestMessageKind.startValidation:
       return validateModel(event.data);
+
     case AIRequestMessageKind.startVectorize:
       const method = event.data.payload.method;
       switch (method) {
         case "tfidf":
           return handleTfIdf(event.data);
+          break;
         case "universalSentenceEncoder":
           return universalEncodersVectorize(event.data);
+          break;
         default:
           logger(`Got a vecotrization request with unkown method ${method}`);
-          // assertNever(event.data);
-          return;
+          assertNever(event.data as never);
       }
   }
 }
-
+async function aiWorkerDispatch(
+  event: MessageEvent<InsertToDBEvent | NSAIWorker.Request.AIWorkerRequests>
+) {
+  const response = await _aiWorkerDispatch(event);
+  if (response) {
+    ctx.postMessage(response);
+  }
+}
 ctx.addEventListener("message", aiWorkerDispatch);

@@ -20,7 +20,7 @@ namespace NSAIWorker {
   }
 
   interface AIEventBase extends GenericWorkerTypes.GenericEvent {
-    worker: GenericWorkerTypes.EWorkerName.ai;
+    workerName: GenericWorkerTypes.EWorkerName.ai;
     requestId: number;
     payload: unknown;
   }
@@ -78,6 +78,7 @@ namespace NSAIWorker {
       kind: AIResponseMessageKind.endFitPredict;
       payload: {};
     }
+    export type Responses = IEndVectorize | IEndValidate | IEndFitPredict;
   }
   export namespace Update {
     interface UpdatePayload {

@@ -2,8 +2,14 @@ import { TableNames, workerDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
 import SVMTrainer from "app/workers/aiWorker/SVMTrainer";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
+import EWorkerName = GenericWorkerTypes.EWorkerName;
+import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
+import AIResponseMessageKind = NSAIWorker.AIResponseMessageKind;
 
-export async function trainSVM(event: NSAIWorker.Request.IStartFitPredict) {
+export async function trainSVM(
+  event: NSAIWorker.Request.IStartFitPredict
+): Promise<NSAIWorker.Response.IEndFitPredict> {
   const labelVocab: Record<string, number> = {};
   let maxLabelId: number = 0;
   const trainingFormat: { samples: number[][]; labels: number[] } = {
@@ -69,4 +75,11 @@ export async function trainSVM(event: NSAIWorker.Request.IStartFitPredict) {
       est: x.estimates,
     }))
   );
+  return {
+    workerName: EWorkerName.ai,
+    requestId: event.requestId,
+    direction: ERquestOrResponesOrUpdate.response,
+    kind: AIResponseMessageKind.endFitPredict,
+    payload: {},
+  };
 }

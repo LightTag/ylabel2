@@ -35,7 +35,7 @@ function handleIndexRequest(
 
   console.log("Saved the index to disk");
   const response: NSIndexWorker.Response.IEndIndex = {
-    worker: GenericWorkerTypes.EWorkerName.index,
+    workerName: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
 
     requestId: message.data.requestId,
@@ -58,7 +58,7 @@ function handleQueryRequest(
       score: res.score,
     }));
   const response: NSIndexWorker.Response.IEndQuery = {
-    worker: GenericWorkerTypes.EWorkerName.index,
+    workerName: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
     kind: ResponseKinds.endQuery,
     requestId: message.data.requestId,
@@ -98,7 +98,7 @@ async function handleStartInitRequest(
   }
 
   const response: NSIndexWorker.Response.IEndInit = {
-    worker: GenericWorkerTypes.EWorkerName.index,
+    workerName: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
 
     requestId: message.data.requestId,

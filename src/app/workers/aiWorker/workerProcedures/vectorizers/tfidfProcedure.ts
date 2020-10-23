@@ -2,8 +2,14 @@
 import TFIDFTransformer from "app/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import { workerDB } from "app/database/database";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
+import AIResponseMessageKind = NSAIWorker.AIResponseMessageKind;
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
+import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
+import EWorkerName = GenericWorkerTypes.EWorkerName;
 
-export async function handleTfIdf(event: NSAIWorker.Request.IStartVectorize) {
+export async function handleTfIdf(
+  event: NSAIWorker.Request.IStartVectorize
+): Promise<NSAIWorker.Response.IEndVectorize> {
   const transformer = new TFIDFTransformer();
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
@@ -18,4 +24,11 @@ export async function handleTfIdf(event: NSAIWorker.Request.IStartVectorize) {
       label: examples[ix].label,
     }))
   );
+  return {
+    workerName: EWorkerName.ai,
+    requestId: event.requestId,
+    direction: ERquestOrResponesOrUpdate.response,
+    kind: AIResponseMessageKind.endVectorize,
+    payload: {},
+  };
 }

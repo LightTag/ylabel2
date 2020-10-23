@@ -24,7 +24,6 @@ async function getRunResults(): Promise<AnalyticsData.ValidationRunResult> {
   const rawTrainingResults: AnalyticsData.PrecisionRecallKfoldMetric[] = await mainThreadDB.kfold.toArray();
   rawTrainingResults.forEach((res) => {
     if (labelArrays[res.label] === undefined) {
-      debugger;
       labelArrays[res.label] = {};
     }
     const labelTimeStampMap = labelArrays[res.label];
@@ -34,7 +33,7 @@ async function getRunResults(): Promise<AnalyticsData.ValidationRunResult> {
     }
     labelTimeStampMap[timeStampString].push(res);
   });
-  debugger;
+
   const result: AnalyticsData.ValidationRunResult = {};
   Object.keys(labelArrays).forEach((label) => {
     const labelMetricsByTimeStamp = labelArrays[label];

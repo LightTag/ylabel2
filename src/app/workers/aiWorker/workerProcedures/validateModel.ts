@@ -3,8 +3,14 @@ import { workerDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
 import SVMTrainer from "app/workers/aiWorker/SVMTrainer";
 import NSAIWorker from "app/workers/aiWorker/aiWorkerTypes";
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
+import EWorkerName = GenericWorkerTypes.EWorkerName;
+import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
+import AIResponseMessageKind = NSAIWorker.AIResponseMessageKind;
 
-export async function validateModel(event: NSAIWorker.Request.IStartValidate) {
+export async function validateModel(
+  event: NSAIWorker.Request.IStartValidate
+): Promise<NSAIWorker.Response.IEndValidate> {
   logger("Begin Model Validation");
   const labelVocab: Record<string, number> = {};
   let maxLabelId: number = 0;
@@ -52,4 +58,11 @@ export async function validateModel(event: NSAIWorker.Request.IStartValidate) {
     logger(`Inserted starting next`);
   }
   logger(`Finished KFOLD Evaluation`);
+  return {
+    workerName: EWorkerName.ai,
+    requestId: event.requestId,
+    direction: ERquestOrResponesOrUpdate.response,
+    kind: AIResponseMessageKind.endValidation,
+    payload: {},
+  };
 }

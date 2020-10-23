@@ -1,5 +1,5 @@
 import Worker from "worker-loader!*";
-import { NSIndexWorker } from "app/workers/docIndex/indexWorkerTypes";
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
 
 abstract class WorkerSingletonBase {
   protected static instance: WorkerSingletonBase;
@@ -14,8 +14,11 @@ abstract class WorkerSingletonBase {
     this.responseListeners = {};
     this.worker = workerInstance;
   }
-
-  registerResponseHandler<T extends NSIndexWorker.Response.TResponse>(
+  protected nextRequestId() {
+    this.requestId++;
+    return this.requestId;
+  }
+  registerResponseHandler<T extends GenericWorkerTypes.ResponseEvent>(
     requestId: number
   ): Promise<T["payload"]> {
     return new Promise((resolve) => {

@@ -6,6 +6,9 @@ import Worker from "worker-loader!../../workers/aiWorker/ai.worker";
 
 import { EventKinds, InsertToDBEvent } from "app/workers/aiWorker/ai.worker";
 import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
+import { GenericWorkerTypes } from "app/workers/common/datatypes";
+import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
+import EWorkerName = GenericWorkerTypes.EWorkerName;
 
 declare namespace ExampleActions {
   export interface ExampleState {
@@ -61,6 +64,9 @@ export const addExamplesThunk = (
   examples: Data.Example[]
 ): AppThunk => async () => {
   const event: InsertToDBEvent = {
+    direction: ERquestOrResponesOrUpdate.request,
+    requestId: -100,
+    workerName: EWorkerName.dataLoader,
     kind: EventKinds.insertToDb,
     payload: {
       examples: examples,

@@ -179,9 +179,7 @@ class SVMTrainer {
           resultArr[truth].addObservation(truth, pred); // Add a false negative here
           resultArr[pred].addObservation(truth, pred); // And a false positive here
         }
-      } catch (ex) {
-        debugger;
-      }
+      } catch (ex) {}
     });
     return resultArr;
   }

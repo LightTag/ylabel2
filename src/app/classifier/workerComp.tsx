@@ -1,61 +1,53 @@
 import React, { FunctionComponent } from "react";
-import Worker from "worker-loader!../workers/aiWorker/ai.worker";
-import { useTypedSelector } from "app/redux-state/rootState";
-import { selectExampleIds } from "app/redux-state/examples/exampleSelectors";
-import {
-  EventKinds,
-  TFIDFEvent,
-  TrainSVMEvent,
-  ValidateModelEvent,
-  VecotizeEvent,
-} from "app/workers/aiWorker/ai.worker";
 import { IndexWorkerSingleton } from "app/workers/docIndex/IndexWorkerSingleton";
 import Button from "@material-ui/core/Button";
+import AIWorkerSingleton from "app/workers/aiWorker/AIWorkerSingleton";
+import { Fade } from "@material-ui/core";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
-const worker = new Worker();
+const aiWorkerSingleton = AIWorkerSingleton.getInstance();
 IndexWorkerSingleton;
 const WorkComp: FunctionComponent = () => {
-  const exampleIds = useTypedSelector(selectExampleIds);
-  const calculateTFIDF = () => {
-    const event: TFIDFEvent = {
-      kind: EventKinds.tfidf,
-      payload: {
-        exampleIds: exampleIds as string[],
-      },
-    };
-    worker.postMessage(event);
+  const [working, setWorking] = React.useState<boolean>(false);
+  const calculateTFIDF = async () => {
+    setWorking(true);
+    await aiWorkerSingleton.beginTfidfVectorizer();
+    setWorking(false);
   };
-  const vectorize = () => {
-    const event: VecotizeEvent = {
-      kind: EventKinds.vectorize,
-      payload: {},
-    };
-    worker.postMessage(event);
+  const vectorize = async () => {
+    setWorking(true);
+    await aiWorkerSingleton.beginUniversalVectorizer();
+    setWorking(false);
   };
-  const trainSVM = () => {
-    const event: TrainSVMEvent = {
-      kind: EventKinds.trainSVM,
-      payload: {},
-    };
-    worker.postMessage(event);
+  const trainSVM = async () => {
+    setWorking(true);
+    await aiWorkerSingleton.beginFitPredict();
+    await setWorking(false);
   };
 
-  const validateModel = () => {
-    const event: ValidateModelEvent = {
-      kind: EventKinds.validateModel,
-      payload: {},
-    };
-    worker.postMessage(event);
+  const validateModel = async () => {
+    setWorking(true);
+    await aiWorkerSingleton.beginValidation();
+    setWorking(false);
   };
 
   return (
     <>
-      <Button onClick={calculateTFIDF}>Calculate TFIDF</Button>
-      <Button onClick={vectorize}>Vectorize</Button>
-      <Button onClick={trainSVM}>Train SVM</Button>
-      <Button onClick={validateModel} color={"primary"}>
+      <Button disabled={working} onClick={calculateTFIDF}>
+        Calculate TFIDF
+      </Button>
+      <Button disabled={working} onClick={vectorize}>
+        Vectorize
+      </Button>
+      <Button disabled={working} onClick={trainSVM}>
+        Train SVM
+      </Button>
+      <Button disabled={working} onClick={validateModel} color={"primary"}>
         Val
       </Button>
+      <Fade in={working}>
+        <LinearProgress variant={"indeterminate"} />
+      </Fade>
     </>
   );
 };

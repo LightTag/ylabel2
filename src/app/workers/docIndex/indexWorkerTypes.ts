@@ -14,7 +14,7 @@ export namespace NSIndexWorker {
   }
 
   interface IndexEventBase extends GenericWorkerTypes.GenericEvent {
-    worker: GenericWorkerTypes.EWorkerName.index;
+    workerName: GenericWorkerTypes.EWorkerName.index;
     requestId: number;
     payload: unknown;
   }
@@ -75,7 +75,7 @@ export namespace NSIndexWorker {
     export type TResponse = IEndQuery | IEndIndex | IEndInit;
   }
 
-  export interface IIndexSingelton extends GenericWorkerTypes.IWorkerSingleton {
+  export interface IIndexSingelton {
     addDocs: (docs: Data.Example[]) => Promise<{ numInserted: number }>;
     query: (query: string) => Promise<{ results: SearchResult[] }>;
     initializeIndex: (indexName?: string) => Promise<{ numIndexed: number }>;
