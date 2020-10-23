@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { Provider, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import "./index.css";
 import "./App.css";
 import "typeface-roboto";
@@ -14,47 +14,23 @@ import "react-reflex/styles.css";
 import { CssBaseline } from "@material-ui/core";
 import Example from "./components/example/Example";
 import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
-import store, { useTypedSelector } from "./redux-state/rootState";
+import store from "./redux-state/rootState";
 import ClassificationStats from "./components/classificationStats";
 import FileUploadButton from "./components/dataUpload/simpleDataUpload";
-import debounce from "@material-ui/core/utils/debounce";
 import WorkComp from "app/classifier/workerComp";
-import TextField from "@material-ui/core/TextField";
-// import { IndexWorkerController } from "app/docIndex/IndexWorkerController";
 import PredictionStats from "app/components/predictionStats";
-import searchSlice from "app/QueryContext/searchReducer";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
 import D3Chart from "app/classifier/d3ConfChart";
+import SearchBar from "app/searchBar/SearchBar";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
-
-  const query = useTypedSelector((state) => state.searchReducer.searchQuery);
   const exampleIds = useSearchQuery();
-  const dispatch = useDispatch();
-
-  const handleChange = debounce((e) => {
-    dispatch(
-      searchSlice.actions.setSearchParams({
-        params: { searchQuery: e.target.value },
-      })
-    );
-  }, 50);
 
   return (
     <div style={{ height: "100%", padding: "2rem" }}>
       <div style={{ margin: "2rem" }}>
-        <button onMouseDown={spanRegistry.gotoPrev}>Prev </button>
-        <button onMouseDown={spanRegistry.gotoNext}>Next </button>
-        <TextField
-          variant={"outlined"}
-          onChange={(e) => {
-            e.persist();
-            handleChange(e);
-          }}
-          defaultValue={query}
-          helperText={`${exampleIds.data?.length || 0} items`}
-        />
+        <SearchBar />
       </div>
       <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
         {exampleIds.data

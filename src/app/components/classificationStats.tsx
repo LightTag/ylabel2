@@ -61,7 +61,7 @@ const AnnotateAllButton: FunctionComponent<{ label: string }> = (props) => {
   );
   return (
     <Button size={"small"} onClick={() => classifyAll.mutate()}>
-      {`Label all ${exampleIds?.data?.length || 0} examples as ${props.label}`}
+      {`Label  ${exampleIds?.data?.length || 0}  as ${props.label}`}
     </Button>
   );
 };
