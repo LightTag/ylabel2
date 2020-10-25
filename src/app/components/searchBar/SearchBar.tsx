@@ -7,7 +7,24 @@ import useSearchQuery from "app/QueryContext/useSearchQuery";
 import { useDispatch } from "react-redux";
 import FilterCheckboxes from "app/components/searchBar/FilterCheckboxes";
 import { LinearProgress } from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "inline",
+    width: "100%",
+    boxShadow: "4px 4px 4px #CDCDCD ",
+    paddingBottom: "2.5rem",
+  },
+  searchBarContainer: {
+    width: "50%",
+    display: "inline",
+  },
+  filterContainer: {
+    display: "inline",
+  },
+}));
 const SearchBar: FunctionComponent = () => {
+  const classes = useStyles();
   const query = useTypedSelector((state) => state.searchReducer.searchQuery);
   const exampleIds = useSearchQuery();
   const dispatch = useDispatch();
@@ -20,23 +37,25 @@ const SearchBar: FunctionComponent = () => {
   }, 50);
 
   return (
-    <div>
-      <TextField
-        fullWidth={true}
-        variant={"outlined"}
-        onChange={(e) => {
-          e.persist();
-          handleChange(e);
-        }}
-        defaultValue={query}
-        helperText={
-          exampleIds.isLoading ? (
-            <LinearProgress variant={"indeterminate"} />
-          ) : (
-            `${exampleIds.data?.length || 0} items`
-          )
-        }
-      />
+    <div className={classes.root}>
+      <div className={classes.searchBarContainer}>
+        <TextField
+          fullWidth={false}
+          variant={"outlined"}
+          onChange={(e) => {
+            e.persist();
+            handleChange(e);
+          }}
+          defaultValue={query}
+          helperText={
+            exampleIds.isLoading ? (
+              <LinearProgress variant={"indeterminate"} />
+            ) : (
+              `${exampleIds.data?.length || 0} items`
+            )
+          }
+        />
+      </div>
       <FilterCheckboxes />
     </div>
   );

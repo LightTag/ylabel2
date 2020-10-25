@@ -21,7 +21,7 @@ const FilterCheckboxes: FunctionComponent = (props) => {
   const classes = useStyles();
   const state = useTypedSelector((state) => state.searchReducer);
   return (
-    <FormGroup row>
+    <FormGroup row style={{ display: "inline" }}>
       <FormControlLabel
         labelPlacement={"bottom"}
         control={

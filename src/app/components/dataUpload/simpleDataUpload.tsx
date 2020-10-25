@@ -57,7 +57,7 @@ const FileUploadButton: FunctionComponent = () => {
       />
       <label htmlFor="csv-file">
         <Button
-          fullWidth={true}
+          fullWidth={false}
           variant={"contained"}
           component="span"
           color={"primary"}

@@ -25,7 +25,7 @@ export async function universalEncodersVectorize(
   for (let start = 0; start < allText.length; start += step) {
     const batch = sortedAllText.slice(start, start + step);
     const embed_start = performance.now();
-    const vectors = await model.embed(batch.map((x) => x.content.slice(0, 64)));
+    const vectors = await model.embed(batch.map((x) => x.content));
     const embed_end = performance.now();
     const embed_time = embed_end - embed_start;
     console.log(`emebd in ${embed_time} ms `);

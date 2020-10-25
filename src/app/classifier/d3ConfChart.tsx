@@ -13,7 +13,7 @@ import colorManaer from "app/utils/labelsetcolors/labelsetcolors";
 async function makeChart() {
   var margin = { top: 10, right: 30, bottom: 30, left: 60 };
   const width = 600 - margin.left - margin.right;
-  const height = 600 - margin.top - margin.bottom;
+  const height = 200 - margin.top - margin.bottom;
   var svg = select("#chart")
     .append("svg")
     .attr("width", width + margin.left + margin.right)

@@ -22,31 +22,34 @@ import PredictionStats from "app/components/predictionStats";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
 import D3Chart from "app/classifier/d3ConfChart";
 import SearchBar from "app/components/searchBar/SearchBar";
+import Grid from "@material-ui/core/Grid";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
   const exampleIds = useSearchQuery();
 
   return (
-    <div style={{ height: "100%", padding: "2rem" }}>
-      <div style={{ margin: "2rem" }}>
-        <SearchBar />
-      </div>
-      <div style={{ height: "80%", maxHeight: "80%", overflowY: "auto" }}>
-        {exampleIds.data
-          ? //@ts-ignore
-            exampleIds.data
-              .slice(0, 10)
-              .map((ex) => (
-                <Example
-                  key={ex}
-                  score={1}
-                  exampleId={ex}
-                  addSpanId={spanRegistry.addSpanId}
-                />
-              ))
-          : null}
-      </div>
+    <div
+      style={{
+        height: "100%",
+        padding: "2rem",
+        maxHeight: "100%",
+        overflowY: "auto",
+      }}
+    >
+      {exampleIds.data
+        ? //@ts-ignore
+          exampleIds.data
+            .slice(0, 10)
+            .map((ex) => (
+              <Example
+                key={ex}
+                score={1}
+                exampleId={ex}
+                addSpanId={spanRegistry.addSpanId}
+              />
+            ))
+        : null}
     </div>
   );
 };
@@ -100,7 +103,7 @@ export function App() {
       <QueryClientProvider client={client}>
         <CssBaseline />
         <ReflexContainer
-          orientation="vertical"
+          orientation="horizontal"
           style={{
             height: "100vh",
             width: "100vw",
@@ -108,28 +111,47 @@ export function App() {
             padding: "3rem",
           }}
         >
-          <ReflexElement propagateDimensions>
-            <ReflexContainer orientation="horizontal">
-              <ReflexElement
-                className="left-pane"
-                propagateDimensions
-                flex={0.5}
-              >
-                <LabelControls />
-              </ReflexElement>
-              <ReflexSplitter />
-              <ReflexElement className="left-pane" propagateDimensions>
-                <PredictionStats />
+          <ReflexElement flex={0.2} propagateDimensions={true}>
+            <Grid container>
+              <Grid item xs={6}>
+                <SearchBar />
+              </Grid>
+              <Grid item xs={6}>
                 <Dataset />
                 <WorkComp />
-                <D3Chart />
+              </Grid>
+            </Grid>
+          </ReflexElement>
+          <ReflexElement flex={0.8}>
+            <ReflexContainer orientation="vertical">
+              <ReflexElement className="left-pane" propagateDimensions>
+                <Body />
+              </ReflexElement>
+              <ReflexSplitter />
+
+              <ReflexElement propagateDimensions>
+                <ReflexContainer orientation="horizontal">
+                  <ReflexElement
+                    className="left-pane"
+                    propagateDimensions
+                    flex={1}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        padding: "2rem",
+                        maxHeight: "100%",
+                        overflowY: "auto",
+                      }}
+                    >
+                      <LabelControls />
+                      <D3Chart />
+                      {/*<PredictionStats />*/}
+                    </div>
+                  </ReflexElement>
+                </ReflexContainer>
               </ReflexElement>
             </ReflexContainer>
-          </ReflexElement>
-
-          <ReflexSplitter />
-          <ReflexElement className="left-pane" propagateDimensions>
-            <Body />
           </ReflexElement>
         </ReflexContainer>
       </QueryClientProvider>

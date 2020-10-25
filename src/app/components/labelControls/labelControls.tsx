@@ -5,9 +5,6 @@ import SaveIcon from "@material-ui/icons/Save";
 import useDatabase from "app/database/useDatabase";
 import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
-import { useDispatch } from "react-redux";
-import searchSlice from "app/QueryContext/searchReducer";
-import { useTypedSelector } from "app/redux-state/rootState";
 import Data from "app/data_clients/datainterfaces";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
 import Button from "@material-ui/core/Button";
@@ -34,6 +31,30 @@ const AddLabel: FunctionComponent = () => {
     </div>
   );
 };
+export function useAnnotateAll() {
+  const exampleIds = useSearchQuery();
+  return useMutation((label: string | null) =>
+    mainThreadDB.transaction(
+      "rw",
+      [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
+      async () => {
+        const labelState: Data.LabelState = {
+          label: label || undefined,
+          hasLabel: label !== null ? 1 : -1,
+        };
+        await Promise.all(
+          (exampleIds.data || []).map(async (exampleId) => {
+            Promise.all([
+              mainThreadDB.example.update(exampleId, labelState),
+              mainThreadDB.tfidf.update(exampleId, labelState),
+              mainThreadDB.vector.update(exampleId, labelState),
+            ]);
+          })
+        );
+      }
+    )
+  );
+}
 export const AnnotateAllButton: FunctionComponent<{ label: string }> = (
   props
 ) => {
@@ -85,7 +106,12 @@ const LabelControls: FunctionComponent = (props) => {
       <AddLabel />
 
       {labels.data.map((label, count) => (
-        <LabelRow selected={false} labelName={label.name} key={label.name} />
+        <LabelRow
+          selected={false}
+          count={label.count}
+          labelName={label.name}
+          key={label.name}
+        />
       ))}
     </div>
   );
