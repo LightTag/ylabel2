@@ -12,13 +12,14 @@ export async function universalEncodersVectorize(
   event: NSAIWorker.Request.IStartVectorize,
   tf: any
 ): Promise<NSAIWorker.Response.IEndVectorize> {
+  debugger;
   const model = await useTF.load();
 
-  const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
-
+  // const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
+  debugger;
   const allText = await workerDB.example
-    .where("exampleId")
-    .noneOf(hasVectorIds)
+    // .where("exampleId")
+    // .noneOf(hasVectorIds)
     .toArray();
   const step = 8;
   const sortedAllText = sortBy(allText, (x) => x.content.length);
@@ -32,6 +33,7 @@ export async function universalEncodersVectorize(
     const embed_time = embed_end - embed_start;
     console.log(`emebd in ${embed_time} ms `);
     const vectorsArray = await vectors.array();
+    debugger;
 
     tf.dispose(vectors);
     const insertBatch: Data.Vector[] = [];
@@ -46,14 +48,13 @@ export async function universalEncodersVectorize(
       });
     });
     const insert_start = performance.now();
-
     await workerDB.vector.bulkAdd(insertBatch).then(() => {
       const insert_end = performance.now();
       console.log(`insert in ${insert_end - insert_start} ms`);
     });
     console.log(`Inserted ${start} to ${start + step}`);
   }
-
+  debugger;
   return {
     workerName: EWorkerName.ai,
     requestId: event.requestId,

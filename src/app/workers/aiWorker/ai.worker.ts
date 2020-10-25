@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs-core";
-import "@tensorflow/tfjs-backend-wasm";
+import "@tensorflow/tfjs-backend-cpu";
 import "@tensorflow/tfjs-backend-webgl";
 import Data from "app/data_clients/datainterfaces";
 import { Counter } from "app/workers/aiWorker/workerProcedures/vectorizers/tfidf";
@@ -15,7 +15,7 @@ import { GenericWorkerTypes } from "app/workers/common/datatypes";
 import { assertNever } from "../../../typing/utils";
 
 const ctx: Worker = self as any;
-
+tf.env().set("WEBGL_DELETE_TEXTURE_THRESHOLD", 0);
 async function run() {
   await tf.setBackend("webgl");
 }
