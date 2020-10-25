@@ -15,14 +15,13 @@ import { CssBaseline } from "@material-ui/core";
 import Example from "./components/example/Example";
 import useSpanRegistry from "./utils/spanRegistry/useSpanRegistry";
 import store from "./redux-state/rootState";
-import LabelControls from "./components/labelControls/labelControls";
 import FileUploadButton from "./components/dataUpload/simpleDataUpload";
 import WorkComp from "app/classifier/workerComp";
-import PredictionStats from "app/components/predictionStats";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
 import D3Chart from "app/classifier/d3ConfChart";
 import SearchBar from "app/components/searchBar/SearchBar";
 import Grid from "@material-ui/core/Grid";
+import LabelControls from "app/components/labelControls/labelControls";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();

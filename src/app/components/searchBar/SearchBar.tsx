@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const SearchBar: FunctionComponent = () => {
   const classes = useStyles();
   const query = useTypedSelector((state) => state.searchReducer.searchQuery);
+
   const exampleIds = useSearchQuery();
   const dispatch = useDispatch();
   const handleChange = debounce((e) => {

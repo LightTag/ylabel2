@@ -89,7 +89,7 @@ async function _aiWorkerDispatch(
           return handleTfIdf(event.data);
           break;
         case "universalSentenceEncoder":
-          return universalEncodersVectorize(event.data);
+          return universalEncodersVectorize(event.data, tf);
           break;
         default:
           logger(`Got a vecotrization request with unkown method ${method}`);

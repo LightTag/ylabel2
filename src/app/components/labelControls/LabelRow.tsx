@@ -4,6 +4,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Grid } from "@material-ui/core";
 import SelectedLabelToggle from "app/components/labelControls/SelectedLabelToggle";
 import { useAnnotateAll } from "app/components/labelControls/labelControls";
+import SignificantTermsViz from "app/components/labelControls/SignifantTermsViz";
 const useStyles = makeStyles((theme) => ({
   root: {
     marginBottom: "2px",
@@ -85,6 +86,9 @@ const LabelRow: FunctionComponent<{
         </Grid>
         <Grid item>
           <SelectedLabelToggle labelName={labelName} />
+        </Grid>
+        <Grid item xs={12}>
+          <SignificantTermsViz label={labelName} />
         </Grid>
 
         {/*<Grid item xs={4}>*/}
