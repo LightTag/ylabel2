@@ -78,8 +78,8 @@ class SVMTrainer {
   constructor(
     type: string = "C_SVC",
     kernel: string = "LINEAR",
-    cost: number = 1,
-    gamma = 0.00000001
+    cost: number = 15,
+    gamma = 0.000000001
   ) {
     //TODO this can cause a memory leak because we need to free the model at same point (WASM has heap memory that js dosnt garbage collect)
     this.model = new SVM({
