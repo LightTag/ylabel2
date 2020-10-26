@@ -15,11 +15,11 @@ export async function universalEncodersVectorize(
   debugger;
   const model = await useTF.load();
 
-  // const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
+  const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
   debugger;
   const allText = await workerDB.example
-    // .where("exampleId")
-    // .noneOf(hasVectorIds)
+    .where("exampleId")
+    .noneOf(hasVectorIds)
     .toArray();
   const step = 8;
   const sortedAllText = sortBy(allText, (x) => x.content.length);

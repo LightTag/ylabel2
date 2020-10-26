@@ -22,11 +22,20 @@ import D3Chart from "app/classifier/d3ConfChart";
 import SearchBar from "app/components/searchBar/SearchBar";
 import Grid from "@material-ui/core/Grid";
 import LabelControls from "app/components/labelControls/labelControls";
+import useActiveLearning from "app/QueryContext/useActiveLearning";
+import Switch from "@material-ui/core/Switch";
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
   const exampleIds = useSearchQuery();
-
+  const activeLearningExamples = useActiveLearning();
+  const [isAL, setIsAL] = React.useState<boolean>(false);
+  const source =
+    isAL && activeLearningExamples.data
+      ? activeLearningExamples.data.items.map((x) => x.exampleId)
+      : exampleIds.data
+      ? exampleIds.data
+      : [];
   return (
     <div
       style={{
@@ -36,19 +45,15 @@ const Body: FunctionComponent = () => {
         overflowY: "auto",
       }}
     >
-      {exampleIds.data
-        ? //@ts-ignore
-          exampleIds.data
-            .slice(0, 10)
-            .map((ex) => (
-              <Example
-                key={ex}
-                score={1}
-                exampleId={ex}
-                addSpanId={spanRegistry.addSpanId}
-              />
-            ))
-        : null}
+      <Switch value={isAL} onChange={(e, v) => setIsAL(v)} />
+      {source.slice(0, 10).map((ex) => (
+        <Example
+          key={ex}
+          score={1}
+          exampleId={ex}
+          addSpanId={spanRegistry.addSpanId}
+        />
+      ))}
     </div>
   );
 };
