@@ -4,16 +4,15 @@ import significantTermsForLabel from "app/workers/docIndex/significantTerms";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import searchSlice from "app/QueryContext/searchReducer";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   root: {
     display: "inline-flex",
   },
   termRoot: {
-    border: "0.1rem solid white",
     fontSize: "0.75rem",
     padding: "0.1rem",
-    margin: "0rem 0.1rem",
   },
 }));
 const STerm: FunctionComponent<{
@@ -39,7 +38,7 @@ const STerm: FunctionComponent<{
   );
 };
 const SignificantTermsViz: FunctionComponent<{ label: string }> = (props) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const query = useQuery(["sigTerms", props.label], () =>
     significantTermsForLabel(props.label)
   );
@@ -50,12 +49,14 @@ const SignificantTermsViz: FunctionComponent<{ label: string }> = (props) => {
     console.log({ label: props.label, terms: query.data.slice(10) });
   }
   return (
-    <div className={classes.root}>
+    <Grid container spacing={1}>
       <div onClick={() => query.refetch()}>More</div>
-      {query.data.slice(0, 15).map((ws) => (
-        <STerm term={ws.word} score={ws.score} label={props.label} />
+      {query.data.slice(0, 22).map((ws) => (
+        <Grid item>
+          <STerm term={ws.word} score={ws.score} label={props.label} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 };
 

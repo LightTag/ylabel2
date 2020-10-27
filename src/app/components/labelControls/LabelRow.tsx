@@ -70,11 +70,15 @@ const LabelRow: FunctionComponent<{
     >
       <Grid container alignItems={"center"} spacing={2}>
         <Grid item className={classes.nameContainer} xs={2}>
-          <span className={classes.nameContainer}> {labelName} </span>
+          <span className={classes.nameContainer}>
+            {" "}
+            {labelName} - {props.count}{" "}
+          </span>
         </Grid>
-        <Grid item xs={1}>
-          <span className={classes.nameContainer}> {props.count} </span>
+        <Grid item xs={10}>
+          <SignificantTermsViz label={labelName} />
         </Grid>
+
         <Grid item xs={2}>
           <span
             className={classes.toggleButton}
@@ -86,9 +90,6 @@ const LabelRow: FunctionComponent<{
         </Grid>
         <Grid item>
           <SelectedLabelToggle labelName={labelName} />
-        </Grid>
-        <Grid item xs={12}>
-          <SignificantTermsViz label={labelName} />
         </Grid>
 
         {/*<Grid item xs={4}>*/}
