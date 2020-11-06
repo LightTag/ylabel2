@@ -6,6 +6,7 @@ import { GenericWorkerTypes } from "app/workers/common/datatypes";
 import EWorkerName = GenericWorkerTypes.EWorkerName;
 import ERquestOrResponesOrUpdate = GenericWorkerTypes.ERquestOrResponesOrUpdate;
 import AIResponseMessageKind = NSAIWorker.AIResponseMessageKind;
+import { trainTFModel } from "app/workers/aiWorker/workerProcedures/tfmodel/basicModel";
 
 export async function trainSVM(
   event: NSAIWorker.Request.IStartFitPredict
@@ -16,7 +17,8 @@ export async function trainSVM(
     samples: [],
     labels: [],
   };
-
+  await trainTFModel();
+  return;
   const labeledTFIDFArray = (await workerDB.vector
     .where("hasLabel")
     .equals(1)
