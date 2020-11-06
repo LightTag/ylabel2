@@ -37,9 +37,9 @@ export async function trainSVM(
     inverseLabelVoab[lid] = key;
   }
   const unlabeledExamples = await workerDB.vector
-    // .where("hasLabel")
-    // .equals(-1)
-    // .limit(200)
+    .where("hasLabel")
+    .equals(-1)
+    .limit(200)
     .toArray();
   const unlabeledTfIDF = unlabeledExamples.map((x) => x.vector);
 

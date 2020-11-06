@@ -6,6 +6,7 @@ import useDatabase from "app/database/useDatabase";
 import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
+import AIWorkerSingleton from "app/workers/aiWorker/AIWorkerSingleton";
 
 interface Props {
   exampleId: string;
@@ -56,6 +57,8 @@ const ClassBox: FunctionComponent<{
       props.onClick(null);
     } else {
       props.onClick(labelName);
+      const workerController = AIWorkerSingleton.getInstance();
+      workerController.afterNewLabel();
     }
   };
   return (

@@ -8,9 +8,12 @@ import EWorkerName = GenericWorkerTypes.EWorkerName;
 
 class AIWorkerSingleton extends WorkerSingletonBase {
   workerName: EWorkerName.ai;
+  training: boolean;
+
   private constructor() {
     super(new Worker());
     this.workerName = EWorkerName.ai;
+    this.training = false;
   }
   static getInstance(): AIWorkerSingleton {
     if (this.instance === undefined) {
@@ -67,6 +70,16 @@ class AIWorkerSingleton extends WorkerSingletonBase {
     return this.registerResponseHandler<NSAIWorker.Response.IEndVectorize>(
       event.requestId
     );
+  }
+
+  public async afterNewLabel() {
+    if (this.training) {
+      return;
+    }
+    this.training = true;
+    await this.beginFitPredict();
+    await this.beginValidation();
+    this.training = false;
   }
 }
 

@@ -115,6 +115,8 @@ function initatiateMainThreadDB() {
         updateLabelCount(name, dif)
       )
     );
+    if (Object.keys(labelChangeAccumulator).length) {
+    }
   });
   return mainThreadDB;
 }

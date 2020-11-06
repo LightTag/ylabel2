@@ -10,7 +10,7 @@ function useActiveLearning() {
         hasPrediction: 1,
       });
       let items = await collection.toArray();
-      items = sortBy(items, (x) => (x.confidence ? -x.confidence : 0));
+      items = sortBy(items, (x) => (x.confidence ? x.confidence : 0));
       return { size: collection.count(), items };
     },
     undefined

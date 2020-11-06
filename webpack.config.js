@@ -42,15 +42,18 @@ module.exports = {
         test: /\.wasm$/i,
         type: "javascript/auto",
         use: [
+          'cache-loader',
           {
             loader: "file-loader",
           },
         ],
+        include: sourcePath,
       },
       //workers
       {
         test: /\.worker\.(c|m)?js$/i,
-        use: [
+        include: sourcePath,
+        use: ['cache-loader',
           {
             loader: "worker-loader",
           },
@@ -65,7 +68,9 @@ module.exports = {
       // .ts, .tsx
       {
         test: /\.tsx?$/,
+        include: sourcePath,
         use: [
+          'cache-loader',
           !isProduction && {
             loader: "babel-loader",
             options: { plugins: ["react-hot-loader/babel"] },
@@ -106,8 +111,12 @@ module.exports = {
         ],
       },
       // static assets
-      { test: /\.html$/, use: "html-loader" },
-      { test: /\.(a?png|svg)$/, use: "url-loader?limit=10000" },
+      { test: /\.html$/, use: "html-loader", include: sourcePath },
+      {
+        test: /\.(a?png|svg)$/,
+        use: "url-loader?limit=10000",
+        include: sourcePath,
+      },
       {
         test: /\.(jpe?g|gif|bmp|mp3|mp4|ogg|wav|eot|ttf|woff|woff2)$/,
         use: "file-loader",
@@ -115,23 +124,27 @@ module.exports = {
     ],
   },
   optimization: {
-    splitChunks: {
-      name: true,
-      cacheGroups: {
-        commons: {
-          chunks: "initial",
-          minChunks: 2,
-        },
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          chunks: "all",
-          filename: isProduction
-            ? "vendor.[contenthash].js"
-            : "vendor.[hash].js",
-          priority: -10,
-        },
-      },
-    },
+    removeAvailableModules: isProduction ? true : false,
+    removeEmptyChunks: isProduction ? true : false,
+    splitChunks: isProduction
+      ? {
+          name: true,
+          cacheGroups: {
+            commons: {
+              chunks: "initial",
+              minChunks: 2,
+            },
+            vendors: {
+              test: /[\\/]node_modules[\\/]/,
+              chunks: "all",
+              filename: isProduction
+                ? "vendor.[contenthash].js"
+                : "vendor.[hash].js",
+              priority: -10,
+            },
+          },
+        }
+      : false,
     runtimeChunk: true,
   },
   plugins: [
