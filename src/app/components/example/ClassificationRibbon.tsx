@@ -98,9 +98,13 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
       "rw",
       [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
       async () => {
-        const labelState: Data.LabelState = {
+        const labelState: Partial<Data.LabelState> = {
           label: labelName || undefined,
           hasLabel: labelName !== null ? 1 : -1,
+          hasNegativeOrRejectedLabel:
+            labelName || (example.data?.rejectedLabels || []).length > 0
+              ? 1
+              : -1,
         };
 
         await mainThreadDB.example.update(exampleId, labelState);

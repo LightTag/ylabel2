@@ -10,6 +10,10 @@ function negativeLabelsCrossEntropy(
     -1,
     tf.sum(tf.mul(targets, tf.log(tf.add(predictedProbs, 1e-9))))
   );
+  const a = labelMasks.arraySync();
+  const b = targets.arraySync();
+  const c = predictedProbs.arraySync();
+  console.log({ a, b, c });
   return negativeLogLikelihood;
 }
 

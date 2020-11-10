@@ -26,7 +26,7 @@ function makeLabelMask(
 }
 async function tfDataLoader() {
   const labeledTFIDFArray = (await workerDB.vector
-    .where("hasLabel")
+    .where("hasNegativeOrRejectedLabel")
     .equals(1)
     .toArray()) as Required<Data.Vector>[];
   const featuresArr: number[][] = [];
@@ -35,7 +35,12 @@ async function tfDataLoader() {
   const idsToLabel: Record<number, string> = {};
   const labelSet = new Set<string>();
   labeledTFIDFArray.forEach((item) => {
-    labelSet.add(item.label);
+    item.rejectedLabels.forEach((rl) => {
+      labelSet.add(rl);
+    });
+    if (item.label) {
+      labelSet.add(item.label);
+    }
   });
   const numLables = labelSet.size;
   Array.from(labelSet).forEach((label, num) => {
@@ -45,13 +50,18 @@ async function tfDataLoader() {
   labeledTFIDFArray.forEach((item) => {
     featuresArr.push(item.vector);
     labelMaskArr.push(
-      makeLabelMask(labelsToId[item.label], undefined, numLables)
+      makeLabelMask(
+        labelsToId[item.label],
+        item.rejectedLabels.map((x) => labelsToId[x]),
+        numLables
+      )
     );
   });
-
   return {
     featuresTensor: tf.tensor(featuresArr, undefined, "float32"),
     labelMaskTensor: tf.tensor(labelMaskArr, undefined, "int32"),
+    labelsToId,
+    idsToLabel,
   };
 }
 

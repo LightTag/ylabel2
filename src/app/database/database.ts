@@ -38,13 +38,13 @@ export class OurDatabase extends Dexie {
   }
   constructor() {
     super("OurDatabase");
-    this.version(6).stores({
+    this.version(8).stores({
       example:
-        "exampleId,datasetName,label,hasLabel,hasPrediction,[hasPrediction+hasLabel],predictedLabel,[predictedLabel+label],[predictedLabel+hasLabel],confidence",
+        "exampleId,datasetName,label,hasLabel,hasPrediction,[hasPrediction+hasLabel],predictedLabel,[predictedLabel+label],[predictedLabel+hasLabel],confidence,hasNegativeOrRejectedLabel",
       label: "name",
       indexCache: "name",
-      vector: "exampleId,label,hasLabel",
-      tfidf: "exampleId,label,hasLabel",
+      vector: "exampleId,label,hasLabel,hasNegativeOrRejectedLabel",
+      tfidf: "exampleId,label,hasLabel,hasNegativeOrRejectedLabel",
       kfold: "[timestamp+kNumber+label],[timestamp+label]",
     });
     this.example = this.table("example");

@@ -7,7 +7,6 @@ import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
 import useSearchQuery from "app/QueryContext/useSearchQuery";
-import Button from "@material-ui/core/Button";
 import LabelRow from "app/components/labelControls/LabelRow";
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
@@ -38,6 +37,7 @@ export function useAnnotateAll() {
       "rw",
       [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
       async () => {
+        //TODO -- get the rejected labels back into the update
         const labelState: Data.LabelState = {
           label: label || undefined,
           hasLabel: label !== null ? 1 : -1,
@@ -55,41 +55,7 @@ export function useAnnotateAll() {
     )
   );
 }
-export const AnnotateAllButton: FunctionComponent<{ label: string }> = (
-  props
-) => {
-  const exampleIds = useSearchQuery();
-  const classifyAll = useMutation(() =>
-    mainThreadDB.transaction(
-      "rw",
-      [mainThreadDB.example, mainThreadDB.tfidf, mainThreadDB.vector],
-      async () => {
-        const labelState: Data.LabelState = {
-          label: props.label || undefined,
-          hasLabel: props.label !== null ? 1 : -1,
-        };
-        await Promise.all(
-          (exampleIds.data || []).map(async (exampleId) => {
-            Promise.all([
-              mainThreadDB.example.update(exampleId, labelState),
-              mainThreadDB.tfidf.update(exampleId, labelState),
-              mainThreadDB.vector.update(exampleId, labelState),
-            ]);
-          })
-        );
-      }
-    )
-  );
-  return (
-    <Button
-      size={"small"}
-      onClick={() => classifyAll.mutate()}
-      variant={"outlined"}
-    >
-      {`Label  ${exampleIds?.data?.length || 0}  `}
-    </Button>
-  );
-};
+
 const LabelControls: FunctionComponent = (props) => {
   const labels = useDatabase(
     "labelStats",

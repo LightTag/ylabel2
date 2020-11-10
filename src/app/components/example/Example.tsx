@@ -10,6 +10,7 @@ import ClassificationRibbon from "./ClassificationRibbon";
 
 import Typography from "@material-ui/core/Typography";
 import useDatabase from "app/database/useDatabase";
+import { rejectLabel } from "app/database/dbProcesdures";
 
 interface Props {
   exampleId: string;
@@ -215,7 +216,17 @@ const Example: FunctionComponent<Props> = (props) => {
           </Typography>
           <ClassificationRibbon exampleId={props.exampleId} />
         </div>
-        <div style={{ fontWeight: "bold" }}>
+        <div
+          style={{ fontWeight: "bold" }}
+          onClick={() =>
+            exampleQuery.data && exampleQuery.data.predictedLabel
+              ? rejectLabel(
+                  exampleQuery.data.exampleId,
+                  exampleQuery.data.predictedLabel
+                )
+              : null
+          }
+        >
           {" "}
           {exampleQuery.data?.predictedLabel || null}{" "}
           {exampleQuery.data?.confidence?.toLocaleString("en", {

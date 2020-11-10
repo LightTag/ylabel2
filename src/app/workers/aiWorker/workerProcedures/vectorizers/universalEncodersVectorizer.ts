@@ -45,6 +45,8 @@ export async function universalEncodersVectorize(
         hasLabel: example.hasLabel,
         label: example.label,
         vector: vec,
+        rejectedLabels: [],
+        hasNegativeOrRejectedLabel: example.hasNegativeOrRejectedLabel || -1,
       });
     });
     const insert_start = performance.now();

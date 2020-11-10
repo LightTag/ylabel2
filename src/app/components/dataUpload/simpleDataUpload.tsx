@@ -24,6 +24,8 @@ const FileUploadButton: FunctionComponent = () => {
           label: ex["label"],
           hasLabel: ex["label"] ? 1 : -1,
           kind: "example",
+          hasNegativeOrRejectedLabel: -1,
+          rejectedLabels: [],
         });
       });
     }

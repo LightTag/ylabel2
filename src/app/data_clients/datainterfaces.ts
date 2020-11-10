@@ -5,8 +5,15 @@ declare namespace Data {
     | "labelset"
     | "tag"
     | "label"
-    | "example";
-  type LabelState = { label?: string; hasLabel: 1 | -1 };
+    | "example"
+    | "rejectedLabel";
+
+  type LabelState = {
+    label?: string;
+    hasLabel: 1 | -1;
+    rejectedLabels: string[];
+    hasNegativeOrRejectedLabel: 1 | -1;
+  };
 
   interface Base {
     kind: resource;
@@ -19,6 +26,7 @@ declare namespace Data {
     name: string;
     kind: "dataset";
   }
+
   interface TagSet extends Base {
     name: string;
     colorize?: () => void;

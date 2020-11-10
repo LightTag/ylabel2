@@ -22,6 +22,8 @@ export async function handleTfIdf(
       hasLabel: examples[ix].hasLabel,
       exampleId: examples[ix].exampleId,
       label: examples[ix].label,
+      hasNegativeOrRejectedLabel: examples[ix].hasNegativeOrRejectedLabel,
+      rejectedLabels: examples[ix].rejectedLabels,
     }))
   );
   return {

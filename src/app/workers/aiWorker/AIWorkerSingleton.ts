@@ -78,7 +78,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
     }
     this.training = true;
     await this.beginFitPredict();
-    await this.beginValidation();
+    // await this.beginValidation();
     this.training = false;
   }
 }
