@@ -7,8 +7,8 @@ function makeLabelMask(
   falseLabels: number[] | undefined,
   numLabels: number
 ) {
-  const negativeMask = new Array(numLabels).fill(1);
-  const positiveMask = new Array(numLabels).fill(0);
+  const negativeMask = Array(numLabels).fill(1);
+  const positiveMask = Array(numLabels).fill(0);
   if (trueLabel !== undefined) {
     positiveMask[trueLabel] = 1;
     return positiveMask;
@@ -21,6 +21,7 @@ function makeLabelMask(
     falseLabels.forEach((falseLabelIx) => {
       negativeMask[falseLabelIx] = 0;
     });
+    console.log("neg", negativeMask);
     return negativeMask;
   }
 }
@@ -33,20 +34,14 @@ async function tfDataLoader() {
   const labelMaskArr: number[][] = [];
   const labelsToId: Record<string, number> = {};
   const idsToLabel: Record<number, string> = {};
-  const labelSet = new Set<string>();
-  labeledTFIDFArray.forEach((item) => {
-    item.rejectedLabels.forEach((rl) => {
-      labelSet.add(rl);
-    });
-    if (item.label) {
-      labelSet.add(item.label);
-    }
+  const labels = await workerDB.label.toArray();
+  labels.forEach((label, num) => {
+    labelsToId[label.name] = num;
+    idsToLabel[num] = label.name;
   });
-  const numLables = labelSet.size;
-  Array.from(labelSet).forEach((label, num) => {
-    labelsToId[label] = num;
-    idsToLabel[num] = label;
-  });
+
+  const numLables = labels.length;
+
   labeledTFIDFArray.forEach((item) => {
     featuresArr.push(item.vector);
     labelMaskArr.push(

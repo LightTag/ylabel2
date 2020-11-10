@@ -40,7 +40,8 @@ function onBatchEnd(batch, logs) {
 }
 
 export async function trainTFModel() {
-  const model = modelFactory(2);
+  const numLabels = await workerDB.label.count();
+  const model = modelFactory(numLabels);
   const data = await tfDataLoader();
   console.log(data);
   await model.fit(data.featuresTensor, data.labelMaskTensor, {
