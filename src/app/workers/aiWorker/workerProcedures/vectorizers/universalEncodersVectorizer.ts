@@ -12,11 +12,10 @@ export async function universalEncodersVectorize(
   event: NSAIWorker.Request.IStartVectorize,
   tf: any
 ): Promise<NSAIWorker.Response.IEndVectorize> {
-  debugger;
   const model = await useTF.load();
 
   const hasVectorIds = await workerDB.vector.toCollection().primaryKeys();
-  debugger;
+
   const allText = await workerDB.example
     .where("exampleId")
     .noneOf(hasVectorIds)
@@ -33,7 +32,6 @@ export async function universalEncodersVectorize(
     const embed_time = embed_end - embed_start;
     console.log(`emebd in ${embed_time} ms `);
     const vectorsArray = await vectors.array();
-    debugger;
 
     tf.dispose(vectors);
     const insertBatch: Data.Vector[] = [];
@@ -56,7 +54,7 @@ export async function universalEncodersVectorize(
     });
     console.log(`Inserted ${start} to ${start + step}`);
   }
-  debugger;
+
   return {
     workerName: EWorkerName.ai,
     requestId: event.requestId,

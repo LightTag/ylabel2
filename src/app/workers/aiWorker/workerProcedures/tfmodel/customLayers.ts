@@ -4,8 +4,9 @@ function negativeLabelsCrossEntropy(
   labelMasks: tf.Tensor,
   predictedProbs: tf.Tensor
 ) {
-  const adjustmentFactor = tf.sum(labelMasks, 1, true);
-  const targets = tf.div(tf.mul(predictedProbs, labelMasks), adjustmentFactor);
+  const maskedProbs = tf.mul(predictedProbs, labelMasks);
+  const adjustmentFactor = tf.sum(maskedProbs, 1, true);
+  const targets = tf.div(maskedProbs, adjustmentFactor);
   const negativeLogLikelihood = tf.mul(
     -1,
     tf.sum(tf.mul(targets, tf.log(tf.add(predictedProbs, 1e-9))))

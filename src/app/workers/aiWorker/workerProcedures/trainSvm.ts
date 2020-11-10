@@ -14,12 +14,6 @@ import {
 export async function trainSVM(
   event: NSAIWorker.Request.IStartFitPredict
 ): Promise<NSAIWorker.Response.IEndFitPredict> {
-  const labelVocab: Record<string, number> = {};
-  let maxLabelId: number = 0;
-  const trainingFormat: { samples: number[][]; labels: number[] } = {
-    samples: [],
-    labels: [],
-  };
   const trained = await trainTFModel();
   const predictions = await predictAll(trained.model, trained.idsToLabel);
   await workerDB.transaction("rw", "example" as TableNames, async (tx) => {

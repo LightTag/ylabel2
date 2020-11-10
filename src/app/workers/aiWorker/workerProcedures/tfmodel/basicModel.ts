@@ -6,10 +6,25 @@ import Data from "app/data_clients/datainterfaces";
 function modelFactory(numLabels: number) {
   const model = tf.sequential();
   model.add(
-    tf.layers.dense({ units: 64, inputShape: [512], activation: "relu" })
+    tf.layers.dense({
+      units: 64,
+      inputShape: [512],
+      activation: "tanh",
+    })
   );
-  model.add(tf.layers.dense({ units: 32, activation: "elu" }));
-  model.add(tf.layers.dense({ units: numLabels, activation: "linear" }));
+  model.add(
+    tf.layers.dense({
+      units: 32,
+      activation: "tanh",
+    })
+  );
+  model.add(
+    tf.layers.dense({
+      units: numLabels,
+      activation: "linear",
+      kernelRegularizer: "l1l2",
+    })
+  );
   model.add(tf.layers.softmax());
   model.compile({
     optimizer: "sgd",
@@ -25,12 +40,12 @@ function onBatchEnd(batch, logs) {
 }
 
 export async function trainTFModel() {
-  const model = modelFactory(3);
+  const model = modelFactory(2);
   const data = await tfDataLoader();
   console.log(data);
   await model.fit(data.featuresTensor, data.labelMaskTensor, {
     callbacks: { onBatchEnd },
-    epochs: 100,
+    epochs: 150,
     batchSize: 32,
   });
   return { model, labelsToId: data.labelsToId, idsToLabel: data.idsToLabel };
@@ -51,7 +66,7 @@ function predictOne(
   ) as tf.Tensor;
   const labelId = exampleSoftmax.argMax(-1).dataSync()[0];
   const confidence = exampleSoftmax.max(-1).dataSync()[0];
-  debugger;
+
   const predictedLabel = idsToLabel[labelId];
   return {
     exampleId: example.exampleId,
@@ -66,13 +81,16 @@ export async function predictAll(
   idsToLabel: Record<number, string>
 ) {
   const unlabeledExamples = await workerDB.vector
-    .where("hasLabel")
-    .equals(-1)
+    // .where("hasLabel")
+    // .equals(-1)
     // .limit(200)
     .toArray();
+  const results = tf.tidy(() => {
+    const results = unlabeledExamples.map((x) =>
+      predictOne(model, x, idsToLabel)
+    );
+    return results;
+  });
 
-  const results = unlabeledExamples.map((x) =>
-    predictOne(model, x, idsToLabel)
-  );
   return results;
 }
