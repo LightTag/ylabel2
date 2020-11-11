@@ -117,11 +117,20 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
     return (
       <div tabIndex={0}>
         {labels.data.map((label) => (
-          <ClassBox
-            labelName={label.name}
-            selected={example?.data?.label == label.name}
-            onClick={classify.mutate}
-          />
+          <span
+            style={
+              //@ts-ignore
+              example.data.rejectedLabels.includes(label.name)
+                ? { opacity: 0.3 }
+                : {}
+            }
+          >
+            <ClassBox
+              labelName={label.name}
+              selected={example?.data?.label == label.name}
+              onClick={classify.mutate}
+            />
+          </span>
         ))}
       </div>
     );

@@ -9,27 +9,33 @@ function modelFactory(numLabels: number) {
     tf.layers.dense({
       units: 64,
       inputShape: [512],
-      activation: "tanh",
+      activation: "relu",
     })
   );
   model.add(
     tf.layers.dense({
       units: 32,
-      activation: "tanh",
+      activation: "relu",
+    })
+  );
+  model.add(
+    tf.layers.dense({
+      units: 16,
+      activation: "relu",
     })
   );
   model.add(
     tf.layers.dense({
       units: numLabels,
       activation: "linear",
-      kernelRegularizer: "l1l2",
     })
   );
   model.add(tf.layers.softmax());
   model.compile({
-    optimizer: "sgd",
+    optimizer: "adam",
+
     loss: negativeLabelsCrossEntropy,
-    metrics: ["accuracy"],
+    metrics: ["categoricalAccuracy"],
   });
 
   return model;
@@ -46,7 +52,7 @@ export async function trainTFModel() {
   console.log(data);
   await model.fit(data.featuresTensor, data.labelMaskTensor, {
     callbacks: { onBatchEnd },
-    epochs: 150,
+    epochs: 60,
     batchSize: 32,
   });
   return { model, labelsToId: data.labelsToId, idsToLabel: data.idsToLabel };
