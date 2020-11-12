@@ -11,11 +11,12 @@ import ClassificationRibbon from "./ClassificationRibbon";
 import Typography from "@material-ui/core/Typography";
 import useDatabase from "app/database/useDatabase";
 import { rejectLabel } from "app/database/dbProcesdures";
+import { ActiveLearningContext } from "app/active_learning/ActiveLearningContext";
 
 interface Props {
   exampleId: string;
   score?: number;
-  addSpanId: (spanId: string) => void;
+  addSpanId?: (spanId: string) => void;
 }
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -198,6 +199,7 @@ const Example: FunctionComponent<Props> = (props) => {
     (db) => db.example.get(props.exampleId),
     props.exampleId
   );
+  const activeLearningContext = React.useContext(ActiveLearningContext);
   if (exampleQuery.data) {
     return (
       <Paper
@@ -218,14 +220,17 @@ const Example: FunctionComponent<Props> = (props) => {
         </div>
         <div
           style={{ fontWeight: "bold" }}
-          onClick={() =>
-            exampleQuery.data && exampleQuery.data.predictedLabel
-              ? rejectLabel(
-                  exampleQuery.data.exampleId,
-                  exampleQuery.data.predictedLabel
-                )
-              : null
-          }
+          onClick={() => {
+            if (exampleQuery.data && exampleQuery.data.predictedLabel) {
+              rejectLabel(
+                exampleQuery.data.exampleId,
+                exampleQuery.data.predictedLabel
+              );
+              if (activeLearningContext) {
+                activeLearningContext.goToNext();
+              }
+            }
+          }}
         >
           {" "}
           {exampleQuery.data?.predictedLabel || null}{" "}

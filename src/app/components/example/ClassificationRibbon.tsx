@@ -7,6 +7,7 @@ import { useMutation } from "react-query";
 import { mainThreadDB } from "app/database/database";
 import Data from "app/data_clients/datainterfaces";
 import AIWorkerSingleton from "app/workers/aiWorker/AIWorkerSingleton";
+import { ActiveLearningContext } from "app/active_learning/ActiveLearningContext";
 
 interface Props {
   exampleId: string;
@@ -49,6 +50,8 @@ const ClassBox: FunctionComponent<{
     }
   }, [labelName, props.selected]);
 
+  const activeLearningContext = React.useContext(ActiveLearningContext);
+
   const handleClick = () => {
     if (!props.onClick) {
       return;
@@ -59,6 +62,9 @@ const ClassBox: FunctionComponent<{
       props.onClick(labelName);
       const workerController = AIWorkerSingleton.getInstance();
       workerController.afterNewLabel();
+      if (activeLearningContext) {
+        activeLearningContext.goToNext();
+      }
     }
   };
   return (
