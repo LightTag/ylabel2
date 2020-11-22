@@ -1,0 +1,28 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+
+  "rules": {
+    "no-debugger": 1,
+    "no-console": 1
+  },
+  "overrides": [
+    {
+      "files": ["src/vendor/**/*"],
+      "rules": {
+        "no-unused-vars": 0,
+        "no-console": 0
+      }
+    },
+    {
+      "files": [
+        "**/*.ts?(x)"
+      ],
+      "rules": {
+        "import/no-webpack-loader-syntax": "off"
+      }
+    }
+  ]
+}

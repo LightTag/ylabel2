@@ -1,0 +1,108 @@
+import React, { FunctionComponent } from "react";
+
+import { makeStyles } from "@material-ui/core/styles";
+import { Paper } from "@material-ui/core";
+import LabselsetColors from "../../utils/labelsetcolors/labelsetcolors";
+import ClassificationRibbon from "./ClassificationRibbon";
+
+import Typography from "@material-ui/core/Typography";
+import useDatabase from "../../../backend/database/useDatabase";
+import { ActiveLearningContext } from "../../active_learning/ActiveLearningContext";
+import { rejectLabel } from "../../../backend/database/dbProcesdures";
+
+interface Props {
+  exampleId: string;
+  score?: number;
+  addSpanId?: (spanId: string) => void;
+}
+const useStyles = makeStyles((theme) => ({
+  root: {
+    boxShadow: "4px 4px 4px #CDCDCD ",
+    margin: theme.spacing(3),
+    padding: theme.spacing(3),
+    lineHeight: "2.5rem",
+  },
+  body: {
+    padding: theme.spacing(3),
+  },
+  ribbon: {
+    height: "15%",
+  },
+}));
+namespace ExampleRange {
+  type TextRange = {
+    start: number;
+    end: number;
+    text: string;
+  };
+  export type EmptyRange = {
+    kind: "empty";
+  } & TextRange;
+}
+
+const Example: FunctionComponent<Props> = (props) => {
+  const classes = useStyles();
+  const exampleQuery = useDatabase(
+    ["example", props.exampleId],
+    "example",
+    (db) => db.example.get(props.exampleId),
+    props.exampleId
+  );
+  const activeLearningContext = React.useContext(ActiveLearningContext);
+  if (exampleQuery.data) {
+    return (
+      <Paper
+        className={classes.root}
+        style={{
+          border: exampleQuery.data?.predictedLabel
+            ? `1px solid ${LabselsetColors.getLabelColor(
+                exampleQuery.data.predictedLabel
+              )}`
+            : undefined,
+        }}
+      >
+        <div className={classes.ribbon}>
+          <Typography variant={"subtitle1"} color={"primary"}>
+            {props.score || null}
+          </Typography>
+          <ClassificationRibbon exampleId={props.exampleId} />
+        </div>
+        <div
+          style={{ fontWeight: "bold" }}
+          onClick={() => {
+            if (exampleQuery.data && exampleQuery.data.predictedLabel) {
+              rejectLabel(
+                exampleQuery.data.exampleId,
+                exampleQuery.data.predictedLabel
+              );
+              if (activeLearningContext) {
+                activeLearningContext.goToNext();
+              }
+            }
+          }}
+        >
+          {" "}
+          {exampleQuery.data?.predictedLabel || null}{" "}
+          {exampleQuery.data?.confidence?.toLocaleString("en", {
+            style: "percent",
+          }) || null}
+        </div>
+        <div className={classes.body} dir={"auto"}>
+          {/*{annotationQuery.data.map((span) => (*/}
+          {/*  <ExampleSpan*/}
+          {/*    span={span}*/}
+          {/*    key={span.start}*/}
+          {/*    addSpanId={props.addSpanId}*/}
+          {/*  />*/}
+          {/*))}*/}
+
+          {exampleQuery.data.content}
+        </div>
+      </Paper>
+    );
+  } else {
+    return <div>HI</div>;
+  }
+};
+
+export default Example;
