@@ -4,6 +4,7 @@ import { IndexWorkerSingleton } from "../../backend/workers/docIndex/IndexWorker
 import { mainThreadDB } from "../../backend/database/database";
 import intersection from "lodash/intersection";
 import { useQuery } from "react-query";
+import logger from "../../backend/utils/logger";
 
 function useSearchQuery() {
   const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
@@ -29,8 +30,8 @@ function useSearchQuery() {
 
         .primaryKeys()
         .then((keys) => {
-          console.log(`Got back ${keys.length} from filter`);
-          console.log("Filter was", searchParams);
+          logger(`Got back ${keys.length} from filter`);
+          logger("Filter was", searchParams);
           return keys;
         });
     };
@@ -41,7 +42,7 @@ function useSearchQuery() {
       const searchQuery = searchParams.searchQuery;
       return filterFunction().then(async (filterResult) => {
         const searchResults = await indexWorkerSingleton.query(searchQuery);
-        console.log(
+        logger(
           `Search for "${searchQuery}" and got ${searchResults.results.length} results`
         );
         return intersection(
@@ -52,6 +53,7 @@ function useSearchQuery() {
     } else {
       return filterFunction();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   return useQuery(["search", searchParams], searchFunction);

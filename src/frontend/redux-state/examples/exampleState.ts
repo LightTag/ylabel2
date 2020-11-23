@@ -72,7 +72,7 @@ export const addExamplesThunk = (
   };
 
   const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
-  debugger;
+
   //@ts-ignore
 
   worker.worker.postMessage(event);

@@ -1,4 +1,4 @@
-export  namespace GenericWorkerTypes {
+export namespace GenericWorkerTypes {
   export enum EWorkerName {
     index = "index",
     dataLoader = "dataLoading",

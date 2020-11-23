@@ -17,9 +17,11 @@ class LabelAccumulator {
     this.falsePositive = 0;
     this.falseNegative = 0;
   }
+
   predictionCount() {
     return this.truePositive + this.falsePositive;
   }
+
   precision() {
     if (this.predictionCount() === 0) {
       return null;
@@ -27,14 +29,17 @@ class LabelAccumulator {
       return this.truePositive / (this.truePositive + this.falsePositive);
     }
   }
+
   recall() {
     return this.truePositive / this.seen;
   }
+
   f1() {
     const p = this.precision() || 0;
     const r = this.recall();
     return (2 * (p * r)) / (p + r);
   }
+
   addObservation(truth: number, pred: number) {
     if (truth !== this.labelNum && pred !== this.labelNum) {
       return;
@@ -52,6 +57,7 @@ class LabelAccumulator {
       this.falsePositive += 1;
     }
   }
+
   toRecord(params: {
     kNumber: number;
     timestamp: Date;
@@ -93,6 +99,7 @@ class SVMTrainer {
     });
     this.loaded = false;
   }
+
   async init() {
     if (this.loaded) {
       return Promise.resolve();
@@ -118,6 +125,7 @@ class SVMTrainer {
     });
     this.model.train(trainFormat);
   }
+
   async *kFoldEvaluate(
     samples: number[][],
     labels: number[],
@@ -125,8 +133,8 @@ class SVMTrainer {
     idToLabelMap: Record<number, string>
   ): AsyncGenerator<AnalyticsData.PrecisionRecallKfoldMetric[], undefined> {
     /*
-        Generally this whole function is very bad code
-         */
+            Generally this whole function is very bad code
+             */
     this.timestamp = new Date();
     const testSize = Math.max(
       Math.floor((1 / k) * Math.floor(samples.length)),
@@ -165,6 +173,7 @@ class SVMTrainer {
     }
     return;
   }
+
   async precisionRecallReport(truths: number[], preds: number[]) {
     const numLabels = Math.max(...truths, ...preds);
     const resultArr: LabelAccumulator[] = [];

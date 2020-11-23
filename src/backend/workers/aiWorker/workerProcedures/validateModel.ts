@@ -50,7 +50,7 @@ export async function validateModel(
       ...x,
       label: x.label,
     }));
-    console.log(adjusted);
+    logger(adjusted);
     await workerDB.kfold.bulkAdd(adjusted.filter((x) => x.label !== undefined));
     logger(`Inserted starting next`);
   }

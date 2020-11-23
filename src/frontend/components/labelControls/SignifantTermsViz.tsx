@@ -46,7 +46,7 @@ const SignificantTermsViz: FunctionComponent<{ label: string }> = (props) => {
   if (query.data === undefined) {
     return <div>"calculating"</div>;
   } else {
-    console.log({ label: props.label, terms: query.data.slice(10) });
+    logger({ label: props.label, terms: query.data.slice(10) });
   }
   return (
     <Grid container spacing={1}>

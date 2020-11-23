@@ -12,6 +12,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
     this.workerName = GenericWorkerTypes.EWorkerName.ai;
     this.training = false;
   }
+
   static getInstance(): AIWorkerSingleton {
     if (this.instance === undefined) {
       this.instance = new AIWorkerSingleton();
@@ -19,6 +20,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
 
     return this.instance as AIWorkerSingleton;
   }
+
   private beginVectorization(
     method: NSAIWorker.Request.IStartVectorize["payload"]["method"]
   ) {
@@ -36,12 +38,15 @@ class AIWorkerSingleton extends WorkerSingletonBase {
       event.requestId
     );
   }
+
   public beginUniversalVectorizer() {
     return this.beginVectorization("universalSentenceEncoder");
   }
+
   public beginTfidfVectorizer() {
     return this.beginVectorization("tfidf");
   }
+
   public beginValidation() {
     const event: NSAIWorker.Request.IStartValidate = {
       workerName: this.workerName,
@@ -55,6 +60,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
       event.requestId
     );
   }
+
   public beginFitPredict() {
     const event: NSAIWorker.Request.IStartFitPredict = {
       workerName: this.workerName,

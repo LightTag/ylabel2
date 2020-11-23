@@ -15,6 +15,7 @@ interface Props {
   score?: number;
   addSpanId?: (spanId: string) => void;
 }
+
 const useStyles = makeStyles((theme) => ({
   root: {
     boxShadow: "4px 4px 4px #CDCDCD ",
@@ -29,16 +30,6 @@ const useStyles = makeStyles((theme) => ({
     height: "15%",
   },
 }));
-namespace ExampleRange {
-  type TextRange = {
-    start: number;
-    end: number;
-    text: string;
-  };
-  export type EmptyRange = {
-    kind: "empty";
-  } & TextRange;
-}
 
 const Example: FunctionComponent<Props> = (props) => {
   const classes = useStyles();

@@ -19,7 +19,7 @@ function negativeLabelsCrossEntropy(
   const a = labelMasks.arraySync();
   const b = targets.arraySync();
   const c = predictedProbs.arraySync();
-  console.log({
+  logger({
     a,
     b,
     c,

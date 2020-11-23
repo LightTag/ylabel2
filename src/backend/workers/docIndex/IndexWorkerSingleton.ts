@@ -10,6 +10,7 @@ export class IndexWorkerSingleton
   private constructor() {
     super(new Worker());
   }
+
   public static getInstance(): IndexWorkerSingleton {
     if (IndexWorkerSingleton.instance === undefined) {
       IndexWorkerSingleton.instance = new IndexWorkerSingleton();
@@ -36,6 +37,7 @@ export class IndexWorkerSingleton
       return response;
     });
   }
+
   public addDocs(examples: Data.Example[]) {
     if (!this.initialized) {
       throw new Error("The index is not initialized yet");
@@ -57,6 +59,7 @@ export class IndexWorkerSingleton
       requestId
     );
   }
+
   public query(query: string) {
     if (!this.initialized) {
       throw new Error("The index is not initialized yet");

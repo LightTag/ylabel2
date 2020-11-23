@@ -11,6 +11,7 @@ export type TableNames =
   | "vector"
   | "tfidf"
   | "kfold";
+
 export class OurDatabase extends Dexie {
   example: Dexie.Table<Data.Example, string>;
   label: Dexie.Table<Data.Label, string>;
@@ -23,20 +24,23 @@ export class OurDatabase extends Dexie {
     [Date, number, string]
   >;
   changeCallbacks: Record<TableNames, TDBChangeCallback[]>;
+
   public addTableEventListener(
     tableName: TableNames,
     callback: TDBChangeCallback
   ) {
     this.changeCallbacks[tableName].push(callback);
   }
+
   public removeTableEventListener(
     tableName: TableNames,
     callback: TDBChangeCallback
   ) {
     this.changeCallbacks[tableName] = this.changeCallbacks[tableName].filter(
-      (x) => x != callback
+      (x) => x !== callback
     );
   }
+
   constructor() {
     super("OurDatabase");
     this.version(8).stores({
@@ -126,6 +130,7 @@ function initatiateMainThreadDB() {
   });
   return mainThreadDB;
 }
+
 const mainThreadDB = initatiateMainThreadDB();
 
 const initiateWorkerDB = () => {

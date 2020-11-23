@@ -57,6 +57,7 @@ namespace NSAIWorker {
       kind: AIRequestMessageKind.startFitPredict;
       payload: {};
     }
+
     export type AIWorkerRequests =
       | IStartFitPredict
       | IStartValidate
@@ -78,6 +79,7 @@ namespace NSAIWorker {
       kind: AIResponseMessageKind.endFitPredict;
       payload: {};
     }
+
     export type Responses = IEndVectorize | IEndValidate | IEndFitPredict;
   }
   export namespace Update {
@@ -87,6 +89,7 @@ namespace NSAIWorker {
       remaining: number;
       pctRemaining: number;
     }
+
     export interface IEndVectorize extends UpdateEvent {
       kind: AIUpdateMessageKind.updateVectorize;
       payload: UpdatePayload;

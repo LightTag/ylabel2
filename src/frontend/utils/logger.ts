@@ -1,5 +1,5 @@
 function logger(message: any) {
-  console.log(message);
+  logger(message);
 }
 
 export default logger;

@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 namespace SearchTypes {
   type THas = 1 | -1;
+
   export interface SearchParams {
     //We make them null so that we can distinguish from undefined
     hasLabel: THas | null;
@@ -19,10 +20,12 @@ namespace SearchTypes {
     searchQuery: null | string;
     hasFilter: boolean;
   }
+
   export interface ASetSearchParams {
     params: Partial<SearchParams>;
   }
 }
+
 function initialStateFactory(): SearchTypes.SearchParams {
   return {
     hasLabel: null,
@@ -33,6 +36,7 @@ function initialStateFactory(): SearchTypes.SearchParams {
     hasFilter: false,
   };
 }
+
 const searchSlice = createSlice({
   name: "classificationSlice",
   initialState: initialStateFactory(),

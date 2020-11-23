@@ -7,6 +7,7 @@ export namespace NSIndexWorker {
     startQuery = "startQuery",
     startInit = "startInit",
   }
+
   export enum IndexResponseMessageKind {
     endIndexing = "endIndexing",
     endQuery = "endQuery",
@@ -18,6 +19,7 @@ export namespace NSIndexWorker {
     requestId: number;
     payload: unknown;
   }
+
   type RequestEvent = IndexEventBase &
     GenericWorkerTypes.RequestEvent & {
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request;
@@ -39,18 +41,21 @@ export namespace NSIndexWorker {
         examples: Data.Example[];
       };
     }
+
     export interface IStartQuery extends RequestEvent {
       kind: IndexRequestMessageKind.startQuery;
       payload: {
         query: string;
       };
     }
+
     export interface IStartInit extends RequestEvent {
       kind: IndexRequestMessageKind.startInit;
       payload: {
         indexName?: string;
       };
     }
+
     export type TRequests = IStartQuery | IStartIndex | IStartInit;
   }
   export namespace Response {
@@ -60,18 +65,21 @@ export namespace NSIndexWorker {
         numInserted: number;
       };
     }
+
     export interface IEndQuery extends ResponseEvent {
       kind: IndexResponseMessageKind.endQuery;
       payload: {
         results: SearchResult[];
       };
     }
+
     export interface IEndInit extends ResponseEvent {
       kind: IndexResponseMessageKind.endInit;
       payload: {
         numIndexed: number;
       };
     }
+
     export type TResponse = IEndQuery | IEndIndex | IEndInit;
   }
 

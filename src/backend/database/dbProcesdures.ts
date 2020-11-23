@@ -22,7 +22,7 @@ export async function rejectLabel(exampleId: string, label: string) {
       await mainThreadDB.vector.update(exampleId, labelState);
     }
   );
-  console.log(`rejected label ${label} for example ${exampleId}`);
+  logger(`rejected label ${label} for example ${exampleId}`);
   const workerController = AIWorkerSingleton.getInstance();
   workerController.afterNewLabel();
 

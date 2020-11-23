@@ -4,6 +4,7 @@ import { sortBy } from "lodash";
 import Data from "../../../..//data_clients/datainterfaces";
 import NSAIWorker from "../../../..//workers/aiWorker/aiWorkerTypes";
 import { GenericWorkerTypes } from "../../../common/datatypes";
+import logger from "../../../../utils/logger";
 
 export async function universalEncodersVectorize(
   event: NSAIWorker.Request.IStartVectorize,
@@ -27,7 +28,7 @@ export async function universalEncodersVectorize(
 
     const embed_end = performance.now();
     const embed_time = embed_end - embed_start;
-    console.log(`emebd in ${embed_time} ms `);
+    logger(`emebd in ${embed_time} ms `);
     const vectorsArray = await vectors.array();
 
     tf.dispose(vectors);
@@ -47,9 +48,9 @@ export async function universalEncodersVectorize(
     const insert_start = performance.now();
     await workerDB.vector.bulkAdd(insertBatch).then(() => {
       const insert_end = performance.now();
-      console.log(`insert in ${insert_end - insert_start} ms`);
+      logger(`insert in ${insert_end - insert_start} ms`);
     });
-    console.log(`Inserted ${start} to ${start + step}`);
+    logger(`Inserted ${start} to ${start + step}`);
   }
 
   return {

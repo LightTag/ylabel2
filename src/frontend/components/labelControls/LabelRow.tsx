@@ -42,14 +42,15 @@ const LabelRow: FunctionComponent<{
 }> = React.memo((props) => {
   const classes = useStyles();
   const labelName = props.labelName;
-  const style = React.useMemo(() => {
+  let style: { border: string; color: string; background: string };
+  style = React.useMemo(() => {
     const color = colorManaer.getLabelColor(labelName);
     return {
       background: color,
       color: "white",
       border: "1px solid",
     };
-  }, [labelName, props.selected]);
+  }, [labelName]);
 
   const handleClick = () => {
     if (!props.onClick) {

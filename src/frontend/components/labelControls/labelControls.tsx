@@ -32,6 +32,7 @@ const AddLabel: FunctionComponent = () => {
     </div>
   );
 };
+
 export function useAnnotateAll() {
   const exampleIds = useSearchQuery();
   return useMutation((label: string | null) =>

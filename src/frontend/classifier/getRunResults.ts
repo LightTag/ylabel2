@@ -16,6 +16,7 @@ function calculateConf(
     upper: dMean + ciFactor,
   };
 }
+
 async function getRunResults(): Promise<AnalyticsData.ValidationRunResult> {
   const labelArrays: Record<
     string,

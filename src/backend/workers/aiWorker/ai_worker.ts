@@ -13,13 +13,14 @@ import { GenericWorkerTypes } from "../common/datatypes";
 import { assertNever } from "../../../typing/utils";
 import logger, { EventKinds } from "../../utils/logger";
 
-debugger;
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
 tf.env().set("WEBGL_DELETE_TEXTURE_THRESHOLD", 0);
+
 async function run() {
   await tf.setBackend("webgl");
 }
+
 run();
 
 // Post data to parent thread
@@ -52,21 +53,19 @@ async function insertToDB(event: MessageEvent<InsertToDBEvent>) {
     })
   );
   workerDB.example.bulkAdd(examples).catch((e) => {
-    console.log(
+    logger(
       "Dexie rejected a bulka dd but we caught it because its about duplicate string. If we didn't catch it the transaction would abort"
     );
   });
   workerDB.label.bulkAdd(newLabels);
-  console.log(`Inserted ${examples.length}`);
+  logger(`Inserted ${examples.length}`);
 }
 
 async function _aiWorkerDispatch(
   event: MessageEvent<InsertToDBEvent | NSAIWorker.Request.AIWorkerRequests>
 ): Promise<NSAIWorker.Response.Responses> {
-  debugger;
   switch (event.data.kind) {
     case EventKinds.insertToDb:
-      debugger;
       //@ts-ignore
       return insertToDB(event as MessageEvent<InsertToDBEvent>);
 
@@ -81,23 +80,22 @@ async function _aiWorkerDispatch(
       switch (method) {
         case "tfidf":
           return handleTfIdf(event.data);
-          break;
         case "universalSentenceEncoder":
           return universalEncodersVectorize(event.data, tf);
-          break;
         default:
           logger(`Got a vecotrization request with unkown method ${method}`);
           assertNever(event.data as never);
       }
   }
 }
+
 async function aiWorkerDispatch(
   event: MessageEvent<InsertToDBEvent | NSAIWorker.Request.AIWorkerRequests>
 ) {
-  debugger;
   const response = await _aiWorkerDispatch(event);
   if (response) {
     ctx.postMessage(response);
   }
 }
+
 ctx.addEventListener("message", aiWorkerDispatch);

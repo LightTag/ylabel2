@@ -1,7 +1,5 @@
 import React, { FunctionComponent } from "react";
 import { Provider } from "react-redux";
-import "./index.css";
-import "./App.css";
 import "typeface-roboto";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
@@ -123,4 +121,5 @@ export function App() {
     </Provider>
   );
 }
+
 export default App;

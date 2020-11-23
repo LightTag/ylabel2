@@ -20,6 +20,7 @@ interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages
   index: IIndexAPI;
 }
+
 // eslint-disable-next-line no-restricted-globals
 let ctx: WorkerWithIndex = self as any;
 
@@ -32,7 +33,7 @@ function handleIndexRequest(
 
   workerDB.indexCache.add({ data: serializedIndex, name: "index" });
 
-  console.log("Saved the index to disk");
+  logger("Saved the index to disk");
   const response: NSIndexWorker.Response.IEndIndex = {
     workerName: GenericWorkerTypes.EWorkerName.index,
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
@@ -77,7 +78,7 @@ async function handleStartInitRequest(
     | undefined = await workerDB.indexCache.get(indexName);
   let loadedFromCache = false;
   if (serializedIndex) {
-    console.log("Found a serialized index");
+    logger("Found a serialized index");
     const _index = fromSerializable(
       decode(serializedIndex.data) as SerializableIndex<string>
     ) as Index<string>;
@@ -86,13 +87,13 @@ async function handleStartInitRequest(
       ctx.index = createDocumentIndex(["content"], _index);
       loadedFromCache = true;
     } else {
-      console.log("Found a serialized index but it wouldnt pasrse");
+      logger("Found a serialized index but it wouldnt pasrse");
     }
   }
   if (!loadedFromCache) {
-    console.log("Starting New Index");
+    logger("Starting New Index");
     ctx.index = createDocumentIndex(["content"]);
-    console.log("Done New Index");
+    logger("Done New Index");
   }
 
   const response: NSIndexWorker.Response.IEndInit = {
@@ -126,4 +127,5 @@ function messageDispatch(message: MessageEvent<any>) {
       assertNever(kind);
   }
 }
+
 ctx.addEventListener("message", messageDispatch);

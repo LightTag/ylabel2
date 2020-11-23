@@ -12,6 +12,7 @@ function scrollToElementById(elementId: string) {
 
   return false;
 }
+
 function useSpanRegistry() {
   const spansIdRef = React.useRef([] as string[]);
   const currentRef = React.useRef(0 as number | undefined);
@@ -57,4 +58,5 @@ function useSpanRegistry() {
 
   return { addSpanId, gotoNext, gotoPrev };
 }
+
 export default useSpanRegistry;

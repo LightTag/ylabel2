@@ -2,17 +2,21 @@ import Data from "../../../../data_clients/datainterfaces";
 
 export class Counter {
   items: Record<string, number>;
+
   constructor() {
     this.items = {};
   }
+
   get(key: string) {
     return this.items[key] || 0;
   }
+
   increment(key: string) {
     const val = this.get(key);
     this.items[key] = val + 1;
   }
 }
+
 export const tokenizingRegex = /[\b\s-.,!&:]+(?!$)/;
 export type TFIDFT = Record<string, Record<string, number>>;
 
@@ -28,6 +32,7 @@ function doExample(example: Data.Example) {
   });
   return { df, tf };
 }
+
 function calculateTFIDF(examples: Data.Example[], minDF = 4) {
   const tf: Record<string, Counter> = {};
   const df = new Counter();
@@ -57,14 +62,17 @@ function calculateTFIDF(examples: Data.Example[], minDF = 4) {
 
 class TFIDFTransformer {
   df: Counter;
+
   constructor() {
     this.df = new Counter();
   }
+
   fitTransform(examples: Data.Example[]) {
     const { tfIdf, df } = calculateTFIDF(examples);
     this.df = df;
     return tfIdf;
   }
+
   transform(examples: Data.Example[]) {
     const tfIdf: TFIDFT = {};
     const tf: Record<string, Counter> = {};

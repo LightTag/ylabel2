@@ -18,8 +18,8 @@ function typedAddDocumentToIndex<T, D>(
   doc: D
 ): void {
   /*
-    Make the callsignature of add document to index more adherent by using keyof
-     */
+      Make the callsignature of add document to index more adherent by using keyof
+       */
   return addDocumentToIndex(
     index,
     fieldAccessors as Array<(doc: D) => string>,
@@ -29,7 +29,9 @@ function typedAddDocumentToIndex<T, D>(
     doc
   );
 }
+
 const tokenizer = (s: string) => s.split(tokenizingRegex);
+
 function createDocumentIndex(
   fields: (keyof Data.Example)[],
   existingIndex?: Index<string>

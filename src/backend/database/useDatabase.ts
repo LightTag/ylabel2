@@ -26,7 +26,8 @@ function useDatabase<T>(
     return () => {
       mainThreadDB.removeTableEventListener(table, resetQueryCallback);
     };
-  }, [1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return query;
 }
 

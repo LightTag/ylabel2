@@ -21,10 +21,11 @@ function makeLabelMask(
     falseLabels.forEach((falseLabelIx) => {
       negativeMask[falseLabelIx] = 0;
     });
-    console.log("neg", negativeMask);
+    logger("neg", negativeMask);
     return negativeMask;
   }
 }
+
 async function tfDataLoader() {
   const labeledTFIDFArray = (await workerDB.vector
     .where("hasNegativeOrRejectedLabel")

@@ -6,6 +6,7 @@ interface IContext {
   currentExample: Data.Example | undefined;
   goToNext: () => void;
 }
+
 export const ActiveLearningContext = React.createContext<IContext>(null as any);
 
 const ActiveLearningContextProvider: FunctionComponent = (props) => {
@@ -25,20 +26,24 @@ const ActiveLearningContextProvider: FunctionComponent = (props) => {
     ) {
       setCurrentExample(activeLearningExamples[currentCursor]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLearningExamples]);
 
   const goToNext = () => {
     const nextCursor = currentCursor + 1;
     setCurrentCursor(nextCursor);
-    setCurrentExample(
-      activeLearningExamples ? activeLearningExamples[nextCursor] : undefined
-    );
+    if (activeLearningExamples) {
+      setCurrentExample(activeLearningExamples[nextCursor]);
+    } else {
+      setCurrentExample(undefined);
+    }
   };
   const value = React.useMemo(
     () => ({
       goToNext,
       currentExample,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentExample]
   );
 

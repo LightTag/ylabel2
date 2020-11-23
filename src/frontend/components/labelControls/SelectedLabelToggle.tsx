@@ -10,6 +10,7 @@ import searchSlice from "../../QueryContext/searchReducer";
 interface Props {
   labelName: string;
 }
+
 const SelectedLabelToggle: FunctionComponent<Props> = (props) => {
   const labelName = props.labelName;
   const {

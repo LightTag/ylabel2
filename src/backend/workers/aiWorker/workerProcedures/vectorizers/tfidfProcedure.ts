@@ -11,7 +11,7 @@ export async function handleTfIdf(
   const examples = await workerDB.example.toArray();
   const tfidf = transformer.fitTransform(examples);
 
-  console.log("start tfidf", tfidf);
+  logger("start tfidf", tfidf);
   workerDB.tfidf.bulkAdd(
     Object.values(tfidf).map((x, ix) => ({
       dict: x,

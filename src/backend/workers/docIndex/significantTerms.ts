@@ -49,4 +49,5 @@ async function significantTermsForLabel(label: string) {
   });
   return sortBy(result, (x) => -x.score);
 }
+
 export default significantTermsForLabel;

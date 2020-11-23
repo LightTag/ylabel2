@@ -14,10 +14,12 @@ abstract class WorkerSingletonBase {
     this.responseListeners = {};
     this.worker = workerInstance;
   }
+
   protected nextRequestId() {
     this.requestId++;
     return this.requestId;
   }
+
   registerResponseHandler<T extends GenericWorkerTypes.ResponseEvent>(
     requestId: number
   ): Promise<T["payload"]> {

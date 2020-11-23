@@ -30,16 +30,17 @@ function modelFactory(numLabels: number) {
 
   return model;
 }
+
 //@ts-ignore
 function onBatchEnd(batch, logs) {
-  console.log("Accuracy", logs);
+  logger("Accuracy", logs);
 }
 
 export async function trainTFModel() {
   const numLabels = await workerDB.label.count();
   const model = modelFactory(numLabels);
   const data = await tfDataLoader();
-  console.log(data);
+  logger(data);
   await model.fit(data.featuresTensor, data.labelMaskTensor, {
     callbacks: { onBatchEnd },
     epochs: 200,
@@ -47,6 +48,7 @@ export async function trainTFModel() {
   });
   return { model, labelsToId: data.labelsToId, idsToLabel: data.idsToLabel };
 }
+
 function predictOne(
   model: tf.Sequential,
   example: Data.Vector,
@@ -73,6 +75,7 @@ function predictOne(
     hasPrediction: 1,
   };
 }
+
 export async function predictAll(
   model: tf.Sequential,
   idsToLabel: Record<number, string>

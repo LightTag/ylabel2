@@ -21,7 +21,7 @@ async function makeChart() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   const data = await getRunResults();
-  console.log(data);
+  logger(data);
 
   const arrays = Object.values(data);
   const firstObject = arrays[0];
@@ -42,7 +42,7 @@ async function makeChart() {
     // Show confidence interval
     const lcolor = colorManaer.getLabelColor(label);
     const acolor = fade(lcolor, 0.25);
-    console.log(label, lcolor, steps);
+    logger(label, lcolor, steps);
 
     svg
       .append("path")
@@ -75,6 +75,7 @@ async function makeChart() {
       );
   });
 }
+
 const D3Chart: FunctionComponent = () => {
   const [refreshNum, setRefreshNum] = React.useState<number>(1);
   React.useEffect(() => {

@@ -12,6 +12,7 @@ import Data from "../../../backend/data_clients/datainterfaces";
 interface Props {
   exampleId: string;
 }
+
 const useStyles = makeStyles((theme) => ({
   cbRoot: {
     display: "inline",
@@ -114,7 +115,7 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
           >
             <ClassBox
               labelName={label.name}
-              selected={example?.data?.label == label.name}
+              selected={example?.data?.label === label.name}
               onClick={() =>
                 applyLabel((example.data as Data.Example).exampleId, label.name)
               }

@@ -10,9 +10,9 @@ export async function trainSVM(
   const predictions = await predictAll(trained.model, trained.idsToLabel);
   await workerDB.transaction("rw", "example" as TableNames, async (tx) => {
     await Promise.all(
-      predictions.map((update) => {
-        workerDB.example.update(update.exampleId, update);
-      })
+      predictions.map((update) =>
+        workerDB.example.update(update.exampleId, update)
+      )
     );
   });
   return {
@@ -35,7 +35,7 @@ export async function trainSVM(
   //   let labelId = labelVocab[tf.label];
   //   trainingFormat.labels.push(labelId);
   // });
-  // console.log(labelVocab);
+  // logger(labelVocab);
   // const inverseLabelVoab: Record<number, string> = {};
   // for (const key in labelVocab) {
   //   const lid = labelVocab[key];
@@ -51,7 +51,7 @@ export async function trainSVM(
   // const trainer = new SVMTrainer();
   // await trainer.init();
   //
-  // console.log(trainingFormat);
+  // logger(trainingFormat);
   // trainer.model.train(trainingFormat);
   // const result = trainer.model.predictProbability({ samples: unlabeledTfIDF });
   // const updates = result.map((res, ix) => {
@@ -74,7 +74,7 @@ export async function trainSVM(
   //     })
   //   );
   // });
-  // console.log(
+  // logger(
   //   result.map((x) => ({
   //     label: inverseLabelVoab[x.prediction],
   //     est: x.estimates,
