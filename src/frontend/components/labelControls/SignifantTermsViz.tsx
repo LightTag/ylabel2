@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import searchSlice from "../../QueryContext/searchReducer";
 import { Grid } from "@material-ui/core";
+import logger from "../../../backend/utils/logger";
 
 const useStyles = makeStyles(() => ({
   root: {

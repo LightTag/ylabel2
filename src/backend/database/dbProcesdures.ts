@@ -1,6 +1,7 @@
 import { mainThreadDB } from "./database";
 import Data from "../data_clients/datainterfaces";
 import AIWorkerSingleton from "../workers/aiWorker/AIWorkerSingleton";
+import logger from "../utils/logger";
 
 export async function rejectLabel(exampleId: string, label: string) {
   let example: Data.Example | undefined = await mainThreadDB.example.get(

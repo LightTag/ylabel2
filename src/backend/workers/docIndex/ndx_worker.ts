@@ -15,6 +15,7 @@ import {
 import { workerDB } from "../../database/database";
 import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
+import logger from "../../utils/logger";
 
 interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages

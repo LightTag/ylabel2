@@ -3,6 +3,7 @@ import TFIDFTransformer from "../../../..//workers/aiWorker/workerProcedures/vec
 import { workerDB } from "../../../../database/database";
 import NSAIWorker from "../../../..//workers/aiWorker/aiWorkerTypes";
 import { GenericWorkerTypes } from "../../../common/datatypes";
+import logger from "../../../../utils/logger";
 
 export async function handleTfIdf(
   event: NSAIWorker.Request.IStartVectorize

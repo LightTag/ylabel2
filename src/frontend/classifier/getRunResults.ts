@@ -1,7 +1,7 @@
 import { AnalyticsData } from "../../backend/data_clients/datainterfaces";
 import { mainThreadDB } from "../../backend/database/database";
 import { deviation, mean } from "d3-array";
-import logger from "../utils/logger";
+import logger from "../../backend/utils/logger";
 
 function calculateConf(
   data: AnalyticsData.PrecisionRecallKfoldMetric[]

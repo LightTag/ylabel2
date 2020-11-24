@@ -1,4 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
+import logger from "../../../../utils/logger";
 
 function negativeLabelsCrossEntropy(
   labelMasks: tf.Tensor,

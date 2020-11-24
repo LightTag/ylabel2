@@ -1,6 +1,7 @@
 import { workerDB } from "../../../../database/database";
 import Data from "../../../..//data_clients/datainterfaces";
 import * as tf from "@tensorflow/tfjs";
+import logger from "../../../../utils/logger";
 
 function makeLabelMask(
   trueLabel: number | undefined,
@@ -21,6 +22,7 @@ function makeLabelMask(
     falseLabels.forEach((falseLabelIx) => {
       negativeMask[falseLabelIx] = 0;
     });
+
     logger("neg", negativeMask);
     return negativeMask;
   }

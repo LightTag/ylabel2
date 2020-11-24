@@ -8,6 +8,7 @@ import { fade } from "@material-ui/core/styles/colorManipulator";
 
 import getRunResults from ".//getRunResults";
 import colorManaer from "../utils/labelsetcolors/labelsetcolors";
+import logger from "../../backend/utils/logger";
 
 async function makeChart() {
   var margin = { top: 10, right: 30, bottom: 30, left: 60 };
@@ -21,6 +22,7 @@ async function makeChart() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   const data = await getRunResults();
+
   logger(data);
 
   const arrays = Object.values(data);

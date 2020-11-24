@@ -3,6 +3,7 @@ import negativeLabelsCrossEntropy from "./customLayers";
 import tfDataLoader from "./tfDataLoader";
 import { workerDB } from "../../../../database/database";
 import Data from "../../../../data_clients/datainterfaces";
+import logger from "../../../../utils/logger";
 
 function modelFactory(numLabels: number) {
   const model = tf.sequential();
