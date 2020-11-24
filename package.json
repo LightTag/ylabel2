@@ -49,14 +49,14 @@
     "build": "rescripts build",
     "test": "rescripts test",
     "eject": "rescripts eject",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" ",
     "lint:fix": "eslint . --fix",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0",
+      "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0 ",
       "prettier --write"
     ]
   },

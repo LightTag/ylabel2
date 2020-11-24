@@ -2,9 +2,9 @@ import React, { FunctionComponent } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Grid } from "@material-ui/core";
 import colorManaer from "../../utils/labelsetcolors/labelsetcolors";
-import { useAnnotateAll } from "./labelControls";
-import SignificantTermsViz from "./SignifantTermsViz";
+import SignificantTermsContainer from "./significantTerms/SignificantTermsContainer";
 import SelectedLabelToggle from "./SelectedLabelToggle";
+import { ILabelController } from "../../../controllers/controllerInterfaces";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,13 +37,14 @@ const LabelRow: FunctionComponent<{
   count: number;
   labelName: string;
   selected: boolean;
+  labelController: ILabelController;
   onClick?: (val: string | null) => void;
   comment?: string;
-  onLabelAll: (labelName: string) => void;
 }> = React.memo((props) => {
   const classes = useStyles();
   const labelName = props.labelName;
   let style: { border: string; color: string; background: string };
+
   style = React.useMemo(() => {
     const color = colorManaer.getLabelColor(labelName);
     return {
@@ -63,7 +64,7 @@ const LabelRow: FunctionComponent<{
       props.onClick(labelName);
     }
   };
-  const [applyLabelAll] = useAnnotateAll();
+
   return (
     <div
       style={style}
@@ -79,20 +80,28 @@ const LabelRow: FunctionComponent<{
           </span>
         </Grid>
         <Grid item xs={10}>
-          <SignificantTermsViz label={labelName} />
+          <SignificantTermsContainer
+            label={labelName}
+            labelController={props.labelController}
+          />
         </Grid>
 
         <Grid item xs={2}>
           <span
             className={classes.toggleButton}
-            onClick={() => applyLabelAll(labelName)}
+            onClick={() =>
+              props.labelController.applyLabelToSearchResults(labelName)
+            }
           >
             {" "}
             Label All{" "}
           </span>
         </Grid>
         <Grid item>
-          <SelectedLabelToggle labelName={labelName} />
+          <SelectedLabelToggle
+            labelName={labelName}
+            labelController={props.labelController}
+          />
         </Grid>
 
         {/*<Grid item xs={4}>*/}

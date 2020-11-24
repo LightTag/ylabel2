@@ -8,6 +8,7 @@ import useSearchQuery from "../../QueryContext/useSearchQuery";
 import Data from "../../../backend/data_clients/datainterfaces";
 import useDatabase from "../../../backend/database/useDatabase";
 import LabelRow from "./LabelRow";
+import useDefaultLabelController from "../../../controllers/labelControllers/DefaultLabelController";
 
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
@@ -68,7 +69,7 @@ const LabelControls: FunctionComponent = (props) => {
     (db) => db.label.toArray(),
     undefined
   );
-
+  const labelController = useDefaultLabelController();
   if (!labels.data) {
     return <div>loading</div>;
   }
@@ -78,6 +79,7 @@ const LabelControls: FunctionComponent = (props) => {
 
       {labels.data.map((label, count) => (
         <LabelRow
+          labelController={labelController}
           selected={false}
           count={label.count}
           labelName={label.name}
