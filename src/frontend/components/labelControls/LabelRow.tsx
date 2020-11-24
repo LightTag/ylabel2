@@ -39,6 +39,7 @@ const LabelRow: FunctionComponent<{
   selected: boolean;
   onClick?: (val: string | null) => void;
   comment?: string;
+  onLabelAll: (labelName: string) => void;
 }> = React.memo((props) => {
   const classes = useStyles();
   const labelName = props.labelName;
