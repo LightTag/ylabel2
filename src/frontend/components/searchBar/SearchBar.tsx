@@ -28,16 +28,35 @@ const useStyles = makeStyles((theme) => ({
 const SearchBar: FunctionComponent = () => {
   const classes = useStyles();
   const query = useTypedSelector((state) => state.searchReducer.searchQuery);
-
+  const [value, setValue] = React.useState<string | undefined>(
+    query || undefined
+  );
   const exampleIds = useSearchQuery();
   const dispatch = useDispatch();
-  const handleChange = debounce((e) => {
-    dispatch(
-      searchSlice.actions.setSearchParams({
-        params: { searchQuery: e.target.value },
-      })
-    );
-  }, 50);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedUpdate = React.useCallback(
+    debounce((e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      dispatch(
+        searchSlice.actions.setSearchParams({
+          params: { searchQuery: e.target.value },
+        })
+      );
+    }, 150),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  const handleChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setValue(e.target.value);
+    debouncedUpdate(e);
+  };
+
+  React.useEffect(() => {
+    if (query) {
+      setValue(query);
+    }
+  }, [query]);
 
   return (
     <div className={classes.root}>
@@ -49,7 +68,7 @@ const SearchBar: FunctionComponent = () => {
             e.persist();
             handleChange(e);
           }}
-          defaultValue={query}
+          value={value}
           helperText={
             exampleIds.isLoading ? (
               <LinearProgress variant={"indeterminate"} />
