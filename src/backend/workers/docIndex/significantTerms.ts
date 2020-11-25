@@ -16,8 +16,6 @@ async function significantTermsForLabel(
   const otherExamples = await workerDB.example
     .where("label")
     .notEqual(label)
-    .or("hasLabel")
-    .equals(-1)
     .toArray();
 
   const numLabeled = examplesWithLabel.length;
@@ -44,7 +42,7 @@ async function significantTermsForLabel(
   Object.entries(labeledCounter.items).forEach(([word, labledCount]) => {
     const weightedLabeledCount = labledCount / numLabeled;
     const weightedUnlabledCount = otherCounter.get(word) / numUnlabeled;
-    const score = weightedLabeledCount / weightedUnlabledCount;
+    const score = weightedLabeledCount / (weightedUnlabledCount + 1);
     if (isFinite(score)) {
       //Infinite scores means the word has already been labeled in every appearence
       result.push({ word, score });
