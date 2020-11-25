@@ -1,9 +1,9 @@
-import significantTermsForLabel from "../../backend/workers/docIndex/significantTerms";
 import { useAnnotateAll } from "../../frontend/components/labelControls/labelControls";
 import { useDispatch } from "react-redux";
 import searchSlice from "../../frontend/QueryContext/searchReducer";
 import { ILabelController } from "../controllerInterfaces";
 import { useTypedSelector } from "../../frontend/redux-state/rootState";
+import { IndexWorkerSingleton } from "../../backend/workers/docIndex/IndexWorkerSingleton";
 
 export default function useDefaultLabelController(): ILabelController {
   const dispatch = useDispatch();
@@ -34,7 +34,8 @@ export default function useDefaultLabelController(): ILabelController {
   };
   const [applyLabelToSearchResults] = useAnnotateAll();
   return {
-    getSignificantTerms: significantTermsForLabel,
+    getSignificantTerms: (labelName) =>
+      IndexWorkerSingleton.getInstance().getSignificantTermsForLabel(labelName),
     applyLabelToSearchResults,
     searchForTerm,
     changeLabelFilter,

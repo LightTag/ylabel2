@@ -1,17 +1,19 @@
 import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
-
+export type SignificantTerm = { word: string; score: number };
 export namespace NSIndexWorker {
   export enum IndexRequestMessageKind {
     startIndexing = "startIndexing",
     startQuery = "startQuery",
     startInit = "startInit",
+    startSignificantTerms = "startSignificantTerms",
   }
 
   export enum IndexResponseMessageKind {
     endIndexing = "endIndexing",
     endQuery = "endQuery",
     endInit = "endInit",
+    endSignificantTerms = "endSignificantTerms",
   }
 
   interface IndexEventBase extends GenericWorkerTypes.GenericEvent {
@@ -56,7 +58,18 @@ export namespace NSIndexWorker {
       };
     }
 
-    export type TRequests = IStartQuery | IStartIndex | IStartInit;
+    export interface IStartSignificantTerms extends RequestEvent {
+      kind: IndexRequestMessageKind.startSignificantTerms;
+      payload: {
+        labelName: string;
+      };
+    }
+
+    export type TRequests =
+      | IStartQuery
+      | IStartIndex
+      | IStartInit
+      | IStartSignificantTerms;
   }
   export namespace Response {
     export interface IEndIndex extends ResponseEvent {
@@ -80,7 +93,19 @@ export namespace NSIndexWorker {
       };
     }
 
-    export type TResponse = IEndQuery | IEndIndex | IEndInit;
+    export interface IEndSignificantTerms extends ResponseEvent {
+      kind: IndexResponseMessageKind.endSignificantTerms;
+      payload: {
+        terms: SignificantTerm[];
+        labelName: string;
+      };
+    }
+
+    export type TResponse =
+      | IEndQuery
+      | IEndIndex
+      | IEndInit
+      | IEndSignificantTerms;
   }
 
   export interface IIndexSingelton {
@@ -88,6 +113,9 @@ export namespace NSIndexWorker {
     query: (query: string) => Promise<{ results: SearchResult[] }>;
     initializeIndex: (indexName?: string) => Promise<{ numIndexed: number }>;
     addLabel?: (exampleId: string, label: string) => Promise<boolean>;
+    getSignificantTermsForLabel: (
+      labelName: string
+    ) => Promise<{ terms: SignificantTerm[]; labelName: string }>;
     saveToDisk?: () => void;
   }
 }

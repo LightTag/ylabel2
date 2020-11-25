@@ -124,6 +124,7 @@ const LabelRow: FunctionComponent<{
         <SignificantTermsContainer
           label={labelName}
           labelController={props.labelController}
+          count={props.count}
         />
       </span>
     </div>

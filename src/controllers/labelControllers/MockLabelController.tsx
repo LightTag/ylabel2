@@ -10,9 +10,13 @@ function useMocklLabelController(): ILabelController & {
   );
 
   return {
-    getSignificantTerms: () =>
-      Promise.resolve(terms.map((word, score) => ({ word, score }))),
+    getSignificantTerms: (labelName: string) =>
+      Promise.resolve({
+        labelName,
+        terms: terms.map((word, score) => ({ word, score })),
+      }),
     applyLabelToSearchResults: () => {},
+
     searchForTerm: () => {},
     changeLabelFilter: () => {},
     filteredPrediction: null,

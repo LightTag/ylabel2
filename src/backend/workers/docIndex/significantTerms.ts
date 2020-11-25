@@ -4,8 +4,11 @@ import {
   Counter,
   tokenizingRegex,
 } from "../aiWorker/workerProcedures/vectorizers/tfidf";
+import { SignificantTerm } from "./indexWorkerTypes";
 
-async function significantTermsForLabel(label: string) {
+async function significantTermsForLabel(
+  label: string
+): Promise<SignificantTerm[]> {
   const examplesWithLabel = await workerDB.example
     .where({ label: label })
     .toArray();

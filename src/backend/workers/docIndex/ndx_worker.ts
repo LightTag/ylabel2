@@ -16,6 +16,7 @@ import { workerDB } from "../../database/database";
 import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
 import logger from "../../utils/logger";
+import significantTermsForLabel from "./significantTerms";
 
 interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages
@@ -109,7 +110,23 @@ async function handleStartInitRequest(
   };
   ctx.postMessage(response);
 }
+async function handleSignificantTerms(
+  message: MessageEvent<NSIndexWorker.Request.IStartSignificantTerms>
+) {
+  const terms = await significantTermsForLabel(message.data.payload.labelName);
+  const response: NSIndexWorker.Response.IEndSignificantTerms = {
+    workerName: GenericWorkerTypes.EWorkerName.index,
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
 
+    requestId: message.data.requestId,
+    kind: NSIndexWorker.IndexResponseMessageKind.endSignificantTerms,
+    payload: {
+      labelName: message.data.payload.labelName,
+      terms,
+    },
+  };
+  ctx.postMessage(response);
+}
 function messageDispatch(message: MessageEvent<any>) {
   const kind: NSIndexWorker.IndexRequestMessageKind | undefined =
     message.data.kind;
@@ -117,6 +134,7 @@ function messageDispatch(message: MessageEvent<any>) {
   if (!kind) {
     return;
   }
+
   switch (kind) {
     case NSIndexWorker.IndexRequestMessageKind.startIndexing:
       return handleIndexRequest(message);
@@ -124,6 +142,8 @@ function messageDispatch(message: MessageEvent<any>) {
       return handleQueryRequest(message);
     case NSIndexWorker.IndexRequestMessageKind.startInit:
       return handleStartInitRequest(message);
+    case NSIndexWorker.IndexRequestMessageKind.startSignificantTerms:
+      return handleSignificantTerms(message);
     default:
       assertNever(kind);
   }

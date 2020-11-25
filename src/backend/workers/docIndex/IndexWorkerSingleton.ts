@@ -3,6 +3,7 @@ import Worker from "worker-loader!./ndx_worker";
 import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
 import WorkerSingletonBase from "../..//workers/common/BaseWorker";
+import logger from "../../utils/logger";
 
 export class IndexWorkerSingleton
   extends WorkerSingletonBase
@@ -30,10 +31,11 @@ export class IndexWorkerSingleton
       },
     };
     this.worker.postMessage(message);
+    const me = this;
     return this.registerResponseHandler<NSIndexWorker.Response.IEndInit>(
       requestId
     ).then((response) => {
-      this.initialized = true;
+      me.initialized = true;
       return response;
     });
   }
@@ -56,6 +58,30 @@ export class IndexWorkerSingleton
     };
     this.worker.postMessage(message);
     return this.registerResponseHandler<NSIndexWorker.Response.IEndIndex>(
+      requestId
+    );
+  }
+
+  public getSignificantTermsForLabel(labelName: string) {
+    if (!this.initialized) {
+      logger("Index wasn't initialized");
+      return Promise.reject();
+    }
+
+    const requestId = this.nextRequestId();
+    const message: NSIndexWorker.Request.IStartSignificantTerms = {
+      workerName: GenericWorkerTypes.EWorkerName.index,
+      direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
+
+      kind: NSIndexWorker.IndexRequestMessageKind.startSignificantTerms,
+      requestId,
+      payload: {
+        labelName,
+      },
+    };
+
+    this.worker.postMessage(message);
+    return this.registerResponseHandler<NSIndexWorker.Response.IEndSignificantTerms>(
       requestId
     );
   }

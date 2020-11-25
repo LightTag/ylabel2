@@ -1,7 +1,9 @@
-type SignificantTerm = { word: string; score: number };
+import { SignificantTerm } from "../backend/workers/docIndex/indexWorkerTypes";
 
 export interface ILabelController {
-  getSignificantTerms: (labelName: string) => Promise<Array<SignificantTerm>>;
+  getSignificantTerms: (
+    labelName: string
+  ) => Promise<{ terms: Array<SignificantTerm>; labelName: string }>;
   applyLabelToSearchResults: (labelName: string) => void;
   searchForTerm: (term: string) => void;
   changeLabelFilter: (
