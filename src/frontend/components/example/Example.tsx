@@ -78,7 +78,7 @@ const Example: FunctionComponent<Props> = (props) => {
             style: "percent",
           }) || null}
         </div>
-        <div className={classes.body} dir={"auto"}>
+        <Typography className={classes.body} dir={"auto"}>
           {/*{annotationQuery.data.map((span) => (*/}
           {/*  <ExampleSpan*/}
           {/*    span={span}*/}
@@ -88,7 +88,7 @@ const Example: FunctionComponent<Props> = (props) => {
           {/*))}*/}
 
           {exampleQuery.data.content}
-        </div>
+        </Typography>
       </Paper>
     );
   } else {

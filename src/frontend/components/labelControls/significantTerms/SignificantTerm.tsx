@@ -1,11 +1,13 @@
 import React, { FunctionComponent } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+
 const useStyles = makeStyles((theme) => ({
   root: {
-    fontSize: "0.5rem",
+    marginLeft: "0.1rem",
+    padding: "0.2rem",
     boxShadow: "1px 1px 1px #CDCDCD",
     borderRadius: "2px",
-    padding: "2px",
+
     cursor: "pointer",
   },
   term: {},

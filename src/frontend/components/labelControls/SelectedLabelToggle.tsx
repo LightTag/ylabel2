@@ -1,9 +1,7 @@
 import React, { FunctionComponent } from "react";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup/ToggleButtonGroup";
-import HumanIcon from "@material-ui/icons/Person";
-import RobotIcon from "@material-ui/icons/Adb";
-import { ToggleButton } from "@material-ui/lab";
 import { ILabelController } from "../../../controllers/controllerInterfaces";
+import { Checkbox } from "@material-ui/core";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 interface Props {
   labelName: string;
@@ -13,42 +11,46 @@ interface Props {
 const SelectedLabelToggle: FunctionComponent<Props> = (props) => {
   const labelName = props.labelName;
 
-  const value = React.useMemo(() => {
-    const res: string[] = [];
-    const isHuman = props.labelController.filteredLabel === labelName;
-    const isPred = props.labelController.filteredPrediction === labelName;
-    if (isHuman) {
-      res.push("human");
+  const handleClickHuman = () => {
+    if (props.labelController.filteredLabel === props.labelName) {
+      // Then we are unselecting
+      props.labelController.changeLabelFilter(null, "human");
+    } else {
+      props.labelController.changeLabelFilter(labelName, "human");
     }
-    if (isPred) {
-      res.push("pred");
+  };
+  const handleClickModel = () => {
+    if (props.labelController.filteredPrediction === props.labelName) {
+      // Then we are unselecting
+      props.labelController.changeLabelFilter(null, "pred");
+    } else {
+      props.labelController.changeLabelFilter(labelName, "pred");
     }
-    return res;
-  }, [
-    props.labelController.filteredPrediction,
-    props.labelController.filteredLabel,
-    labelName,
-  ]);
-
+  };
   return (
-    <ToggleButtonGroup
-      onChange={(e, v) =>
-        props.labelController.changeLabelFilter(props.labelName, v)
-      }
-      value={value}
-      size="small"
-    >
-      <ToggleButton
-        size={"small"}
-        style={{ fontSize: "0.75rem" }}
-        value={"human"}
-      >
-        <HumanIcon fontSize={"small"} style={{ color: "white" }} />
-      </ToggleButton>
-      <ToggleButton value={"pred"} size={"small"}>
-        <RobotIcon fontSize={"small"} style={{ color: "white" }} />
-      </ToggleButton>
-    </ToggleButtonGroup>
+    <span>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={props.labelController.filteredLabel === labelName}
+            onChange={handleClickHuman}
+            inputProps={{ "aria-label": "primary checkbox" }}
+          />
+        }
+        label="Labels"
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={props.labelController.filteredPrediction === labelName}
+            onChange={handleClickModel}
+            inputProps={{ "aria-label": "primary checkbox" }}
+            color={"primary"}
+          />
+        }
+        label={"Predictions"}
+      />
+    </span>
   );
 };
 

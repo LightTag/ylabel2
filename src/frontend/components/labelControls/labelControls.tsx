@@ -76,16 +76,24 @@ const LabelControls: FunctionComponent = (props) => {
   return (
     <div>
       <AddLabel />
-
-      {labels.data.map((label, count) => (
-        <LabelRow
-          labelController={labelController}
-          selected={false}
-          count={label.count}
-          labelName={label.name}
-          key={label.name}
-        />
-      ))}
+      <div
+        style={{
+          flexWrap: "wrap",
+          display: "flex",
+          width: "100%",
+          marginTop: "1rem",
+        }}
+      >
+        {labels.data.map((label, count) => (
+          <LabelRow
+            labelController={labelController}
+            selected={false}
+            count={label.count}
+            labelName={label.name}
+            key={label.name}
+          />
+        ))}
+      </div>
     </div>
   );
 };

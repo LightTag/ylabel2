@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "inline",
     width: "100%",
+
     boxShadow: "4px 4px 4px #CDCDCD ",
     paddingBottom: "2.5rem",
   },

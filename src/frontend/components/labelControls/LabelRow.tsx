@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Grid } from "@material-ui/core";
 import colorManaer from "../../utils/labelsetcolors/labelsetcolors";
 import SignificantTermsContainer from "./significantTerms/SignificantTermsContainer";
 import SelectedLabelToggle from "./SelectedLabelToggle";
@@ -17,11 +16,43 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     userSelect: "none",
     fontSize: "0.75rem",
+    display: "inline-block",
+    width: "100%",
+    maxHeight: "200px",
+    position: "relative",
+    marginTop: "1rem",
+    "&>label": {
+      padding: "0.15rem",
+      background: "white",
+      position: "absolute",
+      top: "-1rem",
+    },
   },
   nameContainer: {
     textTransform: "uppercase",
     fontWeight: "bold",
     fontSize: "0.75rem",
+  },
+  termsContainer: {
+    marginTop: "1rem",
+
+    border: "1px solid black",
+    fontSize: "10px",
+    position: "relative",
+    display: "inline-flex",
+    width: "100%",
+    "flex-wrap": "wrap",
+    "&>label": {
+      padding: "0.15rem",
+      background: "white",
+      position: "absolute",
+      top: "-1rem",
+
+      fontSize: "0.7rem",
+      border: "1px solid black",
+      borderBottom: "none",
+      borderRadius: "4px",
+    },
   },
   controlorContainers: {
     width: "66%",
@@ -43,14 +74,13 @@ const LabelRow: FunctionComponent<{
 }> = React.memo((props) => {
   const classes = useStyles();
   const labelName = props.labelName;
-  let style: { border: string; color: string; background: string };
-
+  let style: { border: string; borderColor: string };
+  const color = colorManaer.getLabelColor(labelName);
   style = React.useMemo(() => {
     const color = colorManaer.getLabelColor(labelName);
     return {
-      background: color,
-      color: "white",
-      border: "1px solid",
+      borderColor: color,
+      border: `1px solid ${color}`,
     };
   }, [labelName]);
 
@@ -72,42 +102,30 @@ const LabelRow: FunctionComponent<{
       onClick={handleClick}
       tabIndex={0}
     >
-      <Grid container alignItems={"center"} spacing={2}>
-        <Grid item className={classes.nameContainer} xs={2}>
-          <span className={classes.nameContainer}>
-            {" "}
-            {labelName} - {props.count}{" "}
-          </span>
-        </Grid>
-        <Grid item xs={10}>
-          <SignificantTermsContainer
-            label={labelName}
-            labelController={props.labelController}
-          />
-        </Grid>
-
-        <Grid item xs={2}>
-          <span
-            className={classes.toggleButton}
-            onClick={() =>
-              props.labelController.applyLabelToSearchResults(labelName)
-            }
-          >
-            {" "}
-            Label All{" "}
-          </span>
-        </Grid>
-        <Grid item>
-          <SelectedLabelToggle
-            labelName={labelName}
-            labelController={props.labelController}
-          />
-        </Grid>
-
-        {/*<Grid item xs={4}>*/}
-        {/*  /!*<AnnotateAllButton label={props.labelName} />*!/*/}
-        {/*</Grid>*/}
-      </Grid>
+      <label className={classes.nameContainer} style={{ color: color }}>
+        {" "}
+        {labelName} - {props.count}{" "}
+      </label>
+      <span
+        className={classes.toggleButton}
+        onClick={() =>
+          props.labelController.applyLabelToSearchResults(labelName)
+        }
+      >
+        {" "}
+        Label All{" "}
+      </span>
+      <SelectedLabelToggle
+        labelName={labelName}
+        labelController={props.labelController}
+      />
+      <span className={classes.termsContainer}>
+        <label>Keywords</label>
+        <SignificantTermsContainer
+          label={labelName}
+          labelController={props.labelController}
+        />
+      </span>
     </div>
   );
 });

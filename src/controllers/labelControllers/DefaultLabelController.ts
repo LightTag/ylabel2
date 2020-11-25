@@ -11,10 +11,18 @@ export default function useDefaultLabelController(): ILabelController {
     label: filteredLabel,
     predictedLabel: filteredPrediction,
   } = useTypedSelector((state) => state.searchReducer);
-  const changeLabelFilter = (labelName: string, val: string[]) => {
+  const changeLabelFilter = (
+    labelName: string | null,
+    source: "human" | "pred"
+  ) => {
     const change: Record<string, string | null> = {};
-    change["label"] = val.includes("human") ? labelName : null;
-    change["predictedLabel"] = val.includes("pred") ? labelName : null;
+    if (source === "human") {
+      change["label"] = labelName;
+    }
+    if (source === "pred") {
+      change["predictedLabel"] = labelName;
+    }
+
     dispatch(searchSlice.actions.setSearchParams({ params: change }));
   };
   const searchForTerm = (term: string) => {

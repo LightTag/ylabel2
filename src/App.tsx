@@ -18,6 +18,15 @@ import SearchBar from "./frontend/components/searchBar/SearchBar";
 import WorkComp from "./frontend/classifier/workerComp";
 import LabelControls from "./frontend/components/labelControls/labelControls";
 import D3Chart from "./frontend/classifier/d3ConfChart";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import { ThemeProvider } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  typography: {
+    fontSize: 10,
+    fontFamily: "Roboto",
+  },
+});
 
 const Body: FunctionComponent = () => {
   const spanRegistry = useSpanRegistry();
@@ -64,59 +73,60 @@ export function App() {
   return (
     <Provider store={store}>
       <ReactQueryCacheProvider queryCache={cache}>
-        <CssBaseline />
-        <ReflexContainer
-          orientation="horizontal"
-          style={{
-            height: "100vh",
-            width: "100vw",
-            whiteSpace: "pre-wrap",
-            padding: "3rem",
-          }}
-        >
-          <ReflexElement flex={0.2} propagateDimensions={true}>
-            <Grid container>
-              <Grid item xs={6}>
-                <SearchBar />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <ReflexContainer
+            orientation="horizontal"
+            style={{
+              height: "100vh",
+              width: "100vw",
+              whiteSpace: "pre-wrap",
+              padding: "3rem",
+            }}
+          >
+            <ReflexElement flex={0.2} propagateDimensions={true}>
+              <Grid container>
+                <Grid item xs={6}>
+                  <SearchBar />
+                </Grid>
+                <Grid item xs={6}>
+                  <Dataset />
+                  <WorkComp />
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Dataset />
-                <WorkComp />
-              </Grid>
-            </Grid>
-          </ReflexElement>
-          <ReflexElement flex={0.8}>
-            <ReflexContainer orientation="vertical">
-              <ReflexElement className="left-pane" propagateDimensions>
-                <Body />
-              </ReflexElement>
-              <ReflexSplitter />
-
-              <ReflexElement propagateDimensions>
-                <ReflexContainer orientation="horizontal">
-                  <ReflexElement
-                    className="left-pane"
-                    propagateDimensions
-                    flex={1}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        padding: "2rem",
-                        maxHeight: "100%",
-                        overflowY: "auto",
-                      }}
+            </ReflexElement>
+            <ReflexElement flex={0.8}>
+              <ReflexContainer orientation="vertical">
+                <ReflexElement propagateDimensions flex={0.25}>
+                  <ReflexContainer orientation="horizontal">
+                    <ReflexElement
+                      className="left-pane"
+                      propagateDimensions
+                      flex={1}
                     >
-                      <LabelControls />
-                      <D3Chart />
-                      {/*<PredictionStats />*/}
-                    </div>
-                  </ReflexElement>
-                </ReflexContainer>
-              </ReflexElement>
-            </ReflexContainer>
-          </ReflexElement>
-        </ReflexContainer>
+                      <div
+                        style={{
+                          height: "100%",
+                          padding: "2rem",
+                          maxHeight: "100%",
+                          overflowY: "auto",
+                        }}
+                      >
+                        <LabelControls />
+                        <D3Chart />
+                        {/*<PredictionStats />*/}
+                      </div>
+                    </ReflexElement>
+                  </ReflexContainer>
+                </ReflexElement>
+                <ReflexSplitter />
+                <ReflexElement className="left-pane" propagateDimensions>
+                  <Body />
+                </ReflexElement>
+              </ReflexContainer>
+            </ReflexElement>
+          </ReflexContainer>
+        </ThemeProvider>
       </ReactQueryCacheProvider>
     </Provider>
   );
