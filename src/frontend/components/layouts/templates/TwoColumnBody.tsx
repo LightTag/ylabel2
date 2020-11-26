@@ -2,6 +2,7 @@ import React from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import { AppBarHeight } from "../../appBar/Appbar";
 import { useTheme } from "@material-ui/core";
+import WorkComp from "../../../classifier/workerComp";
 
 interface Props {
   Left: JSX.Element;
@@ -48,7 +49,9 @@ const TwoColumnBody: React.FunctionComponent<Props> = (props) => {
             maxHeight: "100%",
             overflowY: "hidden",
           }}
-        ></div>
+        >
+          <WorkComp />
+        </div>
       </ReflexElement>
     </ReflexContainer>
   );

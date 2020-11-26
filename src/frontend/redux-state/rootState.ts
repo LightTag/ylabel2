@@ -22,6 +22,7 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage for
 import classificationReducer from "./classification/classificationReducer";
 import exampleReducer from "./examples/exampleState";
 import searchSlice from "../QueryContext/searchReducer";
+import appModeSlice from "./modes/modeReducer";
 
 export const res = enableMapSet();
 
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   classificationReducer,
   exampleReducer,
   searchReducer: searchSlice.reducer,
+  appMode: appModeSlice.reducer,
 });
 const persistConfig = {
   key: "root",

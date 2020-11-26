@@ -15,12 +15,27 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import SearchBar from "../searchBar/SearchBar";
 import FilterCheckboxes from "../searchBar/FilterCheckboxes";
 import FileUploadButton from "../dataUpload/simpleDataUpload";
+import ActiveLearningToggleContainer from "./ActiveLearningToggleContainer";
+import { useTypedSelector } from "../../redux-state/rootState";
+import { Fade } from "@material-ui/core";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     grow: {
       flexGrow: 1,
+    },
+    regularModeControls: {
+      position: "relative",
+      borderRadius: theme.shape.borderRadius,
+
+      marginRight: theme.spacing(2),
+      marginLeft: 0,
+      width: "100%",
+      [theme.breakpoints.up("sm")]: {
+        marginLeft: theme.spacing(3),
+        width: "auto",
+      },
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -56,6 +71,8 @@ export default function PrimarySearchAppBar() {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const mode = useTypedSelector((state) => state.appMode.mode);
+  const isActiveLearning = mode === "ActiveLearning";
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -144,10 +161,15 @@ export default function PrimarySearchAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            YLabel
           </Typography>
-          <SearchBar />
-          <FilterCheckboxes />
+          <ActiveLearningToggleContainer />
+          <Fade in={!isActiveLearning}>
+            <span className={classes.regularModeControls}>
+              <SearchBar />
+              <FilterCheckboxes />
+            </span>
+          </Fade>
           <div className={classes.grow} />
 
           <div className={classes.sectionDesktop}>
