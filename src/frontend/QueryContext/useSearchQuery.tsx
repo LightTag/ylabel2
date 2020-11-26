@@ -5,6 +5,7 @@ import { mainThreadDB } from "../../backend/database/database";
 import intersection from "lodash/intersection";
 import { useQuery } from "react-query";
 import logger from "../../backend/utils/logger";
+
 const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 function useSearchQuery() {
   const searchParams = useTypedSelector((state) => state.searchReducer);

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import appModeSlice from "../../redux-state/modes/modeReducer";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+
 const ActiveLearningToggleContainer: FunctionComponent = () => {
   const mode = useTypedSelector((state) => state.appMode.mode);
   const dispatch = useDispatch();

@@ -14,10 +14,10 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import SearchBar from "../searchBar/SearchBar";
 import FilterCheckboxes from "../searchBar/FilterCheckboxes";
-import FileUploadButton from "../dataUpload/simpleDataUpload";
 import ActiveLearningToggleContainer from "./ActiveLearningToggleContainer";
 import { useTypedSelector } from "../../redux-state/rootState";
-import { Fade } from "@material-ui/core";
+import { Button, Fade } from "@material-ui/core";
+import { mainThreadDB } from "../../../backend/database/database";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -173,7 +173,7 @@ export default function PrimarySearchAppBar() {
           <div className={classes.grow} />
 
           <div className={classes.sectionDesktop}>
-            <FileUploadButton />
+            <Button onClick={() => mainThreadDB.delete()}>Delete</Button>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

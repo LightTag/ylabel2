@@ -2,13 +2,13 @@ import React from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import { AppBarHeight } from "../../appBar/Appbar";
 import { useTheme } from "@material-ui/core";
-import WorkComp from "../../../classifier/workerComp";
 
 interface Props {
   Left: JSX.Element;
+  Middle: JSX.Element;
   Right: JSX.Element;
 }
-const TwoColumnBody: React.FunctionComponent<Props> = (props) => {
+const ThreeColumnBody: React.FunctionComponent<Props> = (props) => {
   const theme = useTheme();
   return (
     <ReflexContainer
@@ -38,7 +38,7 @@ const TwoColumnBody: React.FunctionComponent<Props> = (props) => {
             overflowY: "auto",
           }}
         >
-          {props.Right}
+          {props.Middle}
         </div>
       </ReflexElement>
       <ReflexSplitter />
@@ -50,10 +50,10 @@ const TwoColumnBody: React.FunctionComponent<Props> = (props) => {
             overflowY: "hidden",
           }}
         >
-          <WorkComp />
+          <div style={{ padding: "2rem" }}>{props.Right}</div>
         </div>
       </ReflexElement>
     </ReflexContainer>
   );
 };
-export default TwoColumnBody;
+export default ThreeColumnBody;

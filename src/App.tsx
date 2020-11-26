@@ -7,8 +7,8 @@ import { CssBaseline } from "@material-ui/core";
 import store from "./frontend/redux-state/rootState";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import { ThemeProvider } from "@material-ui/core/styles";
-import OpenAnnotationBody from "./frontend/components/layouts/OpenAnnotationBodyLayout";
 import PrimarySearchAppBar from "./frontend/components/appBar/Appbar";
+import LayoutDispatch from "./frontend/components/layouts/LayoutDispatch";
 
 const theme = createMuiTheme({
   typography: {
@@ -26,7 +26,7 @@ export function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <PrimarySearchAppBar />
-          <OpenAnnotationBody />
+          <LayoutDispatch />
         </ThemeProvider>
       </ReactQueryCacheProvider>
     </Provider>
