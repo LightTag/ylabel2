@@ -7,11 +7,13 @@ import { useDispatch } from "react-redux";
 import { addExamplesThunk } from "../../redux-state/examples/exampleState";
 import Data from "../../../backend/data_clients/datainterfaces";
 import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 
 const FileUploadButton: FunctionComponent = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [keys, setKeys] = React.useState<string[]>();
   const [key, setKey] = React.useState<string>();
+  const [labelKey, setLabelKey] = React.useState<string | undefined>();
   const [data, setData] = React.useState<any[]>();
   const dispatch = useDispatch();
   const handleSaveExamples = () => {
@@ -23,8 +25,8 @@ const FileUploadButton: FunctionComponent = () => {
 
           datasetName: "test",
           exampleId: md5(ex[key]).toString(),
-          label: ex["label"],
-          hasLabel: ex["label"] ? 1 : -1,
+          label: labelKey ? ex[labelKey] : undefined,
+          hasLabel: labelKey && ex[labelKey] ? 1 : -1,
           kind: "example",
           hasNegativeOrRejectedLabel: -1,
           rejectedLabels: [],
@@ -67,23 +69,44 @@ const FileUploadButton: FunctionComponent = () => {
             component="span"
             color={"primary"}
           >
-            Add File
+            Add A CSV
           </Button>
         </label>
       </Grid>
       <Grid item xs={12}>
         <TextField
+          required={true}
           fullWidth={true}
           disabled={!keys}
           onChange={(e) => setKey(e.target.value)}
           select={true}
-          label={"Text Field"}
-          helperText={"Which Field will we label"}
+          label={"Data Column"}
+          helperText={"Which column will you be labeling? "}
           value={key}
         >
           {(keys || []).map((key) => (
             <MenuItem key={key} value={key}>
               {key}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          fullWidth={true}
+          disabled={!key}
+          onChange={(e) => setLabelKey(e.target.value)}
+          select={true}
+          label={"Label Column"}
+          helperText={"Is there a column with labels?  "}
+          value={key}
+        >
+          <MenuItem key={"empty"} value={undefined} disabled={false}>
+            <Typography color={"error"}> No Labels </Typography>
+          </MenuItem>
+          {(keys || []).map((k) => (
+            <MenuItem key={k} value={k} disabled={k === key}>
+              {k}
             </MenuItem>
           ))}
         </TextField>
