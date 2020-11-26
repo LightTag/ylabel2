@@ -9,6 +9,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import { ThemeProvider } from "@material-ui/core/styles";
 import PrimarySearchAppBar from "./frontend/components/appBar/Appbar";
 import LayoutDispatch from "./frontend/components/layouts/LayoutDispatch";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const theme = createMuiTheme({
   typography: {
@@ -18,13 +19,21 @@ const theme = createMuiTheme({
 });
 
 const cache = new QueryCache();
-
+const useStyles = makeStyles(() => ({
+  "@global": {
+    "*:focus": {
+      outline: 0,
+    },
+    //don't use the browsers outline for selected stuff
+  },
+}));
 export function App() {
+  const classes = useStyles();
   return (
     <Provider store={store}>
       <ReactQueryCacheProvider queryCache={cache}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
+          <CssBaseline classes={classes} />
           <PrimarySearchAppBar />
           <LayoutDispatch />
         </ThemeProvider>

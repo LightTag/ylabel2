@@ -1,17 +1,15 @@
 import React, { FunctionComponent } from "react";
 import ThreeColumnBody from "./templates/ThreeColumnBody";
 import LabelControls from "../labelControls/labelControls";
-import useSpanRegistry from "../../utils/spanRegistry/useSpanRegistry";
 import useSearchQuery from "../../QueryContext/useSearchQuery";
 import ActiveLearningContextProvider from "../../active_learning/ActiveLearningContext";
 import ActiveLearningBody from "../../active_learning/ActiveLearningBody";
-import Example from "../example/Example";
 import { useTypedSelector } from "../../redux-state/rootState";
 import { Fade } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import FileUploadButton from "../dataUpload/simpleDataUpload";
 import WorkComp from "../../classifier/workerComp";
-
+import ExampleInfiniteScroll from "./ExampleInfiniteScroll";
 const NoDataBody = () => {
   return (
     <div style={{ width: "400px", margin: "auto" }}>
@@ -24,8 +22,8 @@ const NoDataBody = () => {
     </div>
   );
 };
+
 const RegularBody: FunctionComponent = () => {
-  const spanRegistry = useSpanRegistry();
   const exampleIds = useSearchQuery();
   const data = exampleIds.data || [];
 
@@ -34,17 +32,12 @@ const RegularBody: FunctionComponent = () => {
       <Fade in={exampleIds.isLoading}>
         <div>Loading</div>
       </Fade>
-      <Fade in={exampleIds.isSuccess && data.length > 0} mountOnEnter>
-        <div>
-          {data.slice(0, 10).map((ex) => (
-            <Example
-              key={ex}
-              score={1}
-              exampleId={ex}
-              addSpanId={spanRegistry.addSpanId}
-            />
-          ))}
-        </div>
+      <Fade
+        in={exampleIds.isSuccess && data.length > 0}
+        mountOnEnter
+        unmountOnExit
+      >
+        <ExampleInfiniteScroll exampleIds={data} />
       </Fade>
       <Fade
         in={exampleIds.isSuccess && data.length === 0}

@@ -9,11 +9,13 @@ import Typography from "@material-ui/core/Typography";
 import useDatabase from "../../../backend/database/useDatabase";
 import { ActiveLearningContext } from "../../active_learning/ActiveLearningContext";
 import { rejectLabel } from "../../../backend/database/dbProcesdures";
+import Divider from "@material-ui/core/Divider";
 
 interface Props {
   exampleId: string;
   score?: number;
   addSpanId?: (spanId: string) => void;
+  onLoad?: () => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +27,11 @@ const useStyles = makeStyles((theme) => ({
   },
   body: {
     whiteSpace: "pre-wrap",
+    fontSize: "16px",
+    lineHeight: "32px",
+  },
+  divider: {
+    margin: theme.spacing(2, 0),
   },
   ribbon: {
     height: "15%",
@@ -40,6 +47,10 @@ const Example: FunctionComponent<Props> = (props) => {
     props.exampleId
   );
   const activeLearningContext = React.useContext(ActiveLearningContext);
+  React.useEffect(() => {
+    props.onLoad && props.onLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exampleQuery.data]);
   if (exampleQuery.data) {
     return (
       <Paper
@@ -58,6 +69,7 @@ const Example: FunctionComponent<Props> = (props) => {
           </Typography>
           <ClassificationRibbon exampleId={props.exampleId} />
         </div>
+        <Divider className={classes.divider} />
         <div
           style={{ fontWeight: "bold" }}
           onClick={() => {
