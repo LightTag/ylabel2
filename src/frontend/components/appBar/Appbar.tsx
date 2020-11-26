@@ -18,6 +18,7 @@ import ActiveLearningToggleContainer from "./ActiveLearningToggleContainer";
 import { useTypedSelector } from "../../redux-state/rootState";
 import { Button, Fade } from "@material-ui/core";
 import { mainThreadDB } from "../../../backend/database/database";
+import Slide from "@material-ui/core/Slide";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -167,9 +168,13 @@ export default function PrimarySearchAppBar() {
           <Fade in={!isActiveLearning}>
             <span className={classes.regularModeControls}>
               <SearchBar />
-              <FilterCheckboxes />
             </span>
           </Fade>
+          <Slide in={!isActiveLearning}>
+            <span className={classes.regularModeControls}>
+              <FilterCheckboxes />
+            </span>
+          </Slide>
           <div className={classes.grow} />
 
           <div className={classes.sectionDesktop}>
