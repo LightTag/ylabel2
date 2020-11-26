@@ -33,7 +33,7 @@ function handleIndexRequest(
   examples.forEach((ex) => ctx.index.add(ex));
   const serializedIndex: Uint8Array = encode(toSerializable(ctx.index._index));
 
-  workerDB.indexCache.add({ data: serializedIndex, name: "index" });
+  workerDB.indexCache.put({ data: serializedIndex, name: "index" });
 
   logger("Saved the index to disk");
   const response: NSIndexWorker.Response.IEndIndex = {

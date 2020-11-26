@@ -28,27 +28,37 @@ async function significantTermsForLabel(
   }
 
   examplesWithLabel.forEach((example) => {
+    const wordSet = new Set<string>();
     example.content.split(tokenizingRegex).forEach((word) => {
-      labeledCounter.increment(word);
+      wordSet.add(word);
     });
+    wordSet.forEach((word) => labeledCounter.increment(word));
   });
 
   otherExamples.forEach((example) => {
+    const wordSet = new Set<string>();
     example.content.split(tokenizingRegex).forEach((word) => {
-      otherCounter.increment(word);
+      wordSet.add(word);
     });
+    wordSet.forEach((word) => otherCounter.increment(word));
   });
   const result: { word: string; score: number }[] = [];
   Object.entries(labeledCounter.items).forEach(([word, labledCount]) => {
     const weightedLabeledCount = labledCount / numLabeled;
     const weightedUnlabledCount = otherCounter.get(word) / numUnlabeled;
     const score = weightedLabeledCount / (weightedUnlabledCount + 1);
-    if (isFinite(score)) {
+    if (
+      isFinite(score) &&
+      weightedUnlabledCount > 0 &&
+      weightedLabeledCount > 0.2 &&
+      weightedUnlabledCount < 0.5
+    ) {
       //Infinite scores means the word has already been labeled in every appearence
       result.push({ word, score });
     }
   });
-  return sortBy(result, (x) => -x.score);
+  const res = sortBy(result, (x) => -x.score);
+  return res;
 }
 
 export default significantTermsForLabel;
