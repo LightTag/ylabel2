@@ -5,12 +5,12 @@ import { mainThreadDB } from "../../backend/database/database";
 import intersection from "lodash/intersection";
 import { useQuery } from "react-query";
 import logger from "../../backend/utils/logger";
-
+const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 function useSearchQuery() {
-  const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
   const searchParams = useTypedSelector((state) => state.searchReducer);
 
   const searchFunction = React.useCallback(async () => {
+    logger("Calling search", searchParams);
     const criteria = {
       hasLabel: searchParams.hasLabel || undefined,
       hasPrediction: searchParams.hasPrediction || undefined,

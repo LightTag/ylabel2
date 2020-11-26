@@ -8,7 +8,7 @@ interface Props {
   labelController: ILabelController;
 }
 
-const SelectedLabelToggle: FunctionComponent<Props> = (props) => {
+const SelectedLabelToggle: FunctionComponent<Props> = React.memo((props) => {
   const labelName = props.labelName;
 
   const handleClickHuman = () => {
@@ -52,6 +52,6 @@ const SelectedLabelToggle: FunctionComponent<Props> = (props) => {
       />
     </span>
   );
-};
+});
 
 export default SelectedLabelToggle;
