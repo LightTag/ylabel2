@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "2.5rem",
   },
   body: {
-    padding: theme.spacing(3),
+    whiteSpace: "pre-wrap",
   },
   ribbon: {
     height: "15%",

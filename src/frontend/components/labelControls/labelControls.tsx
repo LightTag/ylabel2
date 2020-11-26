@@ -74,13 +74,15 @@ const LabelControls: FunctionComponent = (props) => {
     return <div>loading</div>;
   }
   return (
-    <div>
+    <>
       <AddLabel />
       <div
         style={{
           flexWrap: "wrap",
           display: "flex",
           width: "100%",
+          maxHeight: "95%",
+          overflowY: "auto",
           marginTop: "1rem",
         }}
       >
@@ -94,7 +96,7 @@ const LabelControls: FunctionComponent = (props) => {
           />
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

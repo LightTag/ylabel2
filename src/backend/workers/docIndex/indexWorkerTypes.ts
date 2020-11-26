@@ -1,5 +1,6 @@
 import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
+
 export type SignificantTerm = { word: string; score: number };
 export namespace NSIndexWorker {
   export enum IndexRequestMessageKind {
