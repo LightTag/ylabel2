@@ -13,6 +13,13 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.error.main,
     color: theme.palette.error.contrastText,
   },
+  button: {
+    background: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
+    "&:hover": {
+      backgroundColor: theme.palette.error.dark,
+    },
+  },
 }));
 async function handleDelete() {
   await mainThreadDB.delete();
@@ -24,7 +31,9 @@ export const DeleteAllButton: FunctionComponent = () => {
   const classes = useStyles();
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Delete</Button>
+      <Button onClick={() => setOpen(true)} className={classes.button}>
+        Start Over
+      </Button>
       <Dialog color={"danger"} open={open} onClose={() => setOpen(false)}>
         <DialogTitle className={classes.header}>
           <Typography variant={"h3"}>Delete All Data ?</Typography>
@@ -39,7 +48,11 @@ export const DeleteAllButton: FunctionComponent = () => {
         </DialogContent>
         <DialogActions>
           <DownloadButton />
-          <Button variant={"contained"} onClick={handleDelete}>
+          <Button
+            variant={"outlined"}
+            onClick={handleDelete}
+            className={classes.button}
+          >
             Yes I'm Sure
           </Button>
         </DialogActions>

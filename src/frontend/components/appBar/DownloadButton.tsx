@@ -30,7 +30,12 @@ async function downloadResults() {
 const DownloadButton: FunctionComponent = () => {
   const [downloadFunc, downloadStatus] = useMutation(downloadResults);
   return (
-    <Button onClick={() => downloadFunc()} disabled={downloadStatus.isLoading}>
+    <Button
+      variant="contained"
+      color={"primary"}
+      onClick={() => downloadFunc()}
+      disabled={downloadStatus.isLoading}
+    >
       Download
     </Button>
   );

@@ -9,6 +9,7 @@ import Data from "../../../backend/data_clients/datainterfaces";
 import useDatabase from "../../../backend/database/useDatabase";
 import LabelRow from "./LabelRow";
 import useDefaultLabelController from "../../../controllers/labelControllers/DefaultLabelController";
+import Typography from "@material-ui/core/Typography";
 
 const AddLabel: FunctionComponent = () => {
   const [name, setName] = React.useState<string | undefined>();
@@ -75,6 +76,9 @@ const LabelControls: FunctionComponent = (props) => {
   }
   return (
     <>
+      <Typography gutterBottom variant={"h4"}>
+        Labels
+      </Typography>
       <AddLabel />
       <div
         style={{

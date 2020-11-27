@@ -16,8 +16,7 @@ import SearchBar from "../searchBar/SearchBar";
 import FilterCheckboxes from "../searchBar/FilterCheckboxes";
 import ActiveLearningToggleContainer from "./ActiveLearningToggleContainer";
 import { useTypedSelector } from "../../redux-state/rootState";
-import { Button, Fade } from "@material-ui/core";
-import { mainThreadDB } from "../../../backend/database/database";
+import { Fade } from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
 import DownloadButton from "./DownloadButton";
 import DeleteAllButton from "./DeleteAllButton";
@@ -181,7 +180,6 @@ export default function PrimarySearchAppBar() {
 
           <div className={classes.sectionDesktop}>
             <DeleteAllButton />
-            <Button onClick={() => mainThreadDB.delete()}>Delete</Button>
             <DownloadButton />
           </div>
           <div className={classes.sectionMobile}>
