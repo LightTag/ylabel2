@@ -20,6 +20,7 @@ import { Fade } from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
 import DownloadButton from "./DownloadButton";
 import DeleteAllButton from "./DeleteAllButton";
+import ForkOnGithub from "./ForkOnGithub";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "none",
       [theme.breakpoints.up("md")]: {
         display: "flex",
+        marginRight: theme.spacing(6),
       },
     },
     sectionMobile: {
@@ -194,6 +196,7 @@ export default function PrimarySearchAppBar() {
             </IconButton>
           </div>
         </Toolbar>
+        <ForkOnGithub />
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
