@@ -20,6 +20,8 @@ const FileUploadButton: FunctionComponent = () => {
     const examplesArr: Data.Example[] = [];
     if (data && key) {
       data.forEach((ex) => {
+        const metadata = { ...ex };
+        delete metadata[key];
         examplesArr.push({
           content: ex[key],
 
@@ -30,6 +32,7 @@ const FileUploadButton: FunctionComponent = () => {
           kind: "example",
           hasNegativeOrRejectedLabel: -1,
           rejectedLabels: [],
+          metadata,
         });
       });
     }
