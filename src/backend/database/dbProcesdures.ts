@@ -44,9 +44,11 @@ export function applyLabel(exampleId: string, labelName: string) {
             labelName || (example.rejectedLabels || []).length > 0 ? 1 : -1,
         };
 
-        await mainThreadDB.example.update(exampleId, labelState);
-        await mainThreadDB.tfidf.update(exampleId, labelState);
-        await mainThreadDB.vector.update(exampleId, labelState);
+        await Promise.all([
+          mainThreadDB.example.update(exampleId, labelState),
+          mainThreadDB.tfidf.update(exampleId, labelState),
+          mainThreadDB.vector.update(exampleId, labelState),
+        ]);
       }
     }
   );

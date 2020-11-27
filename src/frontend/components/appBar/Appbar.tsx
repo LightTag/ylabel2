@@ -19,6 +19,7 @@ import { useTypedSelector } from "../../redux-state/rootState";
 import { Button, Fade } from "@material-ui/core";
 import { mainThreadDB } from "../../../backend/database/database";
 import Slide from "@material-ui/core/Slide";
+import DownloadButton from "./DownloadButton";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -179,6 +180,7 @@ export default function PrimarySearchAppBar() {
 
           <div className={classes.sectionDesktop}>
             <Button onClick={() => mainThreadDB.delete()}>Delete</Button>
+            <DownloadButton />
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
