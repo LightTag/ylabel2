@@ -20,6 +20,7 @@ import { Button, Fade } from "@material-ui/core";
 import { mainThreadDB } from "../../../backend/database/database";
 import Slide from "@material-ui/core/Slide";
 import DownloadButton from "./DownloadButton";
+import DeleteAllButton from "./DeleteAllButton";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -179,6 +180,7 @@ export default function PrimarySearchAppBar() {
           <div className={classes.grow} />
 
           <div className={classes.sectionDesktop}>
+            <DeleteAllButton />
             <Button onClick={() => mainThreadDB.delete()}>Delete</Button>
             <DownloadButton />
           </div>
