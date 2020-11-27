@@ -1,16 +1,15 @@
 import * as tf from "@tensorflow/tfjs";
 import negativeLabelsCrossEntropy from "./customLayers";
-import tfDataLoader from "./tfDataLoader";
+import { tfTFIDFDataLoader } from "./tfVectorDataLoader";
 import { workerDB } from "../../../../database/database";
-import Data from "../../../../data_clients/datainterfaces";
 import logger from "../../../../utils/logger";
 
-function modelFactory(numLabels: number) {
+function modelFactory(inputShape: number, numLabels: number) {
   const model = tf.sequential();
   model.add(
     tf.layers.dense({
       units: 64,
-      inputShape: [512],
+      inputShape: [inputShape],
       activation: "relu",
     })
   );
@@ -38,13 +37,16 @@ function onBatchEnd(batch, logs) {
 }
 
 export async function trainTFModel() {
+  // TODO take a paramater that specifies the vector source
+  const data = await tfTFIDFDataLoader();
+  const inputSize = data.featuresTensor.shape[1] as number;
   const numLabels = await workerDB.label.count();
-  const model = modelFactory(numLabels);
-  const data = await tfDataLoader();
+  const model = modelFactory(inputSize, numLabels);
+
   logger(data);
   await model.fit(data.featuresTensor, data.labelMaskTensor, {
     callbacks: { onBatchEnd },
-    epochs: 200,
+    epochs: 10,
     batchSize: 32,
   });
   return { model, labelsToId: data.labelsToId, idsToLabel: data.idsToLabel };
@@ -52,7 +54,8 @@ export async function trainTFModel() {
 
 function predictOne(
   model: tf.Sequential,
-  example: Data.Vector,
+  example: { exampleId: string; vector: number[] },
+
   idsToLabel: Record<number, string>
 ): {
   labelId: number;
@@ -81,14 +84,15 @@ export async function predictAll(
   model: tf.Sequential,
   idsToLabel: Record<number, string>
 ) {
-  const unlabeledExamples = await workerDB.vector
-    // .where("hasLabel")
-    // .equals(-1)
+  //TODO make the vector source a paramater
+  const unlabeledExamples = await workerDB.tfidf
+    .where("hasLabel")
+    .equals(-1)
     .limit(200)
     .toArray();
   const results = tf.tidy(() => {
     const results = unlabeledExamples.map((x) =>
-      predictOne(model, x, idsToLabel)
+      predictOne(model, { exampleId: x.exampleId, vector: x.arr }, idsToLabel)
     );
     return results;
   });

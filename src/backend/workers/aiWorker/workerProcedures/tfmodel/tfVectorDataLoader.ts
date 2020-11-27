@@ -28,13 +28,7 @@ function makeLabelMask(
   }
 }
 
-async function tfDataLoader() {
-  const labeledTFIDFArray = (await workerDB.vector
-    .where("hasNegativeOrRejectedLabel")
-    .equals(1)
-    .toArray()) as Required<Data.Vector>[];
-  const featuresArr: number[][] = [];
-  const labelMaskArr: number[][] = [];
+async function getLabelsDict() {
   const labelsToId: Record<string, number> = {};
   const idsToLabel: Record<number, string> = {};
   const labels = await workerDB.label.toArray();
@@ -44,6 +38,17 @@ async function tfDataLoader() {
   });
 
   const numLables = labels.length;
+  return { labelsToId, idsToLabel, numLables };
+}
+
+async function tfVectorDataLoader() {
+  const labeledTFIDFArray = (await workerDB.vector
+    .where("hasNegativeOrRejectedLabel")
+    .equals(1)
+    .toArray()) as Required<Data.Vector>[];
+  const featuresArr: number[][] = [];
+  const labelMaskArr: number[][] = [];
+  const { labelsToId, idsToLabel, numLables } = await getLabelsDict();
 
   labeledTFIDFArray.forEach((item) => {
     featuresArr.push(item.vector);
@@ -63,4 +68,31 @@ async function tfDataLoader() {
   };
 }
 
-export default tfDataLoader;
+export async function tfTFIDFDataLoader() {
+  const labeledTFIDFArray = (await workerDB.tfidf
+    .where("hasLabel")
+    .equals(1)
+    .toArray()) as Required<Data.TFIDF>[];
+  const featuresArr: number[][] = [];
+  const labelMaskArr: number[][] = [];
+  const { labelsToId, idsToLabel, numLables } = await getLabelsDict();
+
+  labeledTFIDFArray.forEach((item) => {
+    featuresArr.push(item.arr);
+    labelMaskArr.push(
+      makeLabelMask(
+        labelsToId[item.label],
+        item.rejectedLabels.map((x) => labelsToId[x]),
+        numLables
+      )
+    );
+  });
+  return {
+    featuresTensor: tf.tensor(featuresArr, undefined, "float32"),
+    labelMaskTensor: tf.tensor(labelMaskArr, undefined, "int32"),
+    labelsToId,
+    idsToLabel,
+  };
+}
+
+export default tfVectorDataLoader;

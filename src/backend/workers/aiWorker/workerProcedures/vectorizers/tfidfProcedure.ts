@@ -13,7 +13,7 @@ export async function handleTfIdf(
   const tfidf = transformer.fitTransform(examples);
 
   logger("start tfidf", tfidf);
-  workerDB.tfidf.bulkAdd(
+  workerDB.tfidf.bulkPut(
     Object.values(tfidf).map((x, ix) => ({
       dict: x,
       arr: Object.values(x),
