@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk } from "../rootState";
 import TFIDFTransformer from "../../../backend/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import Data from "../../../backend/data_clients/datainterfaces";
 import { InsertToDBEvent } from "../../../backend/workers/aiWorker/ai_worker";
@@ -58,9 +57,7 @@ const exampleSlice = createSlice({
   },
 });
 const worker = AIWorkerSingleton.getInstance();
-export const addExamplesThunk = (
-  examples: Data.Example[]
-): AppThunk => async () => {
+export async function addExamples(examples: Data.Example[]) {
   const event: InsertToDBEvent = {
     direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
     requestId: -100,
@@ -76,7 +73,7 @@ export const addExamplesThunk = (
   //@ts-ignore
 
   worker.worker.postMessage(event);
-  indexWorkerSingleton.addDocs(examples);
-};
+  return indexWorkerSingleton.addDocs(examples);
+}
 const exampleReducer = exampleSlice.reducer;
 export default exampleReducer;

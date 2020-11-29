@@ -3,41 +3,47 @@ import { Button, TextField } from "@material-ui/core";
 import { readUserInputFile } from "./fileReader";
 import MenuItem from "@material-ui/core/MenuItem";
 import md5 from "crypto-js/md5";
-import { useDispatch } from "react-redux";
-import { addExamplesThunk } from "../../redux-state/examples/exampleState";
+import { addExamples } from "../../redux-state/examples/exampleState";
 import Data from "../../../backend/data_clients/datainterfaces";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import { useMutation } from "react-query";
+import Fade from "@material-ui/core/Fade";
+import LinearProgress from "@material-ui/core/LinearProgress";
+const saveExamplesfn = (params: {
+  data: any[] | undefined;
+  key: string | undefined;
+  labelKey: string | undefined;
+}) => {
+  const { data, key, labelKey } = params;
+  const examplesArr: Data.Example[] = [];
+  if (data && key) {
+    data.forEach((ex) => {
+      const metadata = { ...ex };
+      delete metadata[key];
+      examplesArr.push({
+        content: ex[key],
 
+        datasetName: "test",
+        exampleId: md5(ex[key]).toString(),
+        label: labelKey ? ex[labelKey] : undefined,
+        hasLabel: labelKey && ex[labelKey] ? 1 : -1,
+        kind: "example",
+        hasNegativeOrRejectedLabel: -1,
+        rejectedLabels: [],
+        metadata,
+      });
+    });
+  }
+  return addExamples(examplesArr);
+};
 const FileUploadButton: FunctionComponent = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [keys, setKeys] = React.useState<string[]>();
   const [key, setKey] = React.useState<string>();
   const [labelKey, setLabelKey] = React.useState<string | undefined>();
   const [data, setData] = React.useState<any[]>();
-  const dispatch = useDispatch();
-  const handleSaveExamples = () => {
-    const examplesArr: Data.Example[] = [];
-    if (data && key) {
-      data.forEach((ex) => {
-        const metadata = { ...ex };
-        delete metadata[key];
-        examplesArr.push({
-          content: ex[key],
-
-          datasetName: "test",
-          exampleId: md5(ex[key]).toString(),
-          label: labelKey ? ex[labelKey] : undefined,
-          hasLabel: labelKey && ex[labelKey] ? 1 : -1,
-          kind: "example",
-          hasNegativeOrRejectedLabel: -1,
-          rejectedLabels: [],
-          metadata,
-        });
-      });
-    }
-    dispatch(addExamplesThunk(examplesArr));
-  };
+  const [saveExamples, saveStatus] = useMutation(saveExamplesfn);
   const handleFile = async (e: SyntheticEvent) => {
     e.preventDefault();
     if (inputRef) {
@@ -119,12 +125,17 @@ const FileUploadButton: FunctionComponent = () => {
         <Button
           color={"primary"}
           variant={"contained"}
-          disabled={!key}
-          onClick={handleSaveExamples}
+          disabled={!key || saveStatus.isLoading}
+          onClick={() => saveExamples({ data, key, labelKey })}
           fullWidth={true}
         >
-          Upload
+          <Fade in={!saveStatus.isLoading}>
+            <span> Upload </span>
+          </Fade>
         </Button>
+        <Fade in={saveStatus.isLoading}>
+          <LinearProgress />
+        </Fade>
       </Grid>
     </Grid>
   );

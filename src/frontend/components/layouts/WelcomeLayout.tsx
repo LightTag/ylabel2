@@ -2,6 +2,7 @@ import React, { FunctionComponent } from "react";
 import Typography from "@material-ui/core/Typography";
 import FileUploadButton from "../dataUpload/simpleDataUpload";
 import ThreeColumnBody from "./templates/ThreeColumnBody";
+import { Paper } from "@material-ui/core";
 
 const WelcomeBody: FunctionComponent = () => {
   return (
@@ -16,7 +17,11 @@ const WelcomeBody: FunctionComponent = () => {
         Everything happens in the browser and your data never leaves your
         computer
       </Typography>
-      <FileUploadButton />
+      <Paper>
+        <Typography variant={"h4"}>Add Data</Typography>
+
+        <FileUploadButton />
+      </Paper>
     </div>
   );
 };
