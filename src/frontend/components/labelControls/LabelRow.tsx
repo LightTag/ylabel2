@@ -96,12 +96,7 @@ const LabelRow: FunctionComponent<{
   };
 
   return (
-    <div
-      style={style}
-      className={classes.root}
-      onClick={handleClick}
-      tabIndex={0}
-    >
+    <div style={style} className={classes.root} onClick={handleClick}>
       <label className={classes.nameContainer} style={{ color: color }}>
         {" "}
         {labelName} - {props.count}{" "}

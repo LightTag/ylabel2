@@ -10,6 +10,7 @@ import useDatabase from "../../../backend/database/useDatabase";
 import { ActiveLearningContext } from "../../active_learning/ActiveLearningContext";
 import { rejectLabel } from "../../../backend/database/dbProcesdures";
 import Divider from "@material-ui/core/Divider";
+import { useTypedSelector } from "../../redux-state/rootState";
 
 interface Props {
   exampleId: string;
@@ -29,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "pre-wrap",
     fontSize: "16px",
     lineHeight: "32px",
+    "&>em": {
+      background: "yellow",
+      "&:focus": {
+        fontWeight: "bold",
+      },
+    },
   },
   divider: {
     margin: theme.spacing(2, 0),
@@ -37,6 +44,31 @@ const useStyles = makeStyles((theme) => ({
     height: "15%",
   },
 }));
+
+const HighlightedBody: FunctionComponent<{ text: string }> = React.memo(
+  (props) => {
+    const searchParams = useTypedSelector((state) => state.searchReducer);
+    let query = searchParams.searchQuery;
+    let text = props.text;
+    const spans: JSX.Element[] = [];
+    if (!query) {
+      spans.push(<span>{props.text}</span>);
+    } else {
+      query = query.toLowerCase();
+      let cursor = text.toLowerCase().search(query);
+
+      while (cursor !== -1) {
+        spans.push(<span>{text.slice(0, cursor)}</span>);
+        const end = cursor + query.length;
+        spans.push(<em tabIndex={0}>{text.slice(cursor, end)}</em>);
+        text = text.slice(end);
+        cursor = text.search(query);
+      }
+      spans.push(<span>{text}</span>);
+    }
+    return <> {spans} </>;
+  }
+);
 
 const Example: FunctionComponent<Props> = (props) => {
   const classes = useStyles();
@@ -91,15 +123,7 @@ const Example: FunctionComponent<Props> = (props) => {
           }) || null}
         </div>
         <Typography className={classes.body} dir={"auto"}>
-          {/*{annotationQuery.data.map((span) => (*/}
-          {/*  <ExampleSpan*/}
-          {/*    span={span}*/}
-          {/*    key={span.start}*/}
-          {/*    addSpanId={props.addSpanId}*/}
-          {/*  />*/}
-          {/*))}*/}
-
-          {exampleQuery.data.content}
+          <HighlightedBody text={exampleQuery.data.content} />
         </Typography>
       </Paper>
     );

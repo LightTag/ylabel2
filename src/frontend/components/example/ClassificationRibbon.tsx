@@ -79,7 +79,6 @@ const ClassBox: FunctionComponent<{
       style={style}
       className={classes.cbRoot}
       onClick={handleClick}
-      tabIndex={0}
     >
       {labelName} {props.comment ? ` - ${props.comment}` : null}
     </div>
@@ -103,7 +102,7 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
 
   if (labels.data && example.data)
     return (
-      <div tabIndex={0}>
+      <div>
         {labels.data.map((label) => (
           <span
             style={
