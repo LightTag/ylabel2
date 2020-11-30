@@ -8,6 +8,8 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { mainThreadDB } from "../../../backend/database/database";
+import { useExampleCount } from "../../../backend/database/useDatabase";
+
 const useStyles = makeStyles((theme) => ({
   header: {
     background: theme.palette.error.main,
@@ -29,6 +31,10 @@ async function handleDelete() {
 export const DeleteAllButton: FunctionComponent = () => {
   const [open, setOpen] = React.useState<boolean>(false);
   const classes = useStyles();
+  const exampleCountQuery = useExampleCount();
+  if (!exampleCountQuery.data) {
+    return null;
+  }
   return (
     <>
       <Button onClick={() => setOpen(true)} className={classes.button}>

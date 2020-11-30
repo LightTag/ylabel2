@@ -30,5 +30,32 @@ function useDatabase<T>(
   }, []);
   return query;
 }
+export function useExampleCount() {
+  const exampleCountQuery = useDatabase(
+    "exampleCount",
+    "example",
+    (db) => db.example.count(),
+    undefined
+  );
+  return exampleCountQuery;
+}
+export function useLabelCount() {
+  const exampleCountQuery = useDatabase(
+    "labelCount",
+    "label",
+    (db) => db.label.count(),
+    undefined
+  );
+  return exampleCountQuery;
+}
 
+export function usePredictionCount() {
+  const exampleCountQuery = useDatabase(
+    "predictionCount",
+    "example",
+    (db) => db.example.where({ hasPrediction: 1 }).count(),
+    undefined
+  );
+  return exampleCountQuery;
+}
 export default useDatabase;

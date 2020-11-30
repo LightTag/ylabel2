@@ -21,6 +21,7 @@ import Slide from "@material-ui/core/Slide";
 import DownloadButton from "./DownloadButton";
 import DeleteAllButton from "./DeleteAllButton";
 import ForkOnGithub from "./ForkOnGithub";
+import { useExampleCount } from "../../../backend/database/useDatabase";
 
 export const AppBarHeight = "64px";
 const useStyles = makeStyles((theme: Theme) =>
@@ -77,6 +78,11 @@ export default function PrimarySearchAppBar() {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const mode = useTypedSelector((state) => state.appMode.mode);
   const isActiveLearning = mode === "ActiveLearning";
+  const exampleCountQuery = useExampleCount();
+  if (!exampleCountQuery.data) {
+    return null;
+  }
+  const hasExamples = exampleCountQuery.data > 0;
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -167,13 +173,14 @@ export default function PrimarySearchAppBar() {
           <Typography className={classes.title} variant="h6" noWrap>
             YLabel
           </Typography>
+
           <ActiveLearningToggleContainer />
-          <Fade in={!isActiveLearning}>
+          <Fade in={!isActiveLearning && hasExamples}>
             <span className={classes.regularModeControls}>
               <SearchBar />
             </span>
           </Fade>
-          <Slide in={!isActiveLearning}>
+          <Slide in={!isActiveLearning && hasExamples}>
             <span className={classes.regularModeControls}>
               <FilterCheckboxes />
             </span>

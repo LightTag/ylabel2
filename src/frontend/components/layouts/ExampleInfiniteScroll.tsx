@@ -2,11 +2,12 @@ import React from "react";
 import {
   AutoSizer,
   CellMeasurer,
-  List,
   CellMeasurerCache,
+  List,
   ListRowProps,
 } from "react-virtualized";
 import Example from "../example/Example";
+
 const cache = new CellMeasurerCache({
   fixedWidth: true,
 });

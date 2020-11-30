@@ -13,6 +13,7 @@ import GithubIcon from "@material-ui/icons/GitHub";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import AddDataDialog from "../dataUpload/AddDataDialog";
+
 const WelcomeItem: FunctionComponent<{
   title: string;
   subtitle: string;

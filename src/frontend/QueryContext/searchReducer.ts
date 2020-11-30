@@ -26,7 +26,9 @@ namespace SearchTypes {
   }
 }
 
-function initialStateFactory(): SearchTypes.SearchParams {
+function initialStateFactory(): SearchTypes.SearchParams & {
+  everSearched: boolean;
+} {
   return {
     hasLabel: null,
     hasPrediction: null,
@@ -34,6 +36,7 @@ function initialStateFactory(): SearchTypes.SearchParams {
     searchQuery: null,
     predictedLabel: null,
     hasFilter: false,
+    everSearched: false,
   };
 }
 
@@ -49,6 +52,9 @@ const searchSlice = createSlice({
         //@ts-ignore
         state[key] = value;
       });
+      if (action.payload.params.searchQuery) {
+        state.everSearched = true;
+      }
       state.hasFilter =
         state.hasLabel !== null ||
         state.hasPrediction !== null ||

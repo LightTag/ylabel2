@@ -4,6 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import FileUploadButton from "./simpleDataUpload";
 import Button from "@material-ui/core/Button";
+
 const AddDataDialog: FunctionComponent<{
   open: boolean;
   onClose: () => void;

@@ -4,6 +4,8 @@ import * as Papa from "papaparse";
 import React, { FunctionComponent } from "react";
 import { useMutation } from "react-query";
 import { Button } from "@material-ui/core";
+import { useExampleCount } from "../../../backend/database/useDatabase";
+
 async function downloadResults() {
   const examples = await mainThreadDB.example
     .orderBy(["hasPrediction", "hasLabel"])
@@ -29,6 +31,10 @@ async function downloadResults() {
 
 const DownloadButton: FunctionComponent = () => {
   const [downloadFunc, downloadStatus] = useMutation(downloadResults);
+  const exampleCountQuery = useExampleCount();
+  if (!exampleCountQuery.data) {
+    return null;
+  }
   return (
     <Button
       variant="contained"

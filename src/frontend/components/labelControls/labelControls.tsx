@@ -6,16 +6,22 @@ import { useMutation } from "react-query";
 import { mainThreadDB } from "../../../backend/database/database";
 import useSearchQuery from "../../QueryContext/useSearchQuery";
 import Data from "../../../backend/data_clients/datainterfaces";
-import useDatabase from "../../../backend/database/useDatabase";
+import useDatabase, {
+  useLabelCount,
+} from "../../../backend/database/useDatabase";
 import LabelRow from "./LabelRow";
 import useDefaultLabelController from "../../../controllers/labelControllers/DefaultLabelController";
 import Typography from "@material-ui/core/Typography";
+import Beacon from "../Beacon";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const AddLabel: FunctionComponent = () => {
+  const labelCount = useLabelCount();
   const [name, setName] = React.useState<string | undefined>();
-  const [addLabel] = useMutation((name: string) =>
-    mainThreadDB.label.add({ name, kind: "label", count: 0 }, name)
-  );
+  const [addLabel] = useMutation(async (name: string) => {
+    await mainThreadDB.label.add({ name, kind: "label", count: 0 }, name);
+    setName(undefined);
+  });
 
   return (
     <div>
@@ -23,14 +29,26 @@ const AddLabel: FunctionComponent = () => {
         label={"Add a new label"}
         value={name}
         onChange={(e) => setName(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Beacon show={labelCount.data === 0} />
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                size={"small"}
+                disabled={name === undefined}
+                color={name ? "primary" : undefined}
+                onClick={() => name && addLabel(name)}
+              >
+                <SaveIcon fontSize={"small"} />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
-      <IconButton
-        size={"small"}
-        disabled={name === undefined}
-        onClick={() => name && addLabel(name)}
-      >
-        <SaveIcon fontSize={"small"} />
-      </IconButton>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 import { fade } from "@material-ui/core/styles";
 import Fade from "@material-ui/core/Fade";
+import Beacon from "../Beacon";
 
 const useStyles = makeStyles((theme) => ({
   inputRoot: {
@@ -52,9 +53,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 const SearchBar: FunctionComponent = () => {
   const classes = useStyles();
-  const query = useTypedSelector((state) => state.searchReducer.searchQuery);
+
+  const { searchQuery, everSearched } = useTypedSelector(
+    (state) => state.searchReducer
+  );
   const [value, setValue] = React.useState<string | undefined>(
-    query || undefined
+    searchQuery || undefined
   );
   const exampleIds = useSearchQuery();
   const dispatch = useDispatch();
@@ -78,16 +82,17 @@ const SearchBar: FunctionComponent = () => {
   };
 
   React.useEffect(() => {
-    if (query) {
-      setValue(query);
+    if (searchQuery) {
+      setValue(searchQuery);
     }
-  }, [query]);
+  }, [searchQuery]);
 
   return (
     <div className={classes.search}>
       <div className={classes.searchIcon}>
         <SearchIcon />
       </div>
+
       <InputBase
         placeholder="Search…"
         value={value}
@@ -101,6 +106,7 @@ const SearchBar: FunctionComponent = () => {
       <Fade in={exampleIds.isLoading}>
         <LinearProgress />
       </Fade>
+      <Beacon show={!everSearched} />
     </div>
     // <FilterCheckboxes />
   );
