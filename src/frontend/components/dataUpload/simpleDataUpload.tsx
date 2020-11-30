@@ -37,7 +37,9 @@ const saveExamplesfn = (params: {
   }
   return addExamples(examplesArr);
 };
-const FileUploadButton: FunctionComponent = () => {
+const FileUploadButton: FunctionComponent<{
+  afterSubmit?: () => void;
+}> = (props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [keys, setKeys] = React.useState<string[]>();
   const [key, setKey] = React.useState<string>();
@@ -54,6 +56,7 @@ const FileUploadButton: FunctionComponent = () => {
             const res = await readUserInputFile(inputRef.current.files[0]);
             setData(res);
             setKeys(Object.keys(res[0]));
+            props.afterSubmit && props.afterSubmit();
           }
         }
       }

@@ -7,9 +7,10 @@ import ActiveLearningBody from "../../active_learning/ActiveLearningBody";
 import { useTypedSelector } from "../../redux-state/rootState";
 import { Fade } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import FileUploadButton from "../dataUpload/simpleDataUpload";
 import WorkComp from "../../classifier/workerComp";
 import ExampleInfiniteScroll from "./ExampleInfiniteScroll";
+import { AddDataDialogWithButton } from "../dataUpload/AddDataDialog";
+
 const NoDataBody = () => {
   return (
     <div style={{ width: "400px", margin: "auto" }}>
@@ -79,7 +80,11 @@ const OpenAnnotationBody: FunctionComponent = () => {
       Middle={<BodyDispatch />}
       Right={
         <div>
-          <WorkComp /> <FileUploadButton />
+          <WorkComp />{" "}
+          <AddDataDialogWithButton
+            label={"Add Data"}
+            buttonProps={{ variant: "contained", color: "primary" }}
+          />
         </div>
       }
     />
