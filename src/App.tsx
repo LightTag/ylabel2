@@ -16,13 +16,6 @@ const theme = createMuiTheme({
     fontSize: 10,
     fontFamily: "Roboto",
   },
-  overrides: {
-    MuiPaper: {
-      root: {
-        padding: "16px",
-      },
-    },
-  },
 });
 
 const cache = new QueryCache();
