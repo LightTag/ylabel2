@@ -24,8 +24,9 @@ const AddLabel: FunctionComponent = () => {
   });
 
   return (
-    <div>
+    <div style={{ padding: "1rem" }}>
       <TextField
+        fullWidth={true}
         label={"Add a new label"}
         value={name}
         onChange={(e) => setName(e.target.value)}
