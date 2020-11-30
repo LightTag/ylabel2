@@ -1,7 +1,6 @@
 # YLabel2
-YLabel is a tool for document categorization that runs in the browser. 
+YLabel is a tool for document categorization with search and ML that runs in the browser.
  
-
 ## Goals
 
 ### Fast Document Categorization
@@ -15,10 +14,9 @@ Particularly we want:
 * **Private** The users data should never leave their server and they should be able to use all of YLabel in an offline mode 
 
 ### UX & Technology Experimentation
-YLabel is a UX and tech experiment. Our 0-setup and privacy goals mean that their is no central server or service, and that 
-YLabel works entirely in the browser. YLabel is thus an experiment that asks " How much can we do for the user within the browser ?"
+YLabel is a UX and tech experiment. Our 0-setup and privacy goals mean that their is no central server or service, and that YLabel works entirely in the browser. YLabel is thus an experiment that asks " How much can we do for the user within the browser ?"
 
-Another motivation for running purely in the server is the elimination of operational complexity. Running "AI" for users on a server
+Another motivation for running purely in the server is the **elimination of operational complexity**. Running "AI" for users on a server
 demands operational complexity, and thus pulls resources away from product innovation. We hope that running YLabel purely in the browser
 will allow faster experimentation with user facing features by eliminating operational complexity.  
 
@@ -43,40 +41,14 @@ What work belongs in Web Workers and what are good software development practice
 components beyond the npm ecosystem. For example, [tantivy](https://github.com/tantivy-search/tantivy) is a search engine written in Rust
 that we'd like to use as a WASM module. Or, [tf.js](https://blog.tensorflow.org/2020/09/supercharging-tensorflowjs-webassembly.html)
 recently released a backend that leverages SIMD and native threads for faster calcuation.
-* **React** The React ecosystem makes have use of reference equality to keep apps performant. Our reliance on Web Workers and Indexdb
-makes that harder (because objects are copied). How do we maintain React's performance when reference stability is no longer a valid assumption ? 
+* **React With IndexdDB** The React ecosystem makes have use of reference equality to keep apps performant. Our reliance on Web Workers and Indexdb makes that harder (because objects are copied). How do we maintain React's performance when reference stability is no longer a valid assumption ? 
    
-## Code Structure
-YLabel has "backend" code, the logic that runs on WebWorkers, "frontend" code, the View aspects that the user interacts with
-and  "Controllers", the interfaces via which the frontend talks with the backend. 
 
-The division is not perfect, with the frontend occasionally making calls directly to the database, and not all of the logic
-has been moved behind controllers. The eventual goal is to have well defined interfaces that allow contributors to swap out backends
 
-### Important Parts Of the Code
 
-#### [Database](https://github.com/LightTag/ylabel2/blob/master/src/backend/database/database.ts)
-We use Dexie.js as an interface to IndexDB. database.ts defines the core interface class, registers tables and 
-implements a mechanism for registering callbacks.
-
-We use dexie-observable, which let's us respond to database change events independent of their source (main thread or a webworker)
-
-### [useDatabase](https://github.com/LightTag/ylabel2/blob/master/src/backend/database/useDatabase.ts)
-useDatabase is a custom hook that let's users make a database query and register a callback that triggers it's refreshing. 
-Behind the scenes, we use react-query to cache the datbase query and have the callback mechanism decide when the bust the cache. 
-
-For instance the following call retreives an Example from the database and refetches whenever a change to that example was made.
-```ts
-const example = useDatabase(
-    ["exampleLabel", exampleId],
-    "example",
-    (db) => db.example.get("exampleId"),
-    props.exampleId
-  );
-``` 
 ## Contributing
-Issues, Pull requests and suggestions are welcome! It's still early days, and we don't have much infrastrucutre to help you
-get started just yet, so please ask questions and give feedback to help us help you help us. 
+
+Issues, Pull requests and suggestions are welcome, though it's still early days and we're working on making it easy to dive in. Feedback, complaints and requests are welcome! 
 
 
 ## Inspiration
