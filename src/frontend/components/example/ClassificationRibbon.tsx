@@ -96,7 +96,7 @@ const ClassificationRibbon: FunctionComponent<Props> = React.memo((props) => {
   const example = useDatabase(
     ["exampleLabel", exampleId],
     "example",
-    (db) => db.example.get("exampleId"),
+    (db) => db.example.get(exampleId),
     props.exampleId
   );
 
