@@ -11,6 +11,7 @@ import InputBase from "@material-ui/core/InputBase";
 import { fade } from "@material-ui/core/styles";
 import Fade from "@material-ui/core/Fade";
 import Beacon from "../Beacon";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   inputRoot: {
@@ -25,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("md")]: {
       width: "20ch",
     },
+  },
+  resultCount: {
+    margin: theme.spacing(0, 1),
+    fontWeight: "bold",
   },
   search: {
     position: "relative",
@@ -70,7 +75,7 @@ const SearchBar: FunctionComponent = () => {
           params: { searchQuery: e.target.value },
         })
       );
-    }, 150),
+    }, 250),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -102,6 +107,14 @@ const SearchBar: FunctionComponent = () => {
           input: classes.inputInput,
         }}
         inputProps={{ "aria-label": "search" }}
+        endAdornment={
+          <InputAdornment position={"end"}>
+            <span className={classes.resultCount}>
+              {" "}
+              {exampleIds.data?.length}
+            </span>
+          </InputAdornment>
+        }
       />
       <Fade in={exampleIds.isLoading}>
         <LinearProgress />
