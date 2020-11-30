@@ -3,12 +3,15 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { IndexWorkerSingleton } from "./backend/workers/docIndex/IndexWorkerSingleton";
+import { mainThreadDB } from "./backend/database/database";
 
 const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 indexWorkerSingleton
   .initializeIndex()
   .then(() => {})
   .catch((err) => {});
+//TODO this is a workaround remove this
+mainThreadDB.label.offset(12).delete();
 ReactDOM.render(
   <React.StrictMode>
     <App />
