@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import TFIDFTransformer from "../../../backend/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import Data from "../../../backend/data_clients/datainterfaces";
-import { InsertToDBEvent } from "../../../backend/workers/aiWorker/ai_worker";
-import { GenericWorkerTypes } from "../../../backend/workers/common/datatypes";
 import { IndexWorkerSingleton } from "../../../backend/workers/docIndex/IndexWorkerSingleton";
-import { EventKinds } from "../../../backend/utils/logger";
-import AIWorkerSingleton from "../../../backend/workers/aiWorker/AIWorkerSingleton";
 
 namespace ExampleActions {
   export interface ExampleState {
@@ -56,23 +52,10 @@ const exampleSlice = createSlice({
     },
   },
 });
-const worker = AIWorkerSingleton.getInstance();
 export async function addExamples(examples: Data.Example[]) {
-  const event: InsertToDBEvent = {
-    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
-    requestId: -100,
-    workerName: GenericWorkerTypes.EWorkerName.dataLoader,
-    kind: EventKinds.insertToDb,
-    payload: {
-      examples: examples,
-    },
-  };
-
   const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 
-  //@ts-ignore
-
-  worker.worker.postMessage(event);
+  indexWorkerSingleton.addDocs(examples);
   return indexWorkerSingleton.addDocs(examples);
 }
 const exampleReducer = exampleSlice.reducer;

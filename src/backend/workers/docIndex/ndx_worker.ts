@@ -17,6 +17,7 @@ import Data from "../..//data_clients/datainterfaces";
 import { GenericWorkerTypes } from "../common/datatypes";
 import logger from "../../utils/logger";
 import significantTermsForLabel from "./significantTerms";
+import { Counter } from "../aiWorker/workerProcedures/vectorizers/tfidf";
 
 interface WorkerWithIndex extends Worker {
   //TODO indicate that the index is possibly udnefined and check / send error messages
@@ -46,7 +47,7 @@ function handleIndexRequest(
       numInserted: examples.length,
     },
   };
-  ctx.postMessage(response);
+  return response;
 }
 
 function handleQueryRequest(
@@ -68,7 +69,7 @@ function handleQueryRequest(
       results,
     },
   };
-  ctx.postMessage(response);
+  return response;
 }
 
 async function handleStartInitRequest(
@@ -108,7 +109,7 @@ async function handleStartInitRequest(
       numIndexed: ctx.index._index.docs.size,
     },
   };
-  ctx.postMessage(response);
+  return response;
 }
 async function handleSignificantTerms(
   message: MessageEvent<NSIndexWorker.Request.IStartSignificantTerms>
@@ -125,13 +126,56 @@ async function handleSignificantTerms(
       terms,
     },
   };
-  ctx.postMessage(response);
+  return response;
 }
-function messageDispatch(message: MessageEvent<any>) {
+
+async function insertToDB(
+  message: MessageEvent<NSIndexWorker.Request.IStartDataInsert>
+) {
+  //TODO  This needs to move to its own module and worker
+
+  const examples = message.data.payload.examples;
+  const uniqueLabelSet = new Counter();
+  examples.forEach((ex) => {
+    if (ex.label) {
+      uniqueLabelSet.increment(ex.label);
+    }
+  });
+  const newLabels: Data.Label[] = Object.entries(uniqueLabelSet.items).map(
+    ([name, count]) => ({
+      name,
+      count,
+      kind: "label",
+    })
+  );
+  await workerDB.example.bulkAdd(examples).catch((e) => {
+    logger(
+      "Dexie rejected a bulka dd but we caught it because its about duplicate string. If we didn't catch it the transaction would abort"
+    );
+  });
+  await workerDB.label.bulkAdd(newLabels);
+  logger(`Inserted ${examples.length}`);
+  const response: NSIndexWorker.Response.IEndDataInsert = {
+    workerName: GenericWorkerTypes.EWorkerName.index,
+    direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.response,
+
+    requestId: message.data.requestId,
+    kind: NSIndexWorker.IndexResponseMessageKind.endDataInsert,
+    payload: {
+      numInserted: examples.length,
+    },
+  };
+  return response;
+}
+
+async function _messageDispatch(
+  message: MessageEvent<any>
+): Promise<NSIndexWorker.Response.TResponse> {
   const kind: NSIndexWorker.IndexRequestMessageKind | undefined =
     message.data.kind;
 
   if (!kind) {
+    //@ts-ignore
     return;
   }
 
@@ -144,9 +188,16 @@ function messageDispatch(message: MessageEvent<any>) {
       return handleStartInitRequest(message);
     case NSIndexWorker.IndexRequestMessageKind.startSignificantTerms:
       return handleSignificantTerms(message);
+    case NSIndexWorker.IndexRequestMessageKind.startDataInsert:
+      return insertToDB(message);
     default:
       assertNever(kind);
   }
 }
 
+async function messageDispatch(message: MessageEvent<any>) {
+  const response = await _messageDispatch(message);
+
+  ctx.postMessage(response);
+}
 ctx.addEventListener("message", messageDispatch);

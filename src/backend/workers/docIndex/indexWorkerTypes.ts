@@ -8,6 +8,7 @@ export namespace NSIndexWorker {
     startQuery = "startQuery",
     startInit = "startInit",
     startSignificantTerms = "startSignificantTerms",
+    startDataInsert = "startDataInsert",
   }
 
   export enum IndexResponseMessageKind {
@@ -15,6 +16,7 @@ export namespace NSIndexWorker {
     endQuery = "endQuery",
     endInit = "endInit",
     endSignificantTerms = "endSignificantTerms",
+    endDataInsert = "endDataInsert",
   }
 
   interface IndexEventBase extends GenericWorkerTypes.GenericEvent {
@@ -66,10 +68,18 @@ export namespace NSIndexWorker {
       };
     }
 
+    export interface IStartDataInsert extends RequestEvent {
+      kind: IndexRequestMessageKind.startDataInsert;
+      payload: {
+        examples: Data.Example[];
+      };
+    }
+
     export type TRequests =
       | IStartQuery
       | IStartIndex
       | IStartInit
+      | IStartDataInsert
       | IStartSignificantTerms;
   }
   export namespace Response {
@@ -101,11 +111,18 @@ export namespace NSIndexWorker {
         labelName: string;
       };
     }
+    export interface IEndDataInsert extends ResponseEvent {
+      kind: IndexResponseMessageKind.endDataInsert;
+      payload: {
+        numInserted: number;
+      };
+    }
 
     export type TResponse =
       | IEndQuery
       | IEndIndex
       | IEndInit
+      | IEndDataInsert
       | IEndSignificantTerms;
   }
 

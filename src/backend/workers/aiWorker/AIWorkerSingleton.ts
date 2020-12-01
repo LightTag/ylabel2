@@ -33,7 +33,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
       },
       requestId: this.nextRequestId(),
     };
-    this.worker.postMessage(event);
+    this.startWork(event);
     return this.registerResponseHandler<NSAIWorker.Response.IEndVectorize>(
       event.requestId
     );
@@ -55,7 +55,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
       payload: {},
       requestId: this.nextRequestId(),
     };
-    this.worker.postMessage(event);
+    this.startWork(event);
     return this.registerResponseHandler<NSAIWorker.Response.IEndVectorize>(
       event.requestId
     );
@@ -69,7 +69,7 @@ class AIWorkerSingleton extends WorkerSingletonBase {
       payload: {},
       requestId: this.nextRequestId(),
     };
-    this.worker.postMessage(event);
+    this.startWork(event);
     return this.registerResponseHandler<NSAIWorker.Response.IEndVectorize>(
       event.requestId
     );

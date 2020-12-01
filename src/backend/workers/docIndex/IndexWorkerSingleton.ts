@@ -46,17 +46,17 @@ export class IndexWorkerSingleton
     }
     const requestId = this.nextRequestId();
 
-    const message: NSIndexWorker.Request.IStartIndex = {
-      workerName: GenericWorkerTypes.EWorkerName.index,
+    const event: NSIndexWorker.Request.IStartDataInsert = {
       direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
-
-      kind: NSIndexWorker.IndexRequestMessageKind.startIndexing,
-      requestId,
+      requestId: -100,
+      workerName: GenericWorkerTypes.EWorkerName.index,
+      kind: NSIndexWorker.IndexRequestMessageKind.startDataInsert,
       payload: {
-        examples,
+        examples: examples,
       },
     };
-    this.worker.postMessage(message);
+
+    this.startWork(event);
     return this.registerResponseHandler<NSIndexWorker.Response.IEndIndex>(
       requestId
     );

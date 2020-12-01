@@ -6,11 +6,3 @@ function logger(...message: any) {
 }
 
 export default logger;
-
-export enum EventKinds {
-  tfidf = "tfidf",
-  insertToDb = "insertToDb",
-  trainSVM = "trainSVM",
-  vectorize = "vectorize",
-  validateModel = "validateModel",
-}
