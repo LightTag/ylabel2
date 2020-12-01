@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import Typography from "@material-ui/core/Typography";
-import ThreeColumnBody from "./templates/ThreeColumnBody";
 import { Paper } from "@material-ui/core";
 import ComputerIcon from "@material-ui/icons/Computer";
 import CategoryIcon from "@material-ui/icons/Category";
@@ -13,14 +12,15 @@ import GithubIcon from "@material-ui/icons/GitHub";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import AddDataDialog from "../dataUpload/AddDataDialog";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const WelcomeItem: FunctionComponent<{
   title: string;
   subtitle: string;
   Icon?: typeof CategoryIcon;
 }> = (props) => (
-  <Grid item xs={6}>
-    <Paper style={{ padding: "1rem" }}>
+  <Grid item xs={6} md={3}>
+    <Paper style={{ padding: "1rem", height: "100%" }}>
       <Grid
         container
         alignItems={"center"}
@@ -42,30 +42,12 @@ const WelcomeItem: FunctionComponent<{
   </Grid>
 );
 const WelcomeText: FunctionComponent = () => {
-  const [openDialog, setOpen] = React.useState<boolean>(false);
   return (
     <Grid
       container
       spacing={4}
       style={{ padding: "2rem", margin: "-16px -32px" }}
     >
-      <Grid item xs={6}>
-        <Typography color="primary" variant={"h3"}>
-          Welcome To YLabel
-        </Typography>
-      </Grid>
-      <Grid item xs={6}>
-        <Button
-          variant={"contained"}
-          color={"primary"}
-          fullWidth={true}
-          onClick={() => setOpen(true)}
-        >
-          <Typography align="center" variant={"h4"}>
-            Start Categorizing
-          </Typography>
-        </Button>
-      </Grid>
       <WelcomeItem
         title={"Categorize Documents"}
         subtitle={"YLabel can help you categorize documents"}
@@ -114,18 +96,67 @@ const WelcomeText: FunctionComponent = () => {
         }
         Icon={GithubIcon}
       />
-      <AddDataDialog open={openDialog} onClose={() => setOpen(false)} />
     </Grid>
   );
 };
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+  header: {
+    width: "fit-content",
+    padding: theme.spacing(2),
+    margin: "auto",
+  },
+  subheader: {
+    fontSize: "16px",
+    width: "20rem",
+    margin: "auto",
+    marginTop: theme.spacing(2),
+  },
+  startButton: {
+    width: "fit-content",
+    padding: theme.spacing(2),
+    margin: "auto",
+    [theme.breakpoints.up("sm")]: {
+      marginBottom: theme.spacing(4),
+    },
+  },
+}));
 const WelcomeLayout: FunctionComponent = () => {
+  const [openDialog, setOpen] = React.useState<boolean>(false);
+  const classes = useStyles();
   return (
-    <ThreeColumnBody
-      Middle={<WelcomeText />}
-      Left={<div></div>}
-      Right={<div></div>}
-    />
+    <div className={classes.root}>
+      <div className={classes.header}>
+        <Typography color="primary" variant={"h2"}>
+          Welcome To YLabel
+        </Typography>
+        <Typography
+          color="primary"
+          variant={"body1"}
+          className={classes.subheader}
+        >
+          A free and open source tool for document categorization from the
+          makers of LightTag
+        </Typography>
+      </div>
+      <div className={classes.startButton}>
+        <Button
+          variant={"contained"}
+          color={"primary"}
+          onClick={() => setOpen(true)}
+        >
+          <Typography align="center" variant={"h4"}>
+            Start Categorizing
+          </Typography>
+        </Button>
+      </div>
+
+      <WelcomeText />
+
+      <AddDataDialog open={openDialog} onClose={() => setOpen(false)} />
+    </div>
   );
 };
 
