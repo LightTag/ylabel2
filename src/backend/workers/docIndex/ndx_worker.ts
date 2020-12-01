@@ -27,10 +27,10 @@ interface WorkerWithIndex extends Worker {
 // eslint-disable-next-line no-restricted-globals
 let ctx: WorkerWithIndex = self as any;
 
-function handleIndexRequest(
+async function handleIndexRequest(
   message: MessageEvent<NSIndexWorker.Request.IStartIndex>
 ) {
-  const examples = message.data.payload.examples;
+  const examples = await workerDB.example.toArray();
   examples.forEach((ex) => ctx.index.add(ex));
   const serializedIndex: Uint8Array = encode(toSerializable(ctx.index._index));
 

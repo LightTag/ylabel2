@@ -47,6 +47,8 @@ abstract class WorkerSingletonBase {
           );
           delete this.responseListeners[requestId];
           resolve(event.data.payload);
+        } else {
+          logger("Unhandled response", event.data);
         }
       };
       this.responseListeners[requestId] = responseHandler;

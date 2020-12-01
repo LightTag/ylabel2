@@ -55,8 +55,7 @@ const exampleSlice = createSlice({
 export async function addExamples(examples: Data.Example[]) {
   const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 
-  indexWorkerSingleton.addDocs(examples);
-  return indexWorkerSingleton.addDocs(examples);
+  await indexWorkerSingleton.insertAndIndex(examples);
 }
 const exampleReducer = exampleSlice.reducer;
 export default exampleReducer;

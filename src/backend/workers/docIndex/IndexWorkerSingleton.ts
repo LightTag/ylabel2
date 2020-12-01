@@ -40,20 +40,14 @@ export class IndexWorkerSingleton
     });
   }
 
-  public addDocs(examples: Data.Example[]) {
-    if (!this.initialized) {
-      throw new Error("The index is not initialized yet");
-    }
+  public buildIndex() {
     const requestId = this.nextRequestId();
-
-    const event: NSIndexWorker.Request.IStartDataInsert = {
-      direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
-      requestId: -100,
+    const event: NSIndexWorker.Request.IStartIndex = {
       workerName: GenericWorkerTypes.EWorkerName.index,
-      kind: NSIndexWorker.IndexRequestMessageKind.startDataInsert,
-      payload: {
-        examples: examples,
-      },
+      direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
+      requestId,
+      kind: NSIndexWorker.IndexRequestMessageKind.startIndexing,
+      payload: {},
     };
 
     this.startWork(event);
@@ -62,6 +56,31 @@ export class IndexWorkerSingleton
     );
   }
 
+  public addDocs(examples: Data.Example[]) {
+    if (!this.initialized) {
+      throw new Error("The index is not initialized yet");
+    }
+    const requestId = this.nextRequestId();
+
+    const event: NSIndexWorker.Request.IStartDataInsert = {
+      direction: GenericWorkerTypes.ERquestOrResponesOrUpdate.request,
+      requestId: requestId,
+      workerName: GenericWorkerTypes.EWorkerName.index,
+      kind: NSIndexWorker.IndexRequestMessageKind.startDataInsert,
+      payload: {
+        examples: examples,
+      },
+    };
+
+    this.startWork(event);
+    return this.registerResponseHandler<NSIndexWorker.Response.IEndDataInsert>(
+      requestId
+    );
+  }
+  public async insertAndIndex(examples: Data.Example[]) {
+    await this.addDocs(examples);
+    return this.buildIndex();
+  }
   public getSignificantTermsForLabel(labelName: string) {
     if (!this.initialized) {
       logger("Index wasn't initialized");

@@ -42,9 +42,7 @@ export namespace NSIndexWorker {
   export namespace Request {
     export interface IStartIndex extends RequestEvent {
       kind: IndexRequestMessageKind.startIndexing;
-      payload: {
-        examples: Data.Example[];
-      };
+      payload: {};
     }
 
     export interface IStartQuery extends RequestEvent {
