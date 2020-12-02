@@ -30,7 +30,7 @@ export class IndexWorkerSingleton
         indexName,
       },
     };
-    this.worker.postMessage(message);
+    this.startWork(message);
     const me = this;
     return this.registerResponseHandler<NSIndexWorker.Response.IEndInit>(
       requestId
@@ -99,7 +99,7 @@ export class IndexWorkerSingleton
       },
     };
 
-    this.worker.postMessage(message);
+    this.startWork(message);
     return this.registerResponseHandler<NSIndexWorker.Response.IEndSignificantTerms>(
       requestId
     );

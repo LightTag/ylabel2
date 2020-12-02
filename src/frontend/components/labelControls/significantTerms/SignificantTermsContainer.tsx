@@ -10,7 +10,7 @@ const SignificantTermsContainer: FunctionComponent<{
   count: number;
 }> = (props) => {
   const query = useQuery(
-    ["sigTerms", props.label, props.count],
+    ["sigTerms", props.label],
     () => props.labelController.getSignificantTerms(props.label),
     { cacheTime: 0 }
   );
