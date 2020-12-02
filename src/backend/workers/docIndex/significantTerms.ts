@@ -45,7 +45,7 @@ async function significantTermsForLabel(
     score,
   }));
 
-  return sortBy(res, (x) => -x.score);
+  return sortBy(res, (x) => -x.score).slice(0, 100);
 }
 
 export default significantTermsForLabel;

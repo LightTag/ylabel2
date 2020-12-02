@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import TFIDFTransformer from "../../../backend/workers/aiWorker/workerProcedures/vectorizers/tfidf";
 import Data from "../../../backend/data_clients/datainterfaces";
 import { IndexWorkerSingleton } from "../../../backend/workers/docIndex/IndexWorkerSingleton";
+import AIWorkerSingleton from "../../../backend/workers/aiWorker/AIWorkerSingleton";
 
 namespace ExampleActions {
   export interface ExampleState {
@@ -56,6 +57,7 @@ export async function addExamples(examples: Data.Example[]) {
   const indexWorkerSingleton = IndexWorkerSingleton.getInstance();
 
   await indexWorkerSingleton.insertAndIndex(examples);
+  await AIWorkerSingleton.getInstance().beginTfidfVectorizer();
 }
 const exampleReducer = exampleSlice.reducer;
 export default exampleReducer;
