@@ -48,7 +48,7 @@ namespace Data {
     datasetName?: string;
     kind: "example";
     predictedLabel?: string;
-    hasPrediction?: boolean;
+    hasPrediction: 1 | -1;
     confidence?: number;
   }
 

@@ -29,6 +29,7 @@ const saveExamplesfn = (params: {
         exampleId: md5(ex[key]).toString(),
         label: labelKey ? ex[labelKey] : undefined,
         hasLabel: labelKey && ex[labelKey] ? 1 : -1,
+        hasPrediction: -1,
         kind: "example",
         hasNegativeOrRejectedLabel: -1,
         rejectedLabels: [],
